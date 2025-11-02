@@ -1,0 +1,65 @@
+/**
+ * @swagger
+ * /api/your-endpoint:
+ *   post:
+ *     summary: Short summary of what this endpoint does
+ *     description: |
+ *       Detailed multi-line explanation for developers.
+ *     tags:
+ *       - CategoryTag
+ *     security:
+ *       - WebhookSignature: []
+ *     parameters:
+ *       - in: header
+ *         name: your-header-name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Your header description
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/YourSchemaHere'
+ *           examples:
+ *             example1:
+ *               value:
+ *                 key: value
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           text/plain:
+ *             examples:
+ *               badInput:
+ *                 value: "Missing required field"
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     YourSchemaHere:
+ *       type: object
+ *       properties:
+ *         ...
+ *     SuccessResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *   securitySchemes:
+ *     WebhookSignature:
+ *       type: apiKey
+ *       in: header
+ *       name: your-signature-header
+ *       description: Signature to verify webhook source
+ */

@@ -1,0 +1,10 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+}
