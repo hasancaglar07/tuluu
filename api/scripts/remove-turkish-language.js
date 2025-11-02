@@ -6,7 +6,7 @@
 const mongoose = require('mongoose');
 
 // MongoDB connection URI from .env
-const MONGODB_URI = 'mongodb+srv://tarfyazilim_db_user:rVJhMF2Xvm0eYXvb@tulu0.ztsglsx.mongodb.net/?appName=tulu0';
+const MONGODB_URI = process.env.MONGODB_URI || 'your-mongodb-uri-here';
 
 // Language Schema (matching api/models/Language.ts)
 const LanguageSchema = new mongoose.Schema(
