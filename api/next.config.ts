@@ -28,7 +28,7 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? process.env.ALLOWED_ORIGINS
+                ? (process.env.ALLOWED_ORIGINS || "*")
                 : "http://localhost:3000",
           },
           {
@@ -92,7 +92,7 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? process.env.ALLOWED_ORIGINS
+                ? (process.env.ALLOWED_ORIGINS || "*")
                 : "http://localhost:3000",
           },
           {
