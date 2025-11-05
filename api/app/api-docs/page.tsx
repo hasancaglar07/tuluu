@@ -1,3 +1,5 @@
+"use client";
+
 import { getApiDocs } from "@/lib/swagger";
 import * as React from "react";
 import dynamic from "next/dynamic";
@@ -16,15 +18,4 @@ export default function ApiDocs() {
       <ReactSwagger spec={spec} />
     </section>
   );
-}
-
-// Nextjs dynamic metadata
-export function generateMetadata() {
-  return {
-    title: `TULU App - API Documentation`,
-    description: `API Documentation`,
-    icons: {
-      icon: `/logo_.png`,
-    },
-  };
 }
