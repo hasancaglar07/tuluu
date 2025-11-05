@@ -931,7 +931,9 @@ export async function GET(req: NextRequest) {
     const ageGroup = searchParams.get("ageGroup");
     const localeParam = searchParams.get("locale");
 
-    const languageFilter: Record<string, unknown> = {};
+    const languageFilter: Record<string, unknown> = {
+      isActive: true,
+    };
 
     if (category) {
       languageFilter.category = category;

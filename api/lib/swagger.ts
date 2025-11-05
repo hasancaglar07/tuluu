@@ -13,7 +13,7 @@ export const getApiDocs = () => {
           name: "Licence EULA",
           url: "https://github.com/sylvaincodes/tulu/blob/main/LICENCE.md",
         },
-        servers: "https://tuluapi.netlify.app",
+        servers: "https://tuluu.vercel.app",
         contact: {
           email: "syvlaincodeur@gmail.com",
           title: " Sylvain Codes",
@@ -22,7 +22,7 @@ export const getApiDocs = () => {
       },
       servers: [
         {
-          url: "https://tuluapi.netlify.app",
+          url: "https://tuluu.vercel.app",
           description: "Production Environment",
         },
         {
@@ -55,7 +55,7 @@ const options: swaggerJSDoc.Options = {
         name: "Licence EULA",
         url: "https://github.com/sylvaincodes/tulu/blob/main/LICENCE.md",
       },
-      servers: "https://tuluapi.netlify.app",
+      servers: "https://tuluu.vercel.app",
       contact: {
         email: "syvlaincodeur@gmail.com",
         title: " Sylvain Codes",
@@ -64,7 +64,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: "https://tuluapi.netlify.app",
+        url: "https://tuluu.vercel.app",
         description: "Production Environment",
       },
       {
