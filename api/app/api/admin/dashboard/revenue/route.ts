@@ -2,10 +2,14 @@ import { authGuard } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-05-28.basil",
-});
+// Initialize Stripe lazily to avoid build-time errors
+function getStripe() {
+  const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder";
+  
+  return new Stripe(STRIPE_SECRET_KEY, {
+    apiVersion: "2025-05-28.basil",
+  });
+}
 
 /**
  * @swagger
@@ -54,6 +58,7 @@ export async function GET() {
     const endOfMonth = new Date();
 
     // Get all successful payments for the current month
+    const stripe = getStripe();
     const charges = await stripe.charges.list({
       created: {
         gte: Math.floor(startOfMonth.getTime() / 1000),
@@ -63,7 +68,7 @@ export async function GET() {
     });
 
     // Calculate total revenue
-    const revenue = charges.data.reduce((sum, charge) => {
+    const revenue = charges.data.reduce((sum: number, charge: any) => {
       return sum + charge.amount / 100; // Convert from cents to dollars
     }, 0);
 
@@ -82,7 +87,7 @@ export async function GET() {
       limit: 100,
     });
 
-    const lastMonthRevenue = lastMonthCharges.data.reduce((sum, charge) => {
+    const lastMonthRevenue = lastMonthCharges.data.reduce((sum: number, charge: any) => {
       return sum + charge.amount / 100;
     }, 0);
 
