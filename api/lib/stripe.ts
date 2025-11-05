@@ -1,14 +1,21 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set");
-}
+// Allow build without STRIPE_SECRET_KEY (will fail at runtime if actually used)
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+export const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-05-28.basil",
 });
 
+// Helper to check if Stripe is properly configured
+function ensureStripeConfigured() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not configured. Please add it to your environment variables.");
+  }
+}
+
 export async function getStripeStats() {
+  ensureStripeConfigured();
   try {
     // Get total revenue from successful charges
     const charges = await stripe.charges.list({
@@ -60,6 +67,7 @@ export async function getStripeStats() {
 }
 
 export async function getStripeRevenueChart() {
+  ensureStripeConfigured();
   try {
     const months = [];
     const now = new Date();
@@ -99,6 +107,7 @@ export async function getStripeRevenueChart() {
 }
 
 export async function getStripeTransactions(limit = 50) {
+  ensureStripeConfigured();
   try {
     const charges = await stripe.charges.list({
       limit,
@@ -127,6 +136,7 @@ export async function getStripeTransactions(limit = 50) {
 }
 
 export async function getStripeRefunds(limit = 50) {
+  ensureStripeConfigured();
   try {
     const refunds = await stripe.refunds.list({
       limit,
@@ -155,6 +165,7 @@ export async function getStripeRefunds(limit = 50) {
 }
 
 export async function getStripeInvoice(invoiceId: string) {
+  ensureStripeConfigured();
   try {
     const invoice = (await stripe.invoices.retrieve(invoiceId, {
       expand: ["customer", "subscription"],
