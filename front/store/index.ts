@@ -4,30 +4,68 @@ import userReducer from "./userSlice";
 import progressReducer from "./progressSlice";
 import lessonsReducer from "./lessonsSlice";
 import settingsReducer from "./settingsSlice";
-import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { persistStore, persistReducer } from "redux-persist";
+import type { WebStorage } from "redux-persist";
 import { useDispatch } from "react-redux";
 
-// Create a custom storage object that falls back to a noop storage when localStorage is not available
-const createNoopStorage = () => {
+type UniversalStorage = {
+  getItem: (key: string) => Promise<string | null>;
+  setItem: (key: string, value: string) => Promise<void>;
+  removeItem: (key: string) => Promise<void>;
+};
+
+const isServer = typeof window === "undefined";
+
+if (isServer) {
+  const globalScope = globalThis as unknown as {
+    localStorage?: {
+      getItem?: (key: string) => string | null;
+      setItem?: (key: string, value: string) => void;
+      removeItem?: (key: string) => void;
+      clear?: () => void;
+      key?: (index: number) => string | null;
+      length?: number;
+    };
+  };
+
+  if (
+    typeof globalScope.localStorage !== "object" ||
+    typeof globalScope.localStorage?.getItem !== "function"
+  ) {
+    const noop = () => null;
+    const noops = () => {};
+    globalScope.localStorage = {
+      getItem: noop,
+      setItem: noops,
+      removeItem: noops,
+      clear: noops,
+      key: noop,
+      length: 0,
+    };
+  }
+}
+
+const createStorage = (): UniversalStorage => {
+  if (isServer) {
+    return {
+      getItem: async () => null,
+      setItem: async () => {},
+      removeItem: async () => {},
+    };
+  }
+
   return {
-    getItem() {
-      return Promise.resolve(null);
+    getItem: async (key) => window.localStorage.getItem(key),
+    setItem: async (key, value) => {
+      window.localStorage.setItem(key, value);
     },
-    setItem(value: unknown) {
-      return Promise.resolve(value);
-    },
-    removeItem() {
-      return Promise.resolve();
+    removeItem: async (key) => {
+      window.localStorage.removeItem(key);
     },
   };
 };
 
-// persite store
-const storage =
-  typeof window !== "undefined"
-    ? createWebStorage("local")
-    : createNoopStorage();
+const storage = createStorage() as unknown as WebStorage;
 
 const rootReducer = combineReducers({
   user: userReducer,

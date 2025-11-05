@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import { AppUser } from "@/types";
 
 interface UserEditDialogProps {
@@ -147,6 +148,94 @@ export default function UserEditDialog({
               />
             </div>
           </div>
+
+          <div className="grid gap-4 border rounded-lg p-4 bg-muted/20">
+            <h3 className="text-sm font-semibold text-muted-foreground">Parental Controls</h3>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="parental-enabled"
+                checked={formData.parentalControls?.enabled ?? false}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    parentalControls: {
+                      enabled: checked,
+                      guardianContact:
+                        prev.parentalControls?.guardianContact ?? "",
+                    },
+                  }))
+                }
+              />
+              <Label htmlFor="parental-enabled">Require guardian approval</Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="guardianContact">Guardian contact email</Label>
+              <Input
+                id="guardianContact"
+                value={formData.parentalControls?.guardianContact ?? ""}
+                onChange={(event) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    parentalControls: {
+                      enabled: prev.parentalControls?.enabled ?? false,
+                      guardianContact: event.target.value,
+                    },
+                  }))
+                }
+                disabled={!formData.parentalControls?.enabled}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="minutesAllowed">Daily limit (minutes)</Label>
+                <Input
+                  id="minutesAllowed"
+                  type="number"
+                  value={formData.dailyLimits?.minutesAllowed ?? 0}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      dailyLimits: {
+                        minutesAllowed:
+                          Number.parseInt(event.target.value) || 0,
+                        minutesUsed: prev.dailyLimits?.minutesUsed ?? 0,
+                        lastResetAt: prev.dailyLimits?.lastResetAt ?? null,
+                      },
+                    }))
+                  }
+                  min={0}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="minutesUsed">Minutes used today</Label>
+                <Input
+                  id="minutesUsed"
+                  type="number"
+                  value={formData.dailyLimits?.minutesUsed ?? 0}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      dailyLimits: {
+                        minutesAllowed: prev.dailyLimits?.minutesAllowed ?? 0,
+                        minutesUsed:
+                          Number.parseInt(event.target.value) || 0,
+                        lastResetAt: prev.dailyLimits?.lastResetAt ?? null,
+                      },
+                    }))
+                  }
+                  min={0}
+                />
+              </div>
+            </div>
+            {formData.dailyLimits?.lastResetAt && (
+              <p className="text-xs text-muted-foreground">
+                Last reset: {new Date(formData.dailyLimits.lastResetAt).toLocaleString()}
+              </p>
+            )}
+          </div>
+
           <DialogFooter>
             <Button
               type="button"

@@ -3,12 +3,15 @@
 import React from "react";
 import { m } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Dog } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { GridBackground } from "../ui/grid-background";
 import { LocaleLink } from "./locale-link";
 import { FormattedMessage } from "react-intl";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const Hero = ({ className }: { className: string }) => {
   const router = useLocalizedRouter();
@@ -30,9 +33,13 @@ const Hero = ({ className }: { className: string }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="md:hidden"
+            className="md:hidden w-32 h-32"
           >
-            <Dog className="h-20 w-20 text-primary-500" />
+            <Lottie
+              animationData={require("@/public/images/header_mascot.json")}
+              loop={true}
+              autoplay={true}
+            />
           </m.div>
 
           <m.h1
@@ -49,6 +56,10 @@ const Hero = ({ className }: { className: string }) => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8"
           >
+            <span className="font-bold">
+              <FormattedMessage id="hero.subtitle" />
+            </span>
+            <br />
             <FormattedMessage id="hero.description" />
           </m.p>
 
@@ -75,9 +86,9 @@ const Hero = ({ className }: { className: string }) => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-3xl my-20"
           >
-            <StatCard number="4+" labelId="hero.languages" delay={0.5} />
-            <StatCard number="2K+" labelId="hero.learners" delay={0.6} />
-            <StatCard number="10K+" labelId="hero.visits" delay={0.7} />
+            <StatCard number="7+" labelId="hero.languages" delay={0.5} />
+            <StatCard number="1K+" labelId="hero.learners" delay={0.6} />
+            <StatCard number="5K+" labelId="hero.visits" delay={0.7} />
           </m.div>
         </div>
       </div>

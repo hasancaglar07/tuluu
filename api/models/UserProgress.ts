@@ -16,6 +16,51 @@ interface CompletedLesson {
   lessonId?: string | { _id: string };
 }
 
+const createDefaultValuePoints = () => ({
+  patience: 0,
+  gratitude: 0,
+  kindness: 0,
+  honesty: 0,
+  sharing: 0,
+  mercy: 0,
+  justice: 0,
+  respect: 0,
+});
+
+const createDefaultDailyLimits = () => ({
+  minutesAllowed: 0,
+  minutesUsed: 0,
+  lastResetAt: null as Date | null,
+});
+
+const createDefaultParentalControls = () => ({
+  enabled: false,
+  guardianContact: "",
+});
+
+const mergeValuePoints = (
+  valuePoints?: Partial<ReturnType<typeof createDefaultValuePoints>>
+) => ({
+  ...createDefaultValuePoints(),
+  ...(valuePoints ?? {}),
+});
+
+const mergeDailyLimits = (
+  dailyLimits?: Partial<ReturnType<typeof createDefaultDailyLimits>>
+) => ({
+  ...createDefaultDailyLimits(),
+  ...(dailyLimits ?? {}),
+});
+
+const mergeParentalControls = (
+  parentalControls?: Partial<
+    ReturnType<typeof createDefaultParentalControls>
+  >
+) => ({
+  ...createDefaultParentalControls(),
+  ...(parentalControls ?? {}),
+});
+
 // 1. Subdocument schemas
 
 const CurrentLessonSchema = new Schema(
@@ -133,6 +178,29 @@ const UserProgressSchema = new Schema(
         date: { type: Date, default: Date.now },
       },
     ],
+    valuePoints: {
+      patience: { type: Number, default: 0 },
+      gratitude: { type: Number, default: 0 },
+      kindness: { type: Number, default: 0 },
+      honesty: { type: Number, default: 0 },
+      sharing: { type: Number, default: 0 },
+      mercy: { type: Number, default: 0 },
+      justice: { type: Number, default: 0 },
+      respect: { type: Number, default: 0 },
+    },
+    dailyLimits: {
+      minutesAllowed: { type: Number, default: 0 },
+      minutesUsed: { type: Number, default: 0 },
+      lastResetAt: { type: Date, default: null },
+    },
+    parentalControls: {
+      enabled: { type: Boolean, default: false },
+      guardianContact: {
+        type: String,
+        trim: true,
+        maxlength: 150,
+      },
+    },
   },
   { timestamps: true }
 );
@@ -346,6 +414,30 @@ UserProgressSchema.statics.addCompletedChapter = async function (
   });
 
   return progress.save();
+};
+
+UserProgressSchema.statics.updateValuePoints = async function (
+  userId: string,
+  languageId: string,
+  updates: Partial<ReturnType<typeof createDefaultValuePoints>>
+) {
+  const $inc: Record<string, number> = {};
+
+  Object.entries(updates || {}).forEach(([key, value]) => {
+    if (typeof value === "number" && !Number.isNaN(value) && value !== 0) {
+      $inc[`valuePoints.${key}`] = value;
+    }
+  });
+
+  if (Object.keys($inc).length === 0) {
+    return this.findOne({ userId, languageId });
+  }
+
+  return this.findOneAndUpdate(
+    { userId, languageId },
+    { $inc },
+    { new: true }
+  );
 };
 
 UserProgressSchema.statics.getTotalStats = async function (
@@ -579,6 +671,9 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
       lastCompletedLesson: null,
       error: "No progress found",
       loading: false,
+      valuePoints: createDefaultValuePoints(),
+      dailyLimits: createDefaultDailyLimits(),
+      parentalControls: createDefaultParentalControls(),
     };
   }
 
@@ -674,6 +769,9 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
     lastCompletedLesson: lastCompletedLesson ?? null,
     error: null,
     loading: false,
+    valuePoints: mergeValuePoints(progress.valuePoints),
+    dailyLimits: mergeDailyLimits(progress.dailyLimits),
+    parentalControls: mergeParentalControls(progress.parentalControls),
   };
 };
 
@@ -741,6 +839,12 @@ export interface UserProgressModel extends Model<UserProgressType> {
       streak?: number;
       xpBoost?: { durationMinutes: number; multiplier: number } | null;
     }
+  ): Promise<UserProgressDocument | null>;
+
+  updateValuePoints(
+    userId: string,
+    languageId: string,
+    updates: Partial<ReturnType<typeof createDefaultValuePoints>>
   ): Promise<UserProgressDocument | null>;
 
   getTotalStats(userId: string): Promise<{

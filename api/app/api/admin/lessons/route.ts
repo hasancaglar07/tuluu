@@ -7,6 +7,7 @@ import Unit, { UnitDocument } from "@/models/Unit";
 import Lesson, { LessonDocument } from "@/models/Lesson";
 import { authGuard } from "@/lib/utils";
 import { LessonSchema } from "@/lib/validations/lesson";
+import { MongoServerError } from "mongodb";
 
 /**
  * @swagger
@@ -135,8 +136,8 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     if (action === "aggregate") {
-      // Fetch all languages
-      const languages = await Language.find({});
+      // Fetch only active programs so disabled entries do not return after deletion
+      const languages = await Language.find({ isActive: true });
 
       // Create the result structure
       const result = {
@@ -151,6 +152,7 @@ export async function GET(req: NextRequest) {
               nativeName: language.nativeName,
               flag: language.flag,
               baseLanguage: language.baseLanguage,
+              locale: language.locale,
               isActive: language.isActive,
               chapters: await Promise.all(
                 chapters.map(async (chapter: ChapterDocument) => {
@@ -250,6 +252,16 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = LessonSchema.safeParse(body);
 
+    if (!validated.success) {
+      return NextResponse.json(
+        {
+          message: "validation error",
+          errors: validated.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
+    }
+
     const data = validated.data;
     await connectDB();
 
@@ -316,9 +328,17 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating unit:", error);
+    if (error instanceof MongoServerError && error.code === 11000) {
+      return NextResponse.json(
+        {
+          message: "A lesson order with the same unit already exists. Use a different order.",
+        },
+        { status: 400 }
+      );
+    }
+    console.error("Error creating lesson:", error);
     return NextResponse.json(
-      { error: "Failed to create unit" },
+      { error: "Failed to create lesson" },
       { status: 500 }
     );
   }

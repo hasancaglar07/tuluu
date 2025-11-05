@@ -6,6 +6,9 @@ import mongoose, {
   HydratedDocument,
 } from "mongoose";
 
+const optionSupportedTypes = ["translate", "select", "arrange", "match"];
+const audioSupportedTypes = ["listen", "speak"];
+
 // 1. Define Schema
 const ExerciseSchema = new Schema(
   {
@@ -66,6 +69,21 @@ const ExerciseSchema = new Schema(
     options: {
       type: [String],
       default: [],
+      validate: {
+        validator: function (this: { type: string }, value: string[]) {
+          const nonEmptyOptions = Array.isArray(value)
+            ? value.filter((option) => option?.trim().length > 0)
+            : [];
+
+          if (optionSupportedTypes.includes(this.type)) {
+            return nonEmptyOptions.length > 0;
+          }
+
+          return nonEmptyOptions.length === 0;
+        },
+        message:
+          "Options are required for this exercise type and must be empty for others",
+      },
     },
 
     isNewWord: {
@@ -77,25 +95,37 @@ const ExerciseSchema = new Schema(
       type: String,
       trim: true,
       default: "",
-      maxlength: 100,
+      maxlength: 500,
+      validate: {
+        validator: function (this: { type: string }, value: string) {
+          if (audioSupportedTypes.includes(this.type)) {
+            return typeof value === "string" && value.trim().length > 0;
+          }
+          return true;
+        },
+        message: "Audio URL is required for this exercise type",
+      },
     },
 
     neutralAnswerImage: {
       type: String,
       trim: true,
       default: "https://cdn-icons-png.flaticon.com/128/14853/14853363.png",
+      maxlength: 500,
     },
 
     badAnswerImage: {
       type: String,
       trim: true,
       default: "https://cdn-icons-png.flaticon.com/128/2461/2461878.png",
+      maxlength: 500,
     },
 
     correctAnswerImage: {
       type: String,
       trim: true,
       default: "https://cdn-icons-png.flaticon.com/128/10851/10851297.png",
+      maxlength: 500,
     },
 
     order: {

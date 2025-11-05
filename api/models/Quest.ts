@@ -79,8 +79,18 @@ const QuestSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ["daily", "weekly", "monthly", "event", "achievement", "custom"],
-      
+      enum: [
+        "daily",
+        "weekly",
+        "monthly",
+        "event",
+        "achievement",
+        "custom",
+        "kindness",
+        "moral_value",
+        "community_event",
+      ],
+
     },
     goal: {
       type: String,
@@ -172,6 +182,21 @@ const QuestSchema = new Schema(
     isVisible: { type: Boolean, default: true },
     isFeatured: { type: Boolean, default: false },
     requiresApproval: { type: Boolean, default: false },
+    approvalFlow: {
+      approver: {
+        type: String,
+        enum: ["parent", "teacher"],
+      },
+      proofType: {
+        type: String,
+        enum: ["photo", "text", "audio"],
+      },
+      gracePeriodHours: {
+        type: Number,
+        min: 0,
+        max: 168,
+      },
+    },
   },
   {
     timestamps: true,

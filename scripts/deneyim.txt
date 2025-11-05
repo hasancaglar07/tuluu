@@ -1,0 +1,1264 @@
+🎮 KULLANICI DENEYİMİ - ADIM ADIM YOLCULUK
+Plan bittiğinde bir kullanıcının yaşayacağı deneyimi detaylıca açıklayayım:
+
+📱 SENARYO: 8 Yaşında Bir Çocuk (Ahmet)
+
+🌟 YENİ DENEYİM VURGULARI
+• Kategori sayfasında üstte filtre rozetleri ile yaş grubu ve temaya göre seçim yapılabiliyor.
+• Ders kartları artık karakter değeri ve mini oyun bilgisini açılır pencerede gösteriyor.
+• Gösterge paneline eklenen Değer Puanları kartı, sabır/şükür gibi puanları anlık takip etmeyi sağlıyor.
+• Yönetici panelinde dil eklerken kategori ve değer odaklı metadata giriliyor, ders ekranında ahlaki içerik ve mini oyun düzenlenebiliyor.
+🏁 ADIM 1: İLK GİRİŞ
+Ekran: Landing Page
+
+Ahmet platformu ilk kez açıyor
+Renkli, çocuk dostu bir karşılama ekranı
+"Hoş geldin! Ne öğrenmek istersin?" yazısı
+Dil seçimi: 🇹🇷 Türkçe seçiyor
+🎯 ADIM 2: KATEGORİ SEÇİMİ
+Ekran: /learn - 7 Ana Kategori Grid
+
+┌─────────────────────────────────────────────────┐
+│      🌟 Ne Öğrenmek İstersin, Ahmet?          │
+└─────────────────────────────────────────────────┘
+
+┌──────────┐  ┌──────────┐  ┌──────────┐
+│   🕋     │  │   📖     │  │   ➕     │
+│ İman &   │  │ Kur'an & │  │ Matematik│
+│  Ahlak   │  │  Arapça  │  │ & Mantık │
+│          │  │          │  │          │
+│ 124 ders │  │  89 ders │  │ 156 ders │
+└──────────┘  └──────────┘  └──────────┘
+
+┌──────────┐  ┌──────────┐  ┌──────────┐
+│   🔭     │  │   🗣️     │  │   🌿     │
+│  Bilim & │  │   Dil    │  │ Zihinsel │
+│  Keşif   │  │ Öğrenimi │  │  Gelişim │
+│          │  │          │  │          │
+│  78 ders │  │ 234 ders │  │  45 ders │
+└──────────┘  └──────────┘  └──────────┘
+
+┌──────────┐
+│   👭     │
+│ Kişisel  │
+│  Sosyal  │
+│          │
+│  67 ders │
+└──────────┘
+
+Ahmet'in seçimi: 🕋 İman & Ahlak kategorisine tıklıyor
+
+📚 ADIM 3: İMAN & AHLAK KATEGORİSİ İÇERİĞİ
+Ekran: Kategori detay sayfası
+
+Ahmet şunları görüyor:
+
+Chapter 1: Peygamberlerimiz 🌟
+✅ Ders 1: Hz. Muhammed (SAV) - Tamamlandı
+✅ Ders 2: Dürüstlük Hikayesi - Tamamlandı
+🎯 Ders 3: Hz. Nuh ve Sabır (AKTIF - BAŞLA butonu var)
+🔒 Ders 4: Hz. İbrahim - Kilitli
+🔒 Ders 5: Test - Kilitli
+Progress Bar: %40 tamamlandı
+
+Chapter 2: Güzel Davranışlar 🤝
+🔒 Ders 6: Paylaşmanın Önemi
+🔒 Ders 7: Yardımlaşma Oyunu
+🔒 Ders 8: Sabır Ağacı
+Ahmet'in Puanları (Sağ üst köşe):
+⏳ Sabır: 45 puan
+🙏 Şükür: 30 puan
+❤️ İyilik: 25 puan
+💎 Dürüstlük: 50 puan ⭐ (En yüksek!)
+
+Ahmet'in seçimi: "Hz. Nuh ve Sabır" dersine BAŞLA butonuna tıklıyor
+
+🎓 ADIM 4: DERS BAŞLIYOR - Hz. Nuh ve Sabır
+Ekran 1: Ders Girişi
+
+┌─────────────────────────────────────┐
+│  🌊 Hz. Nuh ve Sabır Hikayesi      │
+│                                     │
+│  [Ahmet'in avatarı]                │
+│  Seviye: Mekke Seviye 2             │
+│  💚💚💚💚💚 5 kalp                    │
+│  ⭐ 45 XP kazanabilirsin            │
+└─────────────────────────────────────┘
+
+[Bobo maskot animasyonu]: "Hazır mısın Ahmet? 
+Bugün çok güzel bir sabır hikayesi öğreneceğiz!"
+
+Egzersiz 1: Hikaye Dinleme
+
+🎧 Ses: "Hz. Nuh çok uzun yıllar sabretti..."
+📖 Animasyonlu hikaye gösterimi
+Çocuk sesi ile Türkçe anlatım
+Egzersiz 2: Anlama Sorusu
+
+Soru: Hz. Nuh kaç yıl bekled?
+
+A) 10 yıl
+B) 50 yıl  
+C) 950 yıl ✓ (Doğru cevap)
+D) 100 yıl
+
+Ahmet doğru cevap veriyor → ✨ +10 XP kazandı!
+
+Egzersiz 3: Sabır Uygulaması
+
+Mini Oyun: "Sabır Ağacı"
+
+[Bir ağaç resmi, meyveleri yavaş yavaş büyüyor]
+
+Görev: 30 saniye bekle, ağacın meyvelerini toplama!
+
+⏱️ 30... 29... 28...
+
+[Ahmet sabırla bekliyor]
+
+✅ Tebrikler! Sabırlı oldun!
+⏳ Sabır puanı +15
+
+Egzersiz 4: Kelime Eşleştirme
+
+Türkçe kelimeyi Arapça karşılığı ile eşleştir:
+
+Sabır  ←→  صبر (Sabr) ✓
+
+[Drag & drop ile eşleştirme]
+
+Egzersiz 5: Dua Öğrenme
+
+🤲 Bugünün Duası:
+
+Arabic: "رَبِّ اجْعَلْنِي مِنَ الصَّابِرِينَ"
+
+Okunuşu: "Rabbi c'alnî mine's-sâbirîn"
+
+Anlamı: "Rabbim! Beni sabredenlerden eyle!"
+
+🔊 [Dinle] butonu - Çocuk sesi ile tekrar
+📝 [Tekrarla] butonu
+
+🎉 ADIM 5: DERS BİTTİ - ÖDÜLLER!
+Ekran: Ders Tamamlama
+
+┌─────────────────────────────────────────┐
+│         ✨ DERS TAMAMLANDI! ✨         │
+│                                         │
+│  🎯 Kazandıkların:                     │
+│  ⭐ +45 XP                             │
+│  💎 +10 Gem                            │
+│  ⏳ +15 Sabır Puanı                    │
+│                                         │
+│  📊 İlerleme:                          │
+│  Chapter 1: %60 tamamlandı             │
+│  Toplam: 3/5 ders tamamlandı          │
+└─────────────────────────────────────────┘
+
+🌟 ÖZEL BÖLÜM: AHLAKI MESAJ
+
+┌─────────────────────────────────────────┐
+│    ✨ Bugünün Değer Mesajı ✨          │
+│                                         │
+│  [Hz. Nuh'un gemisi animasyonu]        │
+│                                         │
+│  Sabır en güzel davranışlardan biridir.│
+│  Hz. Nuh gibi sen de zor zamanlarda    │
+│  sabredersen, Allah seni sever.        │
+│                                         │
+│  💡 Günlük Hedef:                      │
+│  Bugün bir konuda sabırlı ol ve        │
+│  anlatmayı unutma!                     │
+│                                         │
+│  [Devam Et] butonu                     │
+└─────────────────────────────────────────┘
+
+🏆 ADIM 6: SEVİYE ATLAMA!
+Ekran: Level Up Animation
+
+┌─────────────────────────────────────────┐
+│       🎊 SEVİYE ATLADIN! 🎊           │
+│                                         │
+│  [Animasyonlu rozet]                   │
+│                                         │
+│  Mekke Seviye 2 → Mekke Seviye 3      │
+│                                         │
+│  🏅 Yeni Rozet Kazandın:              │
+│  "Sabır Kahramanı" ⏳                  │
+│                                         │
+│  Açılan Özellikler:                    │
+│  ✅ Hz. İbrahim Dersi açıldı          │
+│  ✅ Özel sabır oyunu açıldı           │
+│                                         │
+│  [Harika!] butonu                      │
+└─────────────────────────────────────────┘
+
+🎯 ADIM 7: İYİLİK GÖREVİ BİLDİRİMİ
+Pop-up Mesaj:
+
+┌─────────────────────────────────────────┐
+│    🌟 YENİ GÖREV VAR! 🌟              │
+│                                         │
+│  Bugünün İyilik Görevi:                │
+│  "Anne veya babana yardım et"          │
+│                                         │
+│  Ne yapmalısın?                        │
+│  • Evde bir iş yap (bulaşık, toplama)  │
+│  • Fotoğraf çek                        │
+│  • Anne/babanın onayını al             │
+│                                         │
+│  Ödül: ❤️ +20 İyilik Puanı            │
+│       🏅 "Yardımsever" Rozeti          │
+│                                         │
+│  [Şimdi Yap] [Sonra Hatırlat]         │
+└─────────────────────────────────────────┘
+
+📸 ADIM 8: İYİLİK GÖREVİNİ TAMAMLAMA
+Senaryo: Ahmet annesine yemek masasını toplamada yardım etti.
+
+Ekran: İyilik Görevi Gönderme
+
+┌─────────────────────────────────────────┐
+│    📸 İyiliğini Paylaş                 │
+│                                         │
+│  Görev: Anne/babana yardım et          │
+│                                         │
+│  📷 Fotoğraf Yükle:                    │
+│  [Fotoğraf: Ahmet masayı toplarken]    │
+│                                         │
+│  ✍️ Ne yaptın? (Anlat)                │
+│  "Anneme yemek masasını toplamada      │
+│   yardım ettim. Tabakları mutfağa      │
+│   taşıdım."                            │
+│                                         │
+│  👤 Kim onaylayacak?                   │
+│  ⚪ Anne  ⚫ Baba  ⚪ Öğretmen         │
+│                                         │
+│  [Gönder] butonu                       │
+└─────────────────────────────────────────┘
+
+Anne'nin Ekranı (Onay Paneli):
+
+┌─────────────────────────────────────────┐
+│    ✅ Onay Bekliyor                    │
+│                                         │
+│  Ahmet bir iyilik yaptı!               │
+│                                         │
+│  [Fotoğraf gösterimi]                  │
+│                                         │
+│  Açıklama:                             │
+│  "Anneme yemek masasını toplamada      │
+│   yardım ettim..."                     │
+│                                         │
+│  💬 Yorumunuz:                         │
+│  "Çok güzel yardım ettin canım,        │
+│   maşallah! 💕"                        │
+│                                         │
+│  [✅ Onayla] [❌ Reddet]               │
+└─────────────────────────────────────────┘
+
+Onaylandıktan Sonra - Ahmet'in Ekranı:
+
+┌─────────────────────────────────────────┐
+│       🎉 GÖREV TAMAMLANDI! 🎉         │
+│                                         │
+│  Annen onayladı!                       │
+│                                         │
+│  "Çok güzel yardım ettin canım,        │
+│   maşallah! 💕"                        │
+│                                         │
+│  🎁 Kazandıkların:                     │
+│  ❤️ +20 İyilik Puanı                  │
+│  🏅 "Yardımsever Çocuk" Rozeti        │
+│  ⭐ +10 XP                             │
+│                                         │
+│  Toplam İyilik Puanın: 45 ❤️          │
+│                                         │
+│  [Süper!] butonu                       │
+└─────────────────────────────────────────┘
+
+🏪 ADIM 9: MAĞAZAYI KEŞFETMEK
+Ahmet "Shop" menüsüne tıklıyor
+
+Ekran: Mağaza
+
+┌─────────────────────────────────────────┐
+│         🏪 DEĞER MAĞAZASI               │
+│                                         │
+│  Bakiyem:                              │
+│  💎 250 Gem  |  ⭐ 145 XP              │
+│                                         │
+│  Kategoriler:                          │
+│  [Kalpler] [Avatarlar] [Rozetler]      │
+
+
+🏪 ADIM 9: MAĞAZAYI KEŞFETMEK (Devam)
+Ekran: Mağaza - Rozetler Sekmesi
+
+┌─────────────────────────────────────────┐
+│         🏪 DEĞER MAĞAZASI               │
+│                                         │
+│  Bakiyem:                              │
+│  💎 250 Gem  |  ❤️ 45 İyilik Puanı   │
+│                                         │
+│  📑 [Kalpler] [Avatarlar] [ROZETLER] ✓ │
+└─────────────────────────────────────────┘
+
+🏅 DEĞER ROZETLERİ:
+
+┌──────────┐  ┌──────────┐  ┌──────────┐
+│    ⏳    │  │    🙏    │  │    ❤️    │
+│  Sabır   │  │  Şükür   │  │  İyilik  │
+│  Ustası  │  │ Çocuğu   │  │ Meleği   │
+│          │  │          │  │          │
+│ Gerekli: │  │ Gerekli: │  │ Gerekli: │
+│ 50 sabır │  │ 60 şükür │  │ 50 iyilik│
+│          │  │          │  │          │
+│ SENİN:45 │  │ SENİN:30 │  │ SENİN:45 │
+│ 🔒 YAKINDA│  │ 🔒 Kilitli│  │ 🔒 YAKINDA│
+└──────────┘  └──────────┘  └──────────┘
+
+┌──────────┐  ┌──────────┐
+│    💎    │  │    🏆    │
+│Dürüstlük │  │  Özel    │
+│ Şampiyonu│  │  Rozet   │
+│          │  │          │
+│ Gerekli: │  │ Tüm değer│
+│ 50 puan  │  │ler 100+  │
+│          │  │          │
+│ SENİN:50 │  │          │
+│✅ ALINMIŞ│  │ 🔒 Kilitli│
+└──────────┘  └──────────┘
+
+🎨 AVATAR PAKETLERİ:
+
+┌──────────┐  ┌──────────┐
+│ Peygamber│  │  Sahabe  │
+│ Temalı   │  │  Temalı  │
+│          │  │          │
+│ 100 💎   │  │ 150 💎   │
+│          │  │          │
+│ [SATIN AL]│  │ [SATIN AL]│
+└──────────┘  └──────────┘
+
+
+Ahmet "Dürüstlük Şampiyonu" rozetini zaten kazanmış! ✅
+
+📊 ADIM 10: PROFİL & İSTATİSTİKLER
+Ahmet profil sayfasına giriyor
+
+┌─────────────────────────────────────────┐
+│         👤 Ahmet'in Profili            │
+└─────────────────────────────────────────┘
+
+[Avatar: Küçük bir çocuk karakteri]
+
+📈 Genel İstatistikler:
+• Seviye: Mekke Seviye 3 🕋
+• Toplam XP: 145 ⭐
+• Streak: 7 gün 🔥
+• Tamamlanan Ders: 12/50
+
+💝 DEĞER PUANLARI:
+
+┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
+│ ⏳ 45 │ │ 🙏 30 │ │ ❤️ 45 │ │ 💎 50 │
+│ Sabır │ │ Şükür │ │İyilik │ │Dürüst.│
+└───────┘ └───────┘ └───────┘ └───────┘
+
+┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
+│ 🤝 35 │ │ 🙇 20 │ │ 🌸 15 │ │ ⚖️ 25 │
+│Paylaş.│ │ Saygı │ │Merhamet│ │Adalet │
+└───────┘ └───────┘ └───────┘ └───────┘
+
+🏅 KAZANILAN ROZETLER (5/20):
+✅ Sabır Kahramanı
+✅ Dürüstlük Şampiyonu  
+✅ Yardımsever Çocuk
+✅ İlk Ders Tamamlayıcı
+✅ 7 Günlük Streak
+
+📚 KATEGORİ İLERLEMESİ:
+
+🕋 İman & Ahlak:        ▓▓▓▓░░░░░░ 40%
+📖 Kur'an & Arapça:     ▓░░░░░░░░░ 10%
+➕ Matematik:           ░░░░░░░░░░  0%
+🔭 Bilim:               ▓▓░░░░░░░░ 20%
+🗣️ Dil (Türkçe→İng):   ░░░░░░░░░░  0%
+🌿 Zihinsel:            ░░░░░░░░░░  0%
+👭 Sosyal:              ▓░░░░░░░░░ 15%
+
+🎯 SONRAKİ HEDEFİN:
+"Sabır Ustası" rozetini kazanmak için 5 puan daha!
+
+
+⏰ ADIM 11: GÜNLÜK ZAMAN LİMİTİ UYARISI
+15 dakika dolmak üzere...
+
+┌─────────────────────────────────────────┐
+│    ⏰ Zaman Uyarısı                    │
+│                                         │
+│  Bugün 13 dakika oynadın!              │
+│  Günlük limitin: 15 dakika             │
+│                                         │
+│  📊 Kalan süre: 2 dakika               │
+│                                         │
+│  💡 İpucu: Yarın yine gelebilirsin!   │
+│      Her gün biraz öğrenmek            │
+│      daha iyidir! 🌟                   │
+│                                         │
+│  [Devam Et] [Kapat]                    │
+└─────────────────────────────────────────┘
+
+15 dakika dolduğunda:
+
+┌─────────────────────────────────────────┐
+│    🌙 Bugünlük Bu Kadar!               │
+│                                         │
+│  Harika bir gün geçirdin Ahmet! 🎉     │
+│                                         │
+│  📊 Bugünkü Başarıların:               │
+│  • 2 ders tamamladın                   │
+│  • 55 XP kazandın                      │
+│  • 1 iyilik yaptın                     │
+│  • 15 değer puanı kazandın             │
+│                                         │
+│  Yarın saat 16:00'da tekrar gel!       │
+│  Yeni bir hikaye seni bekliyor... 📖   │
+│                                         │
+│  🎁 Yarın için bonus:                  │
+│  "8 günlük streak = +10 bonus XP"      │
+│                                         │
+│  [İyi Geceler] 🌟                      │
+└─────────────────────────────────────────┘
+
+📱 ADIM 12: EBEVEYNİN GÖRÜNÜMÜ
+Anne'nin kontrol paneline bakıyor
+
+┌─────────────────────────────────────────┐
+│    👨‍👩‍👦 Ebeveyn Kontrol Paneli         │
+└─────────────────────────────────────────┘
+
+Çocuk: Ahmet (8 yaş)
+
+📊 BU HAFTAKİ AKTİVİTE:
+
+Pzt: ▓▓▓░░ 15/15 dk  ✅
+Sal: ▓▓▓░░ 15/15 dk  ✅
+Çar: ▓▓▓░░ 15/15 dk  ✅
+Per: ▓▓▓░░ 15/15 dk  ✅
+Cum: ▓▓▓░░ 15/15 dk  ✅
+Cmt: ▓▓░░░ 10/15 dk  
+Pzr: ▓▓▓░░ 13/15 dk  (BUGÜN)
+
+Toplam: 7 gün streak 🔥
+
+📚 İÇERİK TERCİHLERİ:
+
+En çok zaman harcanan:
+1. 🕋 İman & Ahlak (45 dk)
+2. 🔭 Bilim & Keşif (20 dk)
+3. 👭 Sosyal Beceriler (15 dk)
+
+💡 ÖNERİLER:
+• Matematik kategorisine ilgi göstermiyor
+• Sabır değerinde çok başarılı
+• Sosyal görevleri seviyor
+
+⚙️ AYARLAR:
+
+📅 Günlük Limit:     [15 dakika ▼]
+🔒 Yaş Filtresi:     [8-12 yaş   ✓]
+📖 İçerik Türü:      [Tümü       ✓]
+🔔 Bildirimler:      [Açık       ✓]
+
+İzin Verilen Kategoriler:
+☑ İman & Ahlak
+☑ Kur'an & Arapça
+☑ Matematik & Mantık
+☑ Bilim & Keşif
+☑ Dil Öğrenimi
+☑ Zihinsel Gelişim
+☑ Sosyal Beceriler
+
+🎯 ONAY BEKLEYENLER (1):
+
+📸 İyilik Görevi: "Masayı toplamada yardım"
+   Tarih: Bugün 17:30
+   [Detay] [Onayla] [Reddet]
+
+
+🏆 ADIM 13: LEADERBOARD (SIRALAMALAR)
+Ahmet sıralama sayfasına bakıyor
+
+┌─────────────────────────────────────────┐
+│         🏆 SIRALAMALAR                  │
+└─────────────────────────────────────────┘
+
+📑 [Bu Hafta] [Bu Ay] [Tüm Zamanlar]
+
+🌟 EN YÜKSEK XP (Bu Hafta):
+
+1. 👑 Zeynep_2015    450 XP  🇹🇷
+2. 🥈 Ali_2014       420 XP  🇹🇷
+3. 🥉 Ayşe_2016      380 XP  🇹🇷
+4.    Mehmet_2015    350 XP  🇹🇷
+5.    Fatma_2014     320 XP  🇹🇷
+---
+12.   Ahmet_2016     145 XP  🇹🇷  ⬅️ SEN!
+---
+
+💝 EN YÜKSEK DEĞER PUANI:
+
+1. 👑 Ayşe_2016    Sabır: 95
+2. 🥈 Mehmet_2015  İyilik: 88
+3. 🥉 Zeynep_2015  Dürüstlük: 85
+---
+8.    Ahmet_2016   Dürüstlük: 50  ⬅️ SEN!
+
+🌍 GLOBAL SIRALAMALAR:
+
+🇹🇷 Türkiye:  #12 / 1,245 oyuncu
+🌍 Dünya:     #4,523 / 45,678 oyuncu
+
+🎯 Bir sonraki sıra için 35 XP daha!
+
+🎮 ADIM 14: DİĞER KATEGORİLERİ KEŞFETMEK
+Ahmet merak edip Matematik kategorisine bakıyor
+
+┌─────────────────────────────────────────┐
+│      ➕ MATEMATİK & MANTIK              │
+└─────────────────────────────────────────┘
+
+🎯 Chapter 1: Sayılarla Tanışma
+
+┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Ders 1:  │  │ Ders 2:  │  │ Ders 3:  │
+│ 1'den    │  │ Toplama  │  │ Çıkarma  │
+│ 10'a    │  │  Oyunu   │  │  Macerası│
+│          │  │          │  │          │
+│  [BAŞLA] │  │ 🔒 Kilitli│  │ 🔒 Kilitli│
+└──────────┘  └──────────┘  └──────────┘
+
+🎮 Mini Oyun: "Sayı Yakalama"
+[Hareketli sayılar, eğlenceli müzik]
+
+💡 Öğrenme Yöntemi:
+• Video anlatım
+• İnteraktif oyunlar
+• Pratik egzersizler
+• Ödül sistemi
+
+🎁 Bu kategoride kazanılacak rozetler:
+🏅 "Matematik Dehası"
+🏅 "Hızlı Hesap"
+🏅 "Problem Çözücü"
+
+🌙 ADIM 15: MEDİTASYON & ZİHİNSEL GELİŞİM
+Ahmet "Zihinsel Gelişim" kategorisine giriyor
+
+┌─────────────────────────────────────────┐
+│      🌿 ZİHİNSEL & RUHSAL GELİŞİM      │
+└─────────────────────────────────────────┘
+
+🌙 ADIM 15: MEDİTASYON & ZİHİNSEL GELİŞİM (Devam)
+┌─────────────────────────────────────────┐
+│      🌿 ZİHİNSEL & RUHSAL GELİŞİM      │
+└─────────────────────────────────────────┘
+
+🧘 Günlük Egzersizler:
+
+┌──────────────────────────────┐
+│  🌬️ Nefes Egzersizi          │
+│                              │
+│  [▶️ 3 dakika]               │
+│  Rahat bir nefes alıp ver.  │
+│  Sakin müzik eşliğinde...   │
+└──────────────────────────────┘
+
+┌──────────────────────────────┐
+│  🙏 Sabah Duaları            │
+│                              │
+│  [▶️ 5 dakika]               │
+│  Günlük dualarını öğren      │
+│  ve ezberle                  │
+└──────────────────────────────┘
+
+┌──────────────────────────────┐
+│  🌟 Tefekkür Zamanı          │
+│                              │
+│  [▶️ 4 dakika]               │
+│  "Allah'ın yarattıklarını   │
+│  düşünmek"                   │
+└──────────────────────────────┘
+
+📚 Hikaye Terapisi:
+• "Kuş Yemi Veren Çocuk"
+• "Anneme Yardım Etmek"
+• "Oyuncaklarımı Paylaşmak"
+
+🎵 Sakin Müzikler:
+• Doğa Sesleri
+• İlahi ve Ezgiler
+• Rahatlatıcı Melodiler
+
+
+📖 ADIM 16: KUR'AN & ARAPÇA KATEGORİSİ
+Ahmet Kur'an kategorisine merak ediyor
+
+┌─────────────────────────────────────────┐
+│      📖 KUR'AN & ARAPÇA                 │
+└─────────────────────────────────────────┘
+
+🎯 Chapter 1: Elif-Ba Öğreniyorum
+
+┌──────────────────────────────┐
+│  Ders 1: Harfleri Tanıyalım │
+│                              │
+│  ا ب ت ث ج ح خ           │
+│  (Elif, Be, Te, Se...)       │
+│                              │
+│  🎵 Şarkı ile öğren          │
+│  🎮 Harf bulma oyunu         │
+│  ✍️ Yazma pratikleri         │
+│                              │
+│  [BAŞLA]                     │
+└──────────────────────────────┘
+
+📿 Kısa Sureler:
+┌──────────────────┐
+│ 🌟 Fatiha Suresi │
+│ Ayet ayet öğren  │
+│ Tecvid kuralları │
+│ [BAŞLA]          │
+└──────────────────┘
+
+┌──────────────────┐
+│ 🌙 İhlas Suresi  │
+│ 🔒 Kilitli       │
+│ (Fatiha'yı bitir)│
+└──────────────────┘
+
+🎤 Sesli Öğrenme:
+• Tecvid kuralları
+• Doğru telaffuz
+• Ezber teknikleri
+
+🎁 Rozetler:
+🏅 "Elif-Ba Mezunu"
+🏅 "Sure Ezberleyici"
+🏅 "Arapça Okuyucu"
+
+
+🔬 ADIM 17: BİLİM & KEŞİF KATEGORİSİ
+┌─────────────────────────────────────────┐
+│      🔭 BİLİM & KEŞİF                   │
+└─────────────────────────────────────────┘
+
+🌌 Chapter 1: Evren ve Yaratılış
+
+┌──────────────────────────────┐
+│  Ders 1: Güneş Sistemi       │
+│                              │
+│  ☀️ Güneş                    │
+│  🌍 Dünya                    │
+│  🌙 Ay ve Yıldızlar         │
+│                              │
+│  "Allah bunları nasıl        │
+│  yarattı?" 🤔                │
+│                              │
+│  🎮 Gezegenler Arası Yolculuk│
+│  [BAŞLA]                     │
+└──────────────────────────────┘
+
+🌱 Chapter 2: Doğa ve Canlılar
+
+┌──────────────────────────────┐
+│  Bitkilerin Büyümesi         │
+│  Hayvanlar Alemi             │
+│  Su Döngüsü                  │
+│  [KEŞFET]                    │
+└──────────────────────────────┘
+
+🧪 Deneyler:
+• Basit bilim deneyleri
+• Video gösterimler
+• Evde yapabilecekler
+
+📚 İslami Perspektif:
+• Kur'an'daki bilimsel mucizeler
+• Peygamberimizin doğa sevgisi
+• Yaratılışa şükretmek
+
+
+👥 ADIM 18: SOSYAL BECERİLER KATEGORİSİ
+┌─────────────────────────────────────────┐
+│      👭 KİŞİSEL & SOSYAL BECERİLER     │
+└─────────────────────────────────────────┘
+
+🤝 Chapter 1: Arkadaşlık
+
+┌──────────────────────────────┐
+│  Ders 1: İyi Arkadaş Olmak   │
+│                              │
+│  Senaryolar:                 │
+│  • Arkadaşınız üzgün        │
+│  • Oyuncak paylaşımı        │
+│  • Kavga çıkınca ne yapmalı?│
+│                              │
+│  🎭 Rol yapma aktiviteleri   │
+│  💭 Duygular ve empati       │
+│                              │
+│  [BAŞLA]                     │
+└──────────────────────────────┘
+
+😊 Duygu Yönetimi:
+┌──────────────────────────────┐
+│  "Kızgın hissediyorum"       │
+│  Nasıl sakinleşebilirim?     │
+│                              │
+│  1. Derin nefes al           │
+│  2. 10'a kadar say           │
+│  3. Yetişkine söyle          │
+│  4. Dua et                   │
+│                              │
+│  [ÖĞREN]                     │
+└──────────────────────────────┘
+
+🏠 Aile İçi İletişim:
+• Anneye-babaya saygı
+• Kardeşlerle paylaşmak
+• Ev işlerine yardım
+
+🌍 Toplum Bilinci:
+• Çevreyi temiz tutma
+• Yaşlılara yardım
+• Hayvan hakları
+
+
+🎁 ADIM 19: ÖZEL ETKİNLİKLER & GÜNLER
+Cuma günü özel bir etkinlik var!
+
+┌─────────────────────────────────────────┐
+│    🎉 ÖZEL ETKİNLİK: CUMA GÜNÜ!        │
+└─────────────────────────────────────────┘
+
+🕌 Bugün Cuma! Özel Görevler:
+
+┌──────────────────────────────┐
+│  📿 Cuma Namazı Hakkında     │
+│                              │
+│  • Neden özel?               │
+│  • Nasıl hazırlanmalıyız?   │
+│  • Cuma günü faziletleri    │
+│                              │
+│  [ÖĞRENİYORUM] [+50 XP]     │
+└──────────────────────────────┘
+
+┌──────────────────────────────┐
+│  🌟 Cuma Günü İyilikleri     │
+│                              │
+│  Bugün 2X İyilik Puanı! 🎁   │
+│                              │
+│  Önerilen iyilikler:         │
+│  • Aileye yardım (20 puan)  │
+│  • Komşuya selam (15 puan)  │
+│  • Hayır duası (10 puan)    │
+│                              │
+│  [GÖREV AL]                  │
+└──────────────────────────────┘
+
+🎊 HAFTALIK TURNUVA:
+
+"Sabır Şampiyonası"
+Başlangıç: Bugün 15:00
+Bitiş: Pazar 23:59
+
+🏆 Ödüller:
+1. 🥇 500 Gem + "Sabır Kralı" rozeti
+2. 🥈 300 Gem + Özel Avatar
+3. 🥉 200 Gem + Bonus XP
+
+[KATIL] [Detaylar]
+
+
+🎓 ADIM 20: SEVİYE ATLAMA SİSTEMİ DETAYLI
+┌─────────────────────────────────────────┐
+│      🌍 SEVİYE ATLAMA SİSTEMİ          │
+└─────────────────────────────────────────┘
+
+📍 MEVCUT SEVİYE: Mekke 3
+
+🗺️ TÜM SEVİYELER:
+
+🕋 MEKKE SEVİYELERİ (1-10)
+Seviye 1: "Yeni Müslüman" (0-50 XP)
+Seviye 2: "Kabe Ziyaretçisi" (50-120 XP)
+Seviye 3: "Hicaz Yolcusu" (120-200 XP) ⬅️ SEN!
+Seviye 4-10: ... devam ediyor
+
+🌴 MEDİNE SEVİYELERİ (11-20)
+Seviye 11: "Medine Muhaciri"
+Seviye 12: "Ensar Dostu"
+... daha fazlası
+
+🕌 ENDÜLÜS SEVİYELERİ (21-30)
+Seviye 21: "Kordoba Öğrencisi"
+Seviye 22: "Granada Gezgini"
+... daha fazlası
+
+🌟 KUDÜS SEVİYELERİ (31-40)
+Seviye 31: "Mescid-i Aksa Ziyaretçisi"
+... daha fazlası
+
+🏆 ÜSTAD SEVİYESİ (41-50)
+Maksimum seviye!
+
+Her seviye atlayışta:
+• 🎁 Özel ödüller
+• 🆕 Yeni içerikler açılır
+• 🎨 Yeni avatarlar
+• 🏅 Özel rozetler
+
+
+💎 ADIM 21: ABONE SİSTEMİ (PREMİUM)
+┌─────────────────────────────────────────┐
+│      ⭐ PREMİUM ÜYELİK                  │
+└─────────────────────────────────────────┘
+
+🆓 ÜCRETSİZ SÜRÜM (Şu an):
+• Günlük 15 dakika oyun
+• Temel dersler
+• Standart rozetler
+• Reklam var
+
+💎 PREMİUM SÜRÜM (Aylık 49₺):
+• ♾️ Sınırsız oyun süresi
+• 🎯 Tüm kategoriler açık
+• 🎨 Özel avatarlar
+• 🏅 Ekstra rozetler
+• 📚 Özel hikayeler
+• 🚫 Reklamsız deneyim
+• 👨‍👩‍👦 Aile paketi (3 çocuk)
+• 📊 Detaylı raporlar
+
+🎁 İLK AY %50 İNDİRİMLİ!
+
+┌──────────────────────────────┐
+│  💰 FİYATLANDIRMA            │
+│                              │
+│  Aylık:    49₺/ay           │
+│  3 Aylık:  129₺ (%12 tasarruf)│
+│  Yıllık:   399₺ (%32 tasarruf)│
+│                              │
+│  [ABONE OL]                  │
+└──────────────────────────────┘
+
+🎯 Deneme Sürümü:
+7 gün ücretsiz dene!
+
+
+📊 ADIM 22: EBEVEYN RAPORLARI
+Anne haftalık raporu inceliyor
+
+┌─────────────────────────────────────────┐
+│    📈 HAFTALIK İLERLEME RAPORU         │
+│         Ahmet (8 yaş)                  │
+└─────────────────────────────────────────┘
+
+📅 Tarih: 27 Ekim - 3 Kasım
+
+⏰ EKRAN SÜRESİ:
+┌────────────────┐
+│  📊 Bu hafta:  │
+│  100/105 dk    │
+│  ▓▓▓▓▓▓▓▓▓░    │
+│  %95 hedefe    │
+│  ulaştı! ✅    │
+└────────────────┘
+
+Günlük ortalama: 14.2 dakika
+Hedef: 15 dakika
+Uyarı sayısı: 0 ⭐
+
+📚 ÖĞRENME ANALİZİ:
+
+En aktif kategoriler:
+1. 🕋 İman & Ahlak (40 dk)
+2. 🔭 Bilim (25 dk)
+3. 👭 Sosyal (15 dk)
+
+Tamamlanan:
+• 8 ders ✅
+• 3 hikaye 📖
+• 5 mini oyun 🎮
+
+💝 DEĞER GELİŞİMİ:
+
+En çok gelişen değerler:
+🥇 Dürüstlük: +30 puan (Mükemmel!)
+🥈 İyilik: +25 puan (Harika!)
+🥉 Sabır: +20 puan (Çok iyi!)
+
+
+
+📊 ADIM 22: EBEVEYN RAPORLARI (Devam)
+Geliştirilmesi gereken:
+⚠️ Matematik: 0 dk (İlgi göstermiyor)
+💡 Öneri: Oyun tabanlı matematik içerikleri 
+
+🎯 BAŞARILAR:
+
+Bu hafta kazanılanlar:
+🏅 "7 Günlük Streak"
+🏅 "Dürüstlük Şampiyonu"
+🏅 "İyilik Meleği"
+
+Tamamlanan görevler:
+✅ 3 iyilik görevi (anne onaylı)
+✅ 2 haftalık hedef
+✅ 8 ders bitirdi
+
+⚠️ DİKKAT NOKTLARI:
+
+• Hiç uyarı almadı ✅
+• Her gün düzenli giriş yaptı ✅
+• İçerik filtreleri aktif ✅
+• Yaşına uygun içerik tüketiyor ✅
+
+📱 SOSYAL AKTİVİTE:
+
+Arkadaş listesi: 8 çocuk
+Ortak çalışmalar: 2 (grup aktiviteleri)
+Leaderboard sıralaması: #12
+
+🎁 ÖNERİLER:
+
+1. Matematik içeriğini oyunlaştırın
+2. Kardeşiyle birlikte öğrenmeyi deneyin
+3. Hafta sonu aile aktivitesi planlayın
+
+[PDF İndir] [E-posta Gönder]
+
+
+🎮 ADIM 23: KARDEŞLER İLE ORTAK OYUN
+Ahmet'in kardeşi Zeynep de katılıyor
+
+┌─────────────────────────────────────────┐
+│    👫 KARDEŞ MODU AKTİF!               │
+└─────────────────────────────────────────┘
+
+🎯 İkili Görevler:
+
+┌──────────────────────────────┐
+│  🤝 Paylaşım Mücadelesi      │
+│                              │
+│  Oyuncu 1: Ahmet (8)         │
+│  Oyuncu 2: Zeynep (6)        │
+│                              │
+│  Görev: Birlikte 10 soruyu  │
+│  doğru cevaplayın!           │
+│                              │
+│  Ödül: Her birine 50 XP     │
+│  + "Takım Ruhu" rozeti       │
+│                              │
+│  [BAŞLA]                     │
+└──────────────────────────────┘
+
+🏆 KARDEŞİM İLE YARIŞMA:
+
+Ahmet:    145 XP  🕋 Seviye 3
+Zeynep:   220 XP  🕋 Seviye 4
+
+Bu hafta kim önde?
+👑 Zeynep (+75 XP fark)
+
+💡 Dostça rekabet: Her ikiniz de kazanırsınız!
+
+📚 Beraber öğrenme bonusu:
+• Ortak ders: +25% XP
+• Yardımlaşma: +İyilik puanı
+• Kardeş rozetleri
+
+
+🌟 ADIM 24: ÖZEL BİLDİRİMLER
+Ahmet'e özel bildirimler geliyor
+
+┌─────────────────────────────────────────┐
+│    🔔 BİLDİRİMLER (3 yeni)             │
+└─────────────────────────────────────────┘
+
+📱 Bugün 16:30
+
+🎉 "Tebrikler Ahmet!"
+Dürüstlük puanın 50'ye ulaştı!
+"Dürüstlük Şampiyonu" rozetini kazandın! 🏅
+[Detay →]
+
+---
+
+🎁 "Yeni içerik eklendi!"
+"Hz. Musa'nın Hikayesi" artık mevcut.
+İman & Ahlak kategorisinde keşfet!
+[İzle →]
+
+---
+
+👥 "Zeynep seni geçti!"
+Kardeşin bu hafta 75 XP daha kazandı.
+Hadi, sen de yetişebilirsin! 💪
+[Leaderboard →]
+
+---
+
+Eski bildirimler:
+
+✅ Cuma günü özel etkinliği
+✅ İyilik görevin onaylandı (Dün)
+✅ 7 günlük streak ödülü (Dün)
+
+
+🎨 ADIM 25: AVATAR KİŞİSELLEŞTİRME
+┌─────────────────────────────────────────┐
+│    👤 AVATAR DÜZENLE                    │
+└─────────────────────────────────────────┘
+
+Mevcut Avatar: 
+[Küçük erkek çocuk karakteri]
+
+🎨 KİŞİSELLEŞTİRME:
+
+┌─ Yüz ──────────┐
+│ [◉] Gülümseyen │
+│ [ ] Mutlu      │
+│ [ ] Düşünceli  │
+└────────────────┘
+
+┌─ Kıyafet ─────────┐
+│ [◉] Rahat (Mevcut)│
+│ 🔒 Spor (50 Gem)  │
+│ 🔒 Klasik (100 Gem)│
+└───────────────────┘
+
+┌─ Aksesuar ────────┐
+│ [ ] Şapka         │
+│ [◉] Kitap         │
+│ 🔒 Tesbih (Premium)│
+└───────────────────┘
+
+🎁 ÖZEL AVATARLAR:
+
+Peygamberler Serisi (100 Gem):
+🔒 Hz. Muhammed temalı
+🔒 Hz. İbrahim temalı
+🔒 Hz. Musa temalı
+
+İslam Kahramanları (150 Gem):
+🔒 Selahaddin Eyyubi
+🔒 Fatih Sultan Mehmet
+🔒 Ömer bin Hattab
+
+[KAYDET] [İPTAL]
+
+
+📚 ADIM 26: HİKAYE KİTAPLIĞI
+┌─────────────────────────────────────────┐
+│    📖 HİKAYE KİTAPLIĞI                  │
+└─────────────────────────────────────────┘
+
+🎯 Kategoriler:
+
+📿 Peygamber Hikayeleri (12 hikaye)
+├─ ✅ Hz. Nuh ve Sabır
+├─ ✅ Hz. Yusuf ve Dürüstlük
+├─ 🔒 Hz. Musa'nın Macerası
+├─ 🔒 Hz. İbrahim ve İman
+└─ ... 8 hikaye daha
+
+🌟 Sahabe Hikayeleri (8 hikaye)
+├─ 🔒 Hz. Ebu Bekir'in Sadakati
+├─ 🔒 Hz. Ömer'in Adaleti
+└─ ... 6 hikaye daha
+
+🏰 İslam Tarihi (10 hikaye)
+├─ 🔒 Mekke'nin Fethi
+├─ 🔒 Endülüs'ün Yükselişi
+└─ ... 8 hikaye daha
+
+💖 Değerler Hikayeleri (20 hikaye)
+├─ ✅ Paylaşmanın Güzelliği
+├─ ✅ Dürüst Olmak
+├─ 🔒 Merhamet Nedir?
+└─ ... 17 hikaye daha
+
+📊 Okuma İstatistikleri:
+• Okunan: 4 hikaye
+• Favori: 2 hikaye
+• Ortalama okuma: 6 dk/hikaye
+
+🎧 Sesli Hikaye Modu:
+[🎙️] Anne/baba sesiyle dinle
+[📱] Otomatik oynatıcı
+
+
+🎯 ADIM 27: HAFTALIK CHALLENGE
+┌─────────────────────────────────────────┐
+│    🏆 HAFTALIK MEYDAN OKUMA             │
+└─────────────────────────────────────────┘
+
+📅 3-10 Kasım 2024
+
+🎯 "SABIR HAFTASI" 🌟
+
+Görevler:
+┌────────────────────────────────┐
+│ [✅] 7 gün üst üste giriş yap  │
+│ [✅] 5 sabır dersi tamamla     │
+│ [▓▓▓░░] 3 iyilik görevi (2/3)  │
+│ [░░░░░] 50 sabır puanı kazan   │
+│         (45/50) %90            │
+└────────────────────────────────┘
+
+🏅 Ödüller:
+• 🥇 Tamamlayanlara: 300 Gem + "Sabır Ustası" rozeti
+• 🎁 Bonus: Premium 1 hafta deneme
+• 🌟 500 XP
+
+👥 Katılımcılar:
+1,234 çocuk bu challenge'a katıldı!
+
+Sıralama:
+#1: Zeynep_2015 (Tamamlandı ✅)
+#2: Ali_2014 (90%)
+#12: Ahmet_2016 (90%) ⬅️ SEN!
+
+Bitiş: 3 gün kaldı! ⏰
+
+🎁 ADIM 28: BAŞARI SİSTEMİ
+┌─────────────────────────────────────────┐
+│    🏆 BAŞARILAR & ROZETLER              │
+└─────────────────────────────────────────┘
+
+📊 Genel İlerleme: 5/100 rozet (%5)
+
+🌟 KAZANILAN ROZETLER (5):
+
+✅ İlk Adım
+   "İlk dersini tamamla"
+   
+✅ 7 Günlük Savaşçı
+   "7 gün üst üste giriş yap"
+   
+✅ Dürüstlük Şampiyonu
+   "50 dürüstlük puanı kazan"
+   
+✅ Yardımsever Kalp
+   "İlk iyilik görevini tamamla"
+   
+✅ Sosyal Kelebek
+   "5 arkadaş edin"
+
+🔒 YAKINDA KAZANILABİLECEKLER:
+
+⏳ Sabır Ustası (5/50 puan kaldı)
+   "50 sabır puanına ulaş"
+   
+❤️ İyilik Meleği (5/10 görev kaldı)
+   "10 iyilik görevi tamamla"
+   
+📚 Kitap Kurdu (6/10 hikaye kaldı)
+   "10 hikaye oku"
+
+🎯 EFSANE ROZETLER:
+
+🏆 İslam Bilgini
+   Tüm kategorilerde %80 tamamla
+   
+👑 Değerler Kralı
+   Tüm değerlerde 100 puan
+   
+⭐ Tam Mezuniyet
+   Tüm dersleri bitir
+   
+💎 Premium Üye
+   1 yıl premium kal
+
+
+📱 ADIM 29: MOBIL UYGULAMA ÖZELLİKLERİ
+┌─────────────────────────────────────────┐
+│    📲 MOBİL APP ÖZELLİKLERİ            │
+└─────────────────────────────────────────┘
+
+✨ Offline Mod:
+• İnternetsiz ders çalış
+• Daha önce indirilen içerikler
+• Senkronizasyon: Giriş yapınca
+
+🔔 Akıllı Bildirimler:
+• 📅 Günlük hatırlatma (16:00)
+• 🎯 Görev bitirme zamanı
+• 👥 Arkadaş aktiviteleri
+• 🎁 Özel ödül duyuruları
+
+👨‍👩‍👦 Aile Modu:
+• Çocuk profili geçişleri
+• Ebeveyn kontrol paneli
+• Hızlı onay sistemi
+• Aile bildirimleri
+
+🎮 Oyun Merkezi:
+• Mini oyunlar
+• Eğitici bulmacalar
+• Hafıza kartları
+• İnteraktif testler
+
+📊 İstatistikler:
+• Haftalık rapor
+• Aylık ilerleme
+• Karşılaştırmalar
+• Hedef takibi
+
+🌙 Gece Modu:
+• Göz dostu renkler
+• Azaltılmış parlaklık
+• Uyku zamanı kontrolü
+
+
+🎊 ADIM 30: ÖZEL GÜNLER & ETKİNLİKLER
+┌─────────────────────────────────────────┐
+│    🎉 ÖZEL GÜNLER TAKVİMİ              │
+└─────────────────────────────────────────┘
+
+📅 Yaklaşan Etkinlikler:
+
+🌙 RAMAZAN AYI (10 Mart)
+• Oruç ve sabır dersleri
+• İftar saati bildirimleri
+• Teravih namazı bilgileri
+• Sadaka challenge'ı
+• 3X İyilik puanı!
+
+🕋 KURBAN BAYRAMI (16 Haziran)
+• Kurban nedir?
+• Paylaşmanın önemi
+• Bayram görevleri
+• Özel avatarlar
+• Bayram bonusu: 500 XP
+
+🎓 MEVLID KANDİLİ (26 Eylül)
+• Peygamberimizin hayatı
+• Özel hikayeler
+• Mevlid etkinliği
+• Bonus rozetler
+
+🌟 Her Kandil Gecesi:
+• Özel dua içerikleri
+• 2X Değer puanları
+• Gece sınırı +30 dakika
+• Manevi içerikler
+
+📚 Haftalık Etkinlikler:
+• Pazartesi: Yeni içerik günü
+• Çarşamba: Orta hafta bonusu
+• Cuma: Özel

@@ -11,158 +11,146 @@ export default function TermsPage() {
       <Container className="py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-8">
-            Terms of Service
+            Kullanım Koşulları
           </h1>
 
           <div className="bg-gray-50 p-4 rounded-lg mb-8">
-            <p className="text-gray-600">Last Updated: May 1, 2025</p>
+            <p className="text-gray-600">Son Güncelleme: 1 Mayıs 2025</p>
           </div>
 
           <div className="prose prose-lg max-w-none">
             <p>
-              Welcome to TULU! These Terms of Service (Terms) govern your
-              access to and use of the TULU application and website (the
-              Service). Please read these Terms carefully before using our
-              Service.
+              TULU'ya hoş geldiniz! Bu Kullanım Koşulları (Koşullar), TULU uygulaması 
+              ve web sitesine (Hizmet) erişiminizi ve kullanımınızı düzenler. Lütfen 
+              Hizmetimizi kullanmadan önce bu Koşulları dikkatlice okuyun.
             </p>
 
             <div className="space-y-10 mt-10">
-              <h4>Acceptance of Terms</h4>
+              <h4>Koşulların Kabulü</h4>
               <p>
-                By accessing or using our Service, you agree to be bound by
-                these Terms. If you disagree with any part of the Terms, you may
-                not access the Service.
+                Hizmetimize erişerek veya kullanarak, bu Koşullara bağlı kalmayı kabul 
+                edersiniz. Koşulların herhangi bir kısmına katılmıyorsanız, Hizmete 
+                erişemezsiniz.
               </p>
 
-              <h4>Changes to Terms</h4>
+              <h4>Koşullarda Değişiklikler</h4>
               <p>
-                We reserve the right to modify or replace these Terms at any
-                time. If a revision is material, we will provide at least 30
-                days notice prior to any new terms taking effect. What
-                constitutes a material change will be determined at our sole
-                discretion.
+                Bu Koşulları herhangi bir zamanda değiştirme veya değiştirme hakkını 
+                saklı tutarız. Bir değişiklik önemliyse, yeni koşulların yürürlüğe 
+                girmesinden en az 30 gün önce bildirimde bulunacağız. Önemli bir 
+                değişikliğin ne olduğu tamamen kendi takdirimize bağlı olarak belirlenecektir.
               </p>
 
-              <h4>Account Registration</h4>
+              <h4>Hesap Kaydı</h4>
               <p>
-                To use certain features of our Service, you must register for an
-                account. You must provide accurate, current, and complete
-                information during the registration process and keep your
-                account information up-to-date.
+                Hizmetimizin belirli özelliklerini kullanmak için bir hesap açmanız 
+                gerekir. Kayıt işlemi sırasında doğru, güncel ve eksiksiz bilgiler 
+                sağlamalı ve hesap bilgilerinizi güncel tutmalısınız.
               </p>
               <p>
-                You are responsible for safeguarding the password that you use
-                to access the Service and for any activities or actions under
-                your password. You agree not to disclose your password to any
-                third party.
+                Hizmete erişmek için kullandığınız şifreyi korumak ve şifreniz altındaki 
+                tüm faaliyetler veya eylemlerden sorumlusunuz. Şifrenizi herhangi bir 
+                üçüncü tarafa ifşa etmemeyi kabul edersiniz.
               </p>
 
-              <h4>User Content</h4>
+              <h4>Kullanıcı İçeriği</h4>
               <p>
-                Our Service allows you to post, link, store, share and otherwise
-                make available certain information, text, graphics, or other
-                material (Content). You are responsible for the Content that you
-                post on or through the Service, including its legality,
-                reliability, and appropriateness.
+                Hizmetimiz, belirli bilgileri, metinleri, grafikleri veya diğer materyalleri 
+                (İçerik) göndermenize, bağlantı vermenize, saklamanıza, paylaşmanıza ve 
+                başka şekillerde kullanılabilir hale getirmenize olanak tanır. Hizmet 
+                üzerinde veya aracılığıyla yayınladığınız İçerikten, yasallığı, 
+                güvenilirliği ve uygunluğu dahil olmak üzere siz sorumlusunuz.
               </p>
               <p>
-                By posting Content on or through the Service, you represent and
-                warrant that: (i) the Content is yours and/or you have the right
-                to use it and the right to grant us the rights and license as
-                provided in these Terms, and (ii) that the posting of your
-                Content on or through the Service does not violate the privacy
-                rights, publicity rights, copyrights, contract rights or any
-                other rights of any person or entity.
-              </p>
-
-              <h4>Subscriptions and Payments</h4>
-              <p>
-                Some parts of the Service are billed on a subscription basis
-                (Subscription(s)). You will be billed in advance on a recurring
-                and periodic basis (Billing Cycle). Billing cycles are set on a
-                monthly or annual basis, depending on the type of subscription
-                plan you select when purchasing a Subscription.
-              </p>
-              <p>
-                At the end of each Billing Cycle, your Subscription will
-                automatically renew under the exact same conditions unless you
-                cancel it or we cancel it. You may cancel your Subscription
-                renewal either through your online account management page or by
-                contacting our customer support team.
+                Hizmet üzerinde veya aracılığıyla İçerik göndererek, şunları beyan ve 
+                garanti edersiniz: (i) İçerik sizindir ve/veya onu kullanma hakkına ve 
+                bu Koşullarda belirtildiği şekilde bize haklar ve lisans verme hakkına 
+                sahipsiniz ve (ii) İçeriğinizin Hizmet üzerinde veya aracılığıyla 
+                yayınlanması, herhangi bir kişi veya kuruluşun gizlilik haklarını, 
+                tanıtım haklarını, telif haklarını, sözleşme haklarını veya diğer 
+                haklarını ihlal etmez.
               </p>
 
-              <h4>Free Trial</h4>
+              <h4>Abonelikler ve Ödemeler</h4>
               <p>
-                We may, at our sole discretion, offer a Subscription with a free
-                trial for a limited period of time (Free Trial). You may be
-                required to enter your billing information in order to sign up
-                for the Free Trial.
+                Hizmetin bazı bölümleri abonelik bazında faturalandırılır (Abonelik(ler)). 
+                Yinelenen ve periyodik bir temelde (Fatura Döngüsü) önceden faturalandırılacaksınız. 
+                Fatura döngüleri, Abonelik satın alırken seçtiğiniz abonelik planı türüne 
+                bağlı olarak aylık veya yıllık bazda belirlenir.
               </p>
               <p>
-                If you do enter your billing information when signing up for the
-                Free Trial, you will not be charged by us until the Free Trial
-                has expired. On the last day of the Free Trial period, unless
-                you cancelled your Subscription, you will be automatically
-                charged the applicable subscription fee for the type of
-                Subscription you have selected.
+                Her Fatura Döngüsünün sonunda, siz veya biz iptal etmediğimiz sürece 
+                Aboneliğiniz tamamen aynı koşullar altında otomatik olarak yenilenecektir. 
+                Abonelik yenilemenizi çevrimiçi hesap yönetimi sayfanız üzerinden veya 
+                müşteri destek ekibimizle iletişime geçerek iptal edebilirsiniz.
               </p>
 
-              <h4>Intellectual Property</h4>
+              <h4>Ücretsiz Deneme</h4>
               <p>
-                The Service and its original content (excluding Content provided
-                by users), features, and functionality are and will remain the
-                exclusive property of TULU and its licensors. The Service
-                is protected by copyright, trademark, and other laws of both the
-                United States and foreign countries. Our trademarks and trade
-                dress may not be used in connection with any product or service
-                without the prior written consent of TULU.
+                Kendi takdirimize bağlı olarak, sınırlı bir süre için ücretsiz deneme 
+                içeren bir Abonelik sunabiliriz (Ücretsiz Deneme). Ücretsiz Denemeye 
+                kaydolmak için fatura bilgilerinizi girmeniz gerekebilir.
+              </p>
+              <p>
+                Ücretsiz Denemeye kaydolurken fatura bilgilerinizi girerseniz, Ücretsiz 
+                Deneme süresi dolana kadar sizden ücret alınmayacaktır. Ücretsiz Deneme 
+                süresinin son gününde, Aboneliğinizi iptal etmediğiniz sürece, seçtiğiniz 
+                Abonelik türü için geçerli abonelik ücreti otomatik olarak tahsil edilecektir.
               </p>
 
-              <h4>Termination</h4>
+              <h4>Fikri Mülkiyet</h4>
               <p>
-                We may terminate or suspend your account and bar access to the
-                Service immediately, without prior notice or liability, under
-                our sole discretion, for any reason whatsoever and without
-                limitation, including but not limited to a breach of the Terms.
-              </p>
-              <p>
-                If you wish to terminate your account, you may simply
-                discontinue using the Service, or notify us that you wish to
-                terminate your account.
+                Hizmet ve orijinal içeriği (kullanıcılar tarafından sağlanan İçerik 
+                hariç), özellikleri ve işlevselliği, TULU ve lisans verenlerinin münhasır 
+                mülkiyetidir ve öyle kalacaktır. Hizmet, hem Amerika Birleşik Devletleri 
+                hem de yabancı ülkelerin telif hakkı, ticari marka ve diğer yasalarıyla 
+                korunmaktadır. Ticari markalarımız ve ticari kıyafetlerimiz, TULU'nun 
+                önceden yazılı izni olmadan herhangi bir ürün veya hizmetle bağlantılı 
+                olarak kullanılamaz.
               </p>
 
-              <h4>Limitation of Liability</h4>
+              <h4>Hesap Sonlandırma</h4>
               <p>
-                In no event shall TULU, nor its directors, employees,
-                partners, agents, suppliers, or affiliates, be liable for any
-                indirect, incidental, special, consequential or punitive
-                damages, including without limitation, loss of profits, data,
-                use, goodwill, or other intangible losses, resulting from (i)
-                your access to or use of or inability to access or use the
-                Service; (ii) any conduct or content of any third party on the
-                Service; (iii) any content obtained from the Service; and (iv)
-                unauthorized access, use or alteration of your transmissions or
-                content, whether based on warranty, contract, tort (including
-                negligence) or any other legal theory, whether or not we have
-                been informed of the possibility of such damage.
+                Kendi takdirimize bağlı olarak, önceden bildirimde bulunmaksızın veya 
+                sorumluluk kabul etmeksizin, herhangi bir nedenle ve sınırlama olmaksızın, 
+                Koşulların ihlali dahil ancak bununla sınırlı olmamak üzere, hesabınızı 
+                derhal sonlandırabilir veya askıya alabilir ve Hizmete erişimi engelleyebiliriz.
+              </p>
+              <p>
+                Hesabınızı sonlandırmak isterseniz, Hizmeti kullanmayı bırakabilir veya 
+                hesabınızı sonlandırmak istediğinizi bize bildirebilirsiniz.
               </p>
 
-              <h4>Governing Law</h4>
+              <h4>Sorumluluk Sınırlaması</h4>
               <p>
-                These Terms shall be governed and construed in accordance with
-                the laws of the State of California, United States, without
-                regard to its conflict of law provisions.
+                Hiçbir durumda TULU, direktörleri, çalışanları, ortakları, temsilcileri, 
+                tedarikçileri veya bağlı kuruluşları, (i) Hizmete erişiminiz veya 
+                kullanımınız ya da Hizmete erişememe veya kullanamama; (ii) Hizmet 
+                üzerindeki herhangi bir üçüncü tarafın davranışı veya içeriği; (iii) 
+                Hizmetten elde edilen herhangi bir içerik; ve (iv) garanti, sözleşme, 
+                haksız fiil (ihmal dahil) veya başka herhangi bir yasal teoriye dayalı 
+                olsun, böyle bir hasarın olasılığı hakkında bilgilendirilmiş olup olmadığımıza 
+                bakılmaksızın, iletimlerinizin veya içeriğinizin yetkisiz erişimi, kullanımı 
+                veya değiştirilmesinden kaynaklanan kar kaybı, veri, kullanım, iyi niyet 
+                veya diğer maddi olmayan kayıplar dahil ancak bunlarla sınırlı olmamak üzere 
+                dolaylı, arızi, özel, sonuç olarak ortaya çıkan veya cezai zararlardan 
+                sorumlu tutulamaz.
               </p>
 
-              <h4>Contact Us</h4>
+              <h4>Geçerli Hukuk</h4>
               <p>
-                If you have any questions about these Terms, please contact us
-                at:
+                Bu Koşullar, kanun ihtilafı hükümlerine bakılmaksızın, Amerika Birleşik 
+                Devletleri Kaliforniya Eyaleti yasalarına göre yönetilecek ve yorumlanacaktır.
+              </p>
+
+              <h4>Bize Ulaşın</h4>
+              <p>
+                Bu Koşullar hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:
               </p>
               <p>
-                <strong>Email:</strong> legal@tulu.com
+                <strong>E-posta:</strong> legal@tulu.com
                 <br />
-                <strong>Address:</strong> 123 Language Lane, San Francisco, CA
+                <strong>Adres:</strong> 123 Language Lane, San Francisco, CA
                 94103
               </p>
             </div>
@@ -176,16 +164,16 @@ export default function TermsPage() {
             <p>© {new Date().getFullYear()} TULU. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-4">
               <LocaleLink href="/terms" className="hover:underline">
-                Terms of Service
+                Kullanım Koşulları
               </LocaleLink>
               <Link
                 href="https://www.patreon.com/messages/8b25e025c56c4d47a903cd9b02049c63?mode=campaign&tab=chats"
                 className="hover:underline"
               >
-                Contact Us
+                Bize Ulaşın
               </Link>
               <LocaleLink href="/about" className="hover:underline">
-                About Us
+                Hakkımızda
               </LocaleLink>
             </div>
           </div>
@@ -198,8 +186,8 @@ export default function TermsPage() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Terms - TULU`,
-    description: `Page - Description here`,
+    title: `Kullanım Koşulları - TULU`,
+    description: `TULU kullanım koşulları ve hizmet şartları`,
     icons: {
       icon: "/images/logo_icon.png",
       shortcut: "/favicon.ico",

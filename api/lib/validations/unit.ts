@@ -16,7 +16,10 @@ export const UnitSchema = z.object({
     .trim(),
   isPremium: z.boolean().optional().default(false),
   isExpanded: z.boolean().optional().default(false),
-  imageUrl: z.string().optional().default(""),
+  imageUrl: z.preprocess(
+    (val) => (val === "" || val === null ? undefined : val),
+    z.string().trim().max(500, "Image URL is too long").optional()
+  ),
   order: z
     .number()
     .int({ message: "Order must be an integer" })

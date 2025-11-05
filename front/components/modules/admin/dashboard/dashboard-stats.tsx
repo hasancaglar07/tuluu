@@ -31,7 +31,6 @@ export function DashboardStats({
         trend={usersData.trend}
         percentageChange={usersData.percentageChange}
         subtitleId="admin.dashboard.stats.monthlyChange"
-        subtitle="{percentage}% compared to last month"
       />
 
       <StatsCard
@@ -42,7 +41,6 @@ export function DashboardStats({
         trend={lessonsData.trend}
         percentageChange={lessonsData.percentageChange}
         subtitleId="admin.dashboard.stats.monthlyChange"
-        subtitle="{percentage}% compared to last month"
       />
 
       <StatsCard
@@ -51,8 +49,7 @@ export function DashboardStats({
         icon={Star}
         value={questsData.count}
         subtitleId="admin.dashboard.stats.newQuests"
-        subtitle="+{newQuests} new quests this month"
-        subtitleValues={{ newQuests: questsData.newThisMonth }}
+        subtitleValues={{ count: questsData.newThisMonth }}
       />
 
       <StatsCard
@@ -63,7 +60,6 @@ export function DashboardStats({
         trend={revenueData.trend}
         percentageChange={revenueData.percentageChange}
         subtitleId="admin.dashboard.stats.monthlyChange"
-        subtitle="${percentage}% compared to last month"
       />
     </div>
   );

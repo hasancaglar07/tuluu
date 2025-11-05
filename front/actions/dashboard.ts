@@ -10,6 +10,17 @@ import { apiClient } from "@/lib/api-client";
 
 import { auth } from "@clerk/nextjs/server";
 
+const getApiBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && envUrl.length > 0) {
+    return envUrl;
+  }
+  if (typeof window === "undefined") {
+    return "http://localhost:3001";
+  }
+  return window.location.origin.replace(":3000", ":3001");
+};
+
 // Get total users count and month-over-month change
 export async function getTotalUsers(): Promise<UserStatsResponse> {
   try {
@@ -17,7 +28,7 @@ export async function getTotalUsers(): Promise<UserStatsResponse> {
     const token = await getToken();
 
     const data = await apiClient.get<UserStatsResponse>(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/admin/dashboard/users`,
+      `${getApiBaseUrl()}/api/admin/dashboard/users`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +51,7 @@ export async function getCompletedLessons(): Promise<LessonStats> {
     const token = await getToken();
 
     const data = await apiClient.get<LessonStats>(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/admin/dashboard/lessons`,
+      `${getApiBaseUrl()}/api/admin/dashboard/lessons`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +74,7 @@ export async function getActiveQuests(): Promise<QuestStats> {
     const token = await getToken();
 
     const data = await apiClient.get<QuestStats>(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/admin/dashboard/quests`,
+      `${getApiBaseUrl()}/api/admin/dashboard/quests`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +97,7 @@ export async function getMonthlyRevenue(): Promise<RevenueStats> {
     const token = await getToken();
 
     const data = await apiClient.get<RevenueStats>(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/admin/dashboard/revenue`,
+      `${getApiBaseUrl()}/api/admin/dashboard/revenue`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +120,7 @@ export async function getUserActivityData(): Promise<ActivityDataPoint[]> {
     const token = await getToken();
 
     const data = await apiClient.get<ActivityDataPoint[]>(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/admin/dashboard/activity`,
+      `${getApiBaseUrl()}/api/admin/dashboard/activity`,
       {
         headers: {
           "Content-Type": "application/json",

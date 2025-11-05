@@ -3,7 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { IRootState } from "@/store";
-import { Check, Crown, Lock, Star } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Crown,
+  HelpCircle,
+  Lock,
+  Puzzle,
+  Shuffle,
+  Star,
+  Wind,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useSelector } from "react-redux";
@@ -31,6 +42,19 @@ type Props = {
   lesson: Lesson;
   isLessonCompleted: boolean;
 };
+
+const MINI_GAME_ICON_MAP: Record<string, LucideIcon> = {
+  match: Shuffle,
+  quiz: HelpCircle,
+  puzzle: Puzzle,
+  story: BookOpen,
+  breathing: Wind,
+};
+
+const toTitleCase = (value: string) =>
+  value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 
 /**
  * Card component for displaying lesson items in the game view
@@ -75,14 +99,20 @@ export const Card = ({
   // Determine card state
   const isCompleted = !current && !locked;
 
-  // Determine which icon to show based on card state
-  const Icon = premium
+  const baseIcon = premium
     ? Lock
     : isLessonCompleted
     ? Check
     : isLast
     ? Crown
     : Star;
+
+  const miniGameIcon =
+    !premium && lesson.miniGame?.type
+      ? MINI_GAME_ICON_MAP[lesson.miniGame.type] ?? Star
+      : null;
+
+  const Icon = isLessonCompleted ? baseIcon : miniGameIcon || baseIcon;
 
   const href = !locked ? `/lesson/${id}` : "#";
 
@@ -172,6 +202,73 @@ function calculateCompletionPercentage(lesson: Lesson): number {
   return Math.round((completed / total) * 100);
 }
 
+function MiniGameSummary({
+  miniGame,
+  variant = "light",
+}: {
+  miniGame?: Lesson["miniGame"] | null;
+  variant?: "light" | "dark";
+}) {
+  if (!miniGame) return null;
+
+  const Icon = MINI_GAME_ICON_MAP[miniGame.type] ?? Star;
+  const isDark = variant === "dark";
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wide",
+        isDark ? "bg-white/10 text-white" : "bg-primary-50 text-primary-700"
+      )}
+    >
+      <Icon
+        className={cn(
+          "h-4 w-4",
+          isDark ? "text-white" : "text-primary-500"
+        )}
+      />
+      <FormattedMessage
+        id={`miniGame.${miniGame.type}`}
+        defaultMessage={toTitleCase(miniGame.type)}
+      />
+    </div>
+  );
+}
+
+function MoralLessonSummary({
+  moralLesson,
+  variant = "light",
+}: {
+  moralLesson?: Lesson["moralLesson"] | null;
+  variant?: "light" | "dark";
+}) {
+  if (!moralLesson) return null;
+
+  const isDark = variant === "dark";
+
+  return (
+    <div
+      className={cn(
+        "rounded-lg px-3 py-2 text-xs leading-snug",
+        isDark ? "bg-white/10 text-white" : "bg-primary-50 text-primary-800"
+      )}
+    >
+      <span className="font-semibold uppercase tracking-wide">
+        <FormattedMessage
+          id={`valuePoints.${moralLesson.value}`}
+          defaultMessage={toTitleCase(moralLesson.value)}
+        />
+      </span>
+      {moralLesson.title && (
+        <p className="mt-1 text-[11px]">{moralLesson.title}</p>
+      )}
+      {moralLesson.storyText && (
+        <p className="mt-1 text-[11px] opacity-90">{moralLesson.storyText}</p>
+      )}
+    </div>
+  );
+}
+
 /**
  * Component for the current lesson card with progress indicator
  */
@@ -196,9 +293,15 @@ function CurrentLessonCard({
       <div className="absolute -top-8 -left-6 z-10 animate-bounce rounded-xl border-2 border-gray-200 bg-white px-3 py-2.5 font-bold uppercase tracking-wide text-muted w-[150px] text-center">
         <span className="text-primary-500">
           {moveHere ? (
-            <FormattedMessage id="dashboard.lesson.start" />
+            <FormattedMessage
+              id="dashboard.lesson.start"
+              defaultMessage="START"
+            />
           ) : (
-            <FormattedMessage id="dashboard.lesson.moveHere" />
+            <FormattedMessage
+              id="dashboard.lesson.moveHere"
+              defaultMessage="MOVE HERE"
+            />
           )}
         </span>
         <div
@@ -245,12 +348,24 @@ function CurrentLessonCard({
               <p className="text-sm text-white">
                 <FormattedMessage
                   id="dashboard.lesson.progress"
+                  defaultMessage="{completed} of {total} exercises completed"
                   values={{
                     completed: completed,
                     total: lesson.exercises?.length,
                   }}
                 />
               </p>
+              <div className="flex flex-col gap-2">
+                {lesson.miniGame && (
+                  <MiniGameSummary miniGame={lesson.miniGame} variant="dark" />
+                )}
+                {lesson.moralLesson && (
+                  <MoralLessonSummary
+                    moralLesson={lesson.moralLesson}
+                    variant="dark"
+                  />
+                )}
+              </div>
               <Button
                 onClick={handleCardClick}
                 variant="locked"
@@ -259,10 +374,14 @@ function CurrentLessonCard({
                 {moveHere ? (
                   <FormattedMessage
                     id="dashboard.lesson.startXp"
+                    defaultMessage="START +{xp} XP"
                     values={{ xp: lesson.xpReward }}
                   />
                 ) : (
-                  <FormattedMessage id="dashboard.lesson.passTest" />
+                  <FormattedMessage
+                    id="dashboard.lesson.passTest"
+                    defaultMessage="PASS TEST"
+                  />
                 )}
               </Button>
               <div
@@ -337,10 +456,22 @@ function LockedLessonPopover({ lesson }: { lesson: Lesson }) {
       <div className="flex flex-col space-y-2 text-left">
         <h3 className="text-lg font-semibold text-gray-900">{lesson.title}</h3>
         <p className="text-sm text-gray-600">
-          <FormattedMessage id="dashboard.lesson.locked" />
+          <FormattedMessage
+            id="dashboard.lesson.locked"
+            defaultMessage="This lesson is locked"
+          />
         </p>
+        <div className="flex flex-col gap-2">
+          {lesson.miniGame && <MiniGameSummary miniGame={lesson.miniGame} />}
+          {lesson.moralLesson && (
+            <MoralLessonSummary moralLesson={lesson.moralLesson} />
+          )}
+        </div>
         <Button variant="locked" disabled={true}>
-          <FormattedMessage id="dashboard.lesson.notUnlocked" />
+          <FormattedMessage
+            id="dashboard.lesson.notUnlocked"
+            defaultMessage="NOT UNLOCKED"
+          />
         </Button>
         <div
           className="text-neutral-100 absolute transitions -top-2 left-1/2 h-0 w-0 
@@ -368,8 +499,22 @@ function CompletedLessonPopover({
       <div className="flex flex-col space-y-2 text-left">
         <h3 className="text-lg font-semibold">{lesson.title}</h3>
         <p className="text-sm">
-          <FormattedMessage id="dashboard.lesson.practice" />
+          <FormattedMessage
+            id="dashboard.lesson.practice"
+            defaultMessage="Practice this lesson again"
+          />
         </p>
+        <div className="flex flex-col gap-2">
+          {lesson.miniGame && (
+            <MiniGameSummary miniGame={lesson.miniGame} variant="dark" />
+          )}
+          {lesson.moralLesson && (
+            <MoralLessonSummary
+              moralLesson={lesson.moralLesson}
+              variant="dark"
+            />
+          )}
+        </div>
         <Button
           variant="outline"
           className="text-black"
@@ -377,6 +522,7 @@ function CompletedLessonPopover({
         >
           <FormattedMessage
             id="dashboard.lesson.practiceXp"
+            defaultMessage="PRACTICE +{xp} XP"
             values={{ xp: lesson.xpReward }}
           />
         </Button>

@@ -18,12 +18,10 @@ export const ChapterSchema = z.object({
   isPremium: z.boolean().optional().default(false),
   isExpanded: z.boolean().optional().default(false),
 
-  imageUrl: z
-    .string()
-    .trim()
-    .url({ message: "Image URL must be a valid URL" })
-    .optional()
-    .or(z.literal("")),
+  imageUrl: z.preprocess(
+    (val) => (val === "" || val === null ? undefined : val),
+    z.string().trim().max(500, "Image URL is too long").optional()
+  ),
 
   order: z
     .number()

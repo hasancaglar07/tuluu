@@ -40,6 +40,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -53,6 +60,14 @@ const MOCK_LANGUAGES = [
     name: "English",
     isDefault: true,
     completionPercentage: 100,
+    category: "language_learning",
+    themeMetadata: {
+      islamicContent: false,
+      ageGroup: "all",
+      moralValues: [],
+      educationalFocus: "",
+      difficultyLevel: "beginner",
+    },
   },
   {
     id: "2",
@@ -60,6 +75,14 @@ const MOCK_LANGUAGES = [
     name: "Spanish",
     isDefault: false,
     completionPercentage: 87,
+    category: "faith_morality",
+    themeMetadata: {
+      islamicContent: true,
+      ageGroup: "kids_8-12",
+      moralValues: ["kindness", "sharing"],
+      educationalFocus: "Daily gratitude lessons",
+      difficultyLevel: "beginner",
+    },
   },
   {
     id: "3",
@@ -67,6 +90,14 @@ const MOCK_LANGUAGES = [
     name: "French",
     isDefault: false,
     completionPercentage: 76,
+    category: "science_discovery",
+    themeMetadata: {
+      islamicContent: false,
+      ageGroup: "teens_13-17",
+      moralValues: ["respect"],
+      educationalFocus: "STEM vocabulary",
+      difficultyLevel: "intermediate",
+    },
   },
   {
     id: "4",
@@ -74,6 +105,14 @@ const MOCK_LANGUAGES = [
     name: "German",
     isDefault: false,
     completionPercentage: 65,
+    category: "math_logic",
+    themeMetadata: {
+      islamicContent: false,
+      ageGroup: "kids_8-12",
+      moralValues: [],
+      educationalFocus: "Numbers and logic",
+      difficultyLevel: "intermediate",
+    },
   },
   {
     id: "5",
@@ -81,6 +120,14 @@ const MOCK_LANGUAGES = [
     name: "Italian",
     isDefault: false,
     completionPercentage: 42,
+    category: "personal_social",
+    themeMetadata: {
+      islamicContent: true,
+      ageGroup: "kids_4-7",
+      moralValues: ["gratitude"],
+      educationalFocus: "Daily routines",
+      difficultyLevel: "beginner",
+    },
   },
   {
     id: "6",
@@ -88,6 +135,14 @@ const MOCK_LANGUAGES = [
     name: "Japanese",
     isDefault: false,
     completionPercentage: 31,
+    category: "language_learning",
+    themeMetadata: {
+      islamicContent: false,
+      ageGroup: "all",
+      moralValues: [],
+      educationalFocus: "Conversational phrases",
+      difficultyLevel: "advanced",
+    },
   },
 ];
 
@@ -174,6 +229,23 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Language name must be at least 2 characters.",
   }),
+  category: z.enum([
+    "faith_morality",
+    "quran_arabic",
+    "math_logic",
+    "science_discovery",
+    "language_learning",
+    "mental_spiritual",
+    "personal_social",
+  ]),
+  ageGroup: z.enum(["kids_4-7", "kids_8-12", "teens_13-17", "all"]),
+  difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
+  islamicContent: z.boolean().default(false),
+  moralValues: z.array(z.string()).default([]),
+  educationalFocus: z
+    .string()
+    .max(200, { message: "Educational focus must be 200 characters or less." })
+    .optional(),
   isDefault: z.boolean().default(false),
 });
 
@@ -199,11 +271,22 @@ export function LanguageManagementDialog({
   } | null>(null);
   const [translations, setTranslations] = useState(MOCK_TRANSLATIONS);
 
+  const formatLabel = (value: string) =>
+    value
+      .replace(/_/g, " " )
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       code: "",
       name: "",
+      category: "language_learning",
+      ageGroup: "all",
+      difficultyLevel: "beginner",
+      islamicContent: false,
+      moralValues: [],
+      educationalFocus: "",
       isDefault: false,
     },
   });
@@ -218,13 +301,21 @@ export function LanguageManagementDialog({
       return;
     }
 
-    // Add new language
+    // Add new programme shape
     const newLanguage = {
       id: Date.now().toString(),
       code: values.code,
       name: values.name,
+      category: values.category,
       isDefault: values.isDefault,
       completionPercentage: 0,
+      themeMetadata: {
+        islamicContent: values.islamicContent,
+        ageGroup: values.ageGroup,
+        moralValues: values.moralValues,
+        educationalFocus: values.educationalFocus ?? "",
+        difficultyLevel: values.difficultyLevel,
+      },
     };
 
     // If this is set as default, update other languages
@@ -237,8 +328,8 @@ export function LanguageManagementDialog({
     setIsAddingLanguage(false);
     form.reset();
 
-    toast("Language added", {
-      description: `${values.name} has been added to your supported languages.`,
+    toast("Program added", {
+      description: `${values.name} has been added to your library of journeys.`,
     });
   }
 
@@ -250,10 +341,10 @@ export function LanguageManagementDialog({
       }))
     );
 
-    toast("Default language updated", {
+    toast("Default programme updated", {
       description: `${
         languages.find((lang) => lang.id === id)?.name
-      } is now the default language.`,
+      } is now the default programme.`,
     });
   };
 
@@ -262,9 +353,9 @@ export function LanguageManagementDialog({
     const isDefault = languages.find((lang) => lang.id === id)?.isDefault;
 
     if (isDefault) {
-      toast("Cannot delete default language", {
+      toast("Cannot delete default programme", {
         description:
-          "Please set another language as default before deleting this one.",
+          "Please assign another programme as default before deleting this one.",
         variant: "destructive",
       });
       return;
@@ -273,7 +364,7 @@ export function LanguageManagementDialog({
     setLanguages(languages.filter((lang) => lang.id !== id));
     setDeleteConfirmId(null);
 
-    toast("Language deleted", {
+    toast("Program deleted", {
       description: `${
         languages.find((lang) => lang.id === id)?.name
       } has been removed.`,
@@ -317,9 +408,10 @@ export function LanguageManagementDialog({
     >
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Manage Languages</DialogTitle>
+          <DialogTitle>Manage programmes & themes</DialogTitle>
           <DialogDescription>
-            Add, edit, or remove languages for your application.
+            Create and refine the value-centred journeys that appear across the
+            platform.
           </DialogDescription>
         </DialogHeader>
 
@@ -347,7 +439,7 @@ export function LanguageManagementDialog({
                 variant="outline"
                 onClick={() => setSelectedLanguage(null)}
               >
-                Back to Languages
+                Back to programmes
               </Button>
             </div>
 
@@ -557,6 +649,36 @@ export function LanguageManagementDialog({
                           </div>
                         </div>
                       </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Badge variant="outline">
+                          {formatLabel(language.category)}
+                        </Badge>
+                        <Badge variant="outline">
+                          Age:{" "}
+                          {formatLabel(language.themeMetadata?.ageGroup ?? "all")}
+                        </Badge>
+                        {language.themeMetadata?.islamicContent && (
+                          <Badge variant="secondary">Islamic content</Badge>
+                        )}
+                        {language.themeMetadata?.moralValues
+                          ?.slice(0, 3)
+                          .map((value) => (
+                            <Badge
+                              key={`${language.id}-${value}`}
+                              variant="secondary"
+                              className="text-[10px]"
+                            >
+                              {formatLabel(value)}
+                            </Badge>
+                          ))}
+                        {language.themeMetadata?.moralValues &&
+                          language.themeMetadata.moralValues.length > 3 && (
+                            <span className="text-xs text-muted-foreground">
+                              +
+                              {language.themeMetadata.moralValues.length - 3}
+                            </span>
+                          )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -618,7 +740,7 @@ export function LanguageManagementDialog({
             {isAddingLanguage ? (
               <div className="border rounded-md p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-medium">Add New Language</h3>
+                  <h3 className="font-medium">Add New Program</h3>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -643,12 +765,12 @@ export function LanguageManagementDialog({
                         name="code"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Language Code</FormLabel>
+                            <FormLabel>Program Key</FormLabel>
                             <FormControl>
                               <Input placeholder="en" {...field} />
                             </FormControl>
                             <FormDescription>
-                              ISO code (e.g., en, es, fr)
+                              Short identifier used in URLs and dashboards
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -660,12 +782,180 @@ export function LanguageManagementDialog({
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Language Name</FormLabel>
+                            <FormLabel>Program Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="English" {...field} />
+                              <Input placeholder="Kindness Journey" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Display name for this language
+                              Display name shown to families and learners
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="faith_morality">
+                                  Faith &amp; Morality
+                                </SelectItem>
+                                <SelectItem value="quran_arabic">
+                                  Qur'an &amp; Arabic
+                                </SelectItem>
+                                <SelectItem value="math_logic">
+                                  Math &amp; Logic
+                                </SelectItem>
+                                <SelectItem value="science_discovery">
+                                  Science Discovery
+                                </SelectItem>
+                                <SelectItem value="language_learning">
+                                  Language Learning
+                                </SelectItem>
+                                <SelectItem value="mental_spiritual">
+                                  Mental &amp; Spiritual
+                                </SelectItem>
+                                <SelectItem value="personal_social">
+                                  Personal &amp; Social
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              The thematic focus that best describes this
+                              language track.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="ageGroup"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Age Group</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select age group" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="kids_4-7">
+                                  Kids 4-7
+                                </SelectItem>
+                                <SelectItem value="kids_8-12">
+                                  Kids 8-12
+                                </SelectItem>
+                                <SelectItem value="teens_13-17">
+                                  Teens 13-17
+                                </SelectItem>
+                                <SelectItem value="all">All ages</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Primary audience for this content.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="difficultyLevel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Difficulty Level</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Difficulty" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="beginner">
+                                  Beginner
+                                </SelectItem>
+                                <SelectItem value="intermediate">
+                                  Intermediate
+                                </SelectItem>
+                                <SelectItem value="advanced">
+                                  Advanced
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Overall challenge level of the lessons.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="educationalFocus"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Educational Focus</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Optional focus (e.g., Daily routines)"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Short description of the learning emphasis.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="moralValues"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Moral Values</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="patience, gratitude"
+                                value={field.value.join(", ")}
+                                onChange={(event) =>
+                                  field.onChange(
+                                    event.target.value
+                                      .split(",")
+                                      .map((value) => value.trim())
+                                      .filter(Boolean)
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Comma-separated list of values highlighted in the
+                              lessons.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -675,14 +965,36 @@ export function LanguageManagementDialog({
 
                     <FormField
                       control={form.control}
+                      name="islamicContent"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel>Includes Islamic Content</FormLabel>
+                            <FormDescription>
+                              Toggle if lessons include Qur'anic or spiritual
+                              elements.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="isDefault"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                           <div className="space-y-0.5">
-                            <FormLabel>Set as Default</FormLabel>
+                            <FormLabel>Set as default programme</FormLabel>
                             <FormDescription>
-                              Make this the default language for your
-                              application
+                              Use this programme when no other context is
+                              selected
                             </FormDescription>
                           </div>
                           <FormControl>
@@ -708,7 +1020,7 @@ export function LanguageManagementDialog({
                 onClick={() => setIsAddingLanguage(true)}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add New Language
+                Add New Program
               </Button>
             )}
 

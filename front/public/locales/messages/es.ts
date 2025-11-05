@@ -472,4 +472,64 @@ export default {
     "No hay idiomas disponibles para aprender en este momento. Por favor, vuelve más tarde o contacta con el soporte si crees que esto es un error.",
   "learn.error": "Error al obtener los idiomas. Por favor, inténtalo de nuevo.",
   "learn.retry": "Reintentar",
+
+  // About Page
+  "about.title": "Acerca de TULU",
+  "about.mascot.alt": "Mascota TULU",
+  
+  // Mission Section
+  "about.mission.title": "Nuestra Misión",
+  "about.mission.paragraph1":
+    "En TULU, creemos que el aprendizaje de idiomas debe ser divertido, accesible y efectivo. Nuestra misión es derribar las barreras lingüísticas y conectar a las personas a través de culturas mediante experiencias de aprendizaje gamificadas y atractivas.",
+  "about.mission.paragraph2":
+    "Ya sea que estés aprendiendo para viajar, trabajar o crecimiento personal, TULU facilita la construcción de un hábito de aprendizaje de idiomas diario que perdura.",
+  "about.mission.cta": "Comienza a Aprender Hoy",
+
+  // How It Works Section
+  "about.howItWorks.title": "Cómo Funciona TULU",
+  "about.howItWorks.step1.title": "Aprende Jugando",
+  "about.howItWorks.step1.description":
+    "Nuestras lecciones breves se sienten más como juegos que como estudiar, haciendo que el aprendizaje sea adictivo y divertido.",
+  "about.howItWorks.step2.title": "Practica Diariamente",
+  "about.howItWorks.step2.description":
+    "Construye una racha y gana recompensas practicando solo unos minutos cada día.",
+  "about.howItWorks.step3.title": "Sigue tu Progreso",
+  "about.howItWorks.step3.description":
+    "Obsérvate mejorar con XP, logros y subidas de nivel que te mantienen motivado.",
+
+  // Story Section
+  "about.story.title": "Nuestra Historia",
+  "about.story.paragraph1":
+    "TULU fue fundado en 2025 por un equipo de entusiastas de los idiomas y expertos en tecnología educativa que querían revolucionar cómo las personas aprenden idiomas. Frustrados por los métodos tradicionales que parecían aburridos e ineficaces, nos propusimos crear una plataforma que hiciera el aprendizaje de idiomas tan agradable como jugar un juego.",
+  "about.story.paragraph2":
+    "Hoy, TULU ayuda a millones de estudiantes en todo el mundo a dominar nuevos idiomas a través de nuestro currículo diseñado científicamente y elementos de gamificación atractivos. Nuestra tecnología de aprendizaje adaptativo personaliza la experiencia de cada usuario, enfocándose en las áreas donde más necesitan práctica.",
+  "about.story.paragraph3":
+    "Estamos en constante evolución y expansión de nuestras ofertas de idiomas, con el compromiso de hacer que la educación lingüística de calidad sea accesible para todos, en todas partes.",
+
+  // Community Section
+  "about.community.title": "Únete a Nuestra Comunidad",
+  "about.community.description":
+    "Conviértete en parte de nuestra comunidad global de estudiantes de idiomas y comienza tu viaje hoy.",
+  "about.community.cta": "Comienza Gratis",
+
+  // Features (Gamification highlights)
+  "about.features.title": "¿Por Qué TULU?",
+  "about.features.gamification.title": "Sistema de Gamificación",
+  "about.features.gamification.description":
+    "¡Gana XP con cada lección completada, completa misiones, mantén rachas diarias y sube en el ranking! ¡Aprender nunca ha sido tan divertido!",
+  "about.features.hearts.title": "Sistema de Corazones",
+  "about.features.hearts.description":
+    "Pierdes corazones por respuestas incorrectas, ¡pero no te preocupes! Puedes comprar corazones en la tienda o ganarlos gratis a través de misiones diarias.",
+  "about.features.progressive.title": "Aprendizaje Progresivo",
+  "about.features.progressive.description":
+    "Las lecciones se desbloquean secuencialmente. Completa cada unidad y capítulo para desbloquear el siguiente. Avanza a tu propio ritmo y disfruta de tu éxito.",
+  "about.features.tracking.title": "Seguimiento Detallado del Progreso",
+  "about.features.tracking.description":
+    "Ve el porcentaje de finalización de cada lección, sigue tu lección activa y visualiza tu viaje de aprendizaje. ¡Mantén tu motivación siempre alta!",
+
+  // Footer
+  "about.footer.copyright": "© {year} TULU. Todos los derechos reservados.",
+  "about.footer.terms": "Términos de Servicio",
+  "about.footer.contact": "Contáctanos",
+  "about.footer.about": "Acerca de Nosotros",
 } as const;

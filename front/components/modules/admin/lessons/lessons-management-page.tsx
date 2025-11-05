@@ -28,7 +28,54 @@ import { LessonDialog } from "./dialogs/lesson-dialog";
 import { ExerciseDialog } from "./dialogs/exercise-dialog";
 
 // Import types
-import type { Language, Chapter, Unit, Lesson } from "@/types/lessons";
+import type {
+  Language,
+  Chapter,
+  Unit,
+  Lesson,
+  NewLanguageForm,
+  NewExerciseForm,
+} from "@/types/lessons";
+import type { ThemeMetadata } from "@/types";
+import { i18n } from "@/i18n-config";
+
+const createDefaultThemeMetadata = (): ThemeMetadata => ({
+  islamicContent: false,
+  ageGroup: "all",
+  moralValues: [] as string[],
+  educationalFocus: "",
+  difficultyLevel: "beginner",
+});
+
+const createInitialLanguage = (locale?: string): NewLanguageForm => ({
+  _id: "",
+  name: "",
+  nativeName: "",
+  flag: "",
+  baseLanguage: locale ?? i18n.defaultLocale,
+  imageUrl: "",
+  isActive: true,
+  category: "language_learning",
+  themeMetadata: createDefaultThemeMetadata(),
+  locale: locale ?? i18n.defaultLocale,
+});
+
+const createInitialExercise = (language?: Language): NewExerciseForm => ({
+  _id: "",
+  lessonId: "",
+  type: "translate",
+  instruction: "",
+  sourceText: "",
+  sourceLanguage: language?.baseLanguage ?? "",
+  targetLanguage: language?.locale ?? language?.baseLanguage ?? "",
+  correctAnswer: [""],
+  options: ["", "", "", "", ""],
+  isNewWord: false,
+  audioUrl: "",
+  neutralAnswerImage: "",
+  badAnswerImage: "",
+  correctAnswerImage: "",
+});
 
 /**
  * Main Lessons Management Page Component
@@ -89,15 +136,9 @@ export default function LessonsManagementPage() {
   const [unitToDelete, setUnitToDelete] = useState<Unit | null>(null);
 
   // Form states for new items
-  const [newLanguage, setNewLanguage] = useState({
-    _id: "",
-    name: "",
-    nativeName: "",
-    flag: "",
-    baseLanguage: "en",
-    isActive: true,
-    imageUrl: "",
-  });
+  const [newLanguage, setNewLanguage] = useState<NewLanguageForm>(() =>
+    createInitialLanguage()
+  );
 
   const [newChapter, setNewChapter] = useState({
     title: "",
@@ -132,22 +173,9 @@ export default function LessonsManagementPage() {
     order: 1,
   });
 
-  const [newExercise, setNewExercise] = useState({
-    _id: "",
-    lessonId: "",
-    type: "translate",
-    instruction: "",
-    sourceText: "",
-    sourceLanguage: "en",
-    targetLanguage: "fr",
-    correctAnswer: [""],
-    options: ["", "", "", "", ""],
-    isNewWord: false,
-    audioUrl: "",
-    neutralAnswerImage: "",
-    badAnswerImage: "",
-    correctAnswerImage: "",
-  });
+  const [newExercise, setNewExercise] = useState<NewExerciseForm>(() =>
+    createInitialExercise()
+  );
 
   // Edit form states
   const [editingLanguage, setEditingLanguage] = useState<Language>();
@@ -222,12 +250,27 @@ export default function LessonsManagementPage() {
         }
       });
     } else {
+      if (message) {
+        if (message.toLowerCase().includes("already exists")) {
+          toast.error(
+            intl.formatMessage({
+              id: "admin.lessons.error.languageExists",
+              defaultMessage:
+                "This programme already exists for the selected site language.",
+            })
+          );
+          return;
+        }
+
+        toast.error(message);
+        return;
+      }
+
       toast.error(
-        message ||
-          intl.formatMessage({
-            id: "admin.lessons.error.unknown",
-            defaultMessage: "An unknown error occurred",
-          })
+        intl.formatMessage({
+          id: "admin.lessons.error.unknown",
+          defaultMessage: "An unknown error occurred",
+        })
       );
     }
   };
@@ -247,13 +290,13 @@ export default function LessonsManagementPage() {
             <h1 className="text-3xl font-bold tracking-tight">
               <FormattedMessage
                 id="admin.lessons.title"
-                defaultMessage="Lessons Management"
+                defaultMessage="Program Management"
               />
             </h1>
             <p className="text-muted-foreground">
               <FormattedMessage
                 id="admin.lessons.subtitle"
-                defaultMessage="Manage your skill tree structure: Languages → Chapters → Units → Lessons"
+                defaultMessage="Design value-centered journeys: Programs → Chapters → Units → Learning Moments"
               />
             </p>
           </div>
@@ -263,7 +306,7 @@ export default function LessonsManagementPage() {
               <Globe className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addLanguage"
-                defaultMessage="Add Language"
+                defaultMessage="Add Program"
               />
             </Button>
           </div>
@@ -418,9 +461,8 @@ export default function LessonsManagementPage() {
                   }}
                   onAddExercise={(chapterId, unitId, lessonId) => {
                     setNewExercise({
-                      ...newExercise,
+                      ...createInitialExercise(currentLanguage),
                       lessonId: `${chapterId}-${unitId}-${lessonId}`,
-                      targetLanguage: selectedLanguage ?? "",
                     });
                     setIsExerciseDialogOpen(true);
                   }}
@@ -525,6 +567,7 @@ export default function LessonsManagementPage() {
           onClose={() => setIsLanguageDialogOpen(false)}
           newLanguage={newLanguage}
           setNewLanguage={setNewLanguage}
+          existingLanguages={data.languages}
           onSubmit={async () => {
             setIsLoading(true);
             try {
@@ -538,6 +581,9 @@ export default function LessonsManagementPage() {
                   name: newLanguage.name,
                   nativeName: newLanguage.nativeName,
                   imageUrl: newLanguage.imageUrl,
+                  category: newLanguage.category,
+                  themeMetadata: newLanguage.themeMetadata,
+                  locale: newLanguage.locale,
                 },
                 {
                   headers: {
@@ -566,15 +612,7 @@ export default function LessonsManagementPage() {
             } catch (err) {
               handleApiError(err);
             } finally {
-              setNewLanguage({
-                _id: "",
-                name: "",
-                nativeName: "",
-                flag: "",
-                baseLanguage: "en",
-                isActive: true,
-                imageUrl: "",
-              });
+              setNewLanguage(createInitialLanguage(newLanguage.locale));
               setIsLoading(false);
             }
           }}
@@ -588,6 +626,7 @@ export default function LessonsManagementPage() {
           onClose={() => setIsEditLanguageDialogOpen(false)}
           newLanguage={editingLanguage || newLanguage}
           setNewLanguage={setEditingLanguage}
+          existingLanguages={data.languages}
           onSubmit={async () => {
             setIsLoading(true);
             try {
@@ -601,6 +640,10 @@ export default function LessonsManagementPage() {
                   name: editingLanguage?.name,
                   nativeName: editingLanguage?.nativeName,
                   imageUrl: editingLanguage?.imageUrl,
+                  category: editingLanguage?.category,
+                  themeMetadata:
+                    editingLanguage?.themeMetadata ?? createDefaultThemeMetadata(),
+                  locale: editingLanguage?.locale ?? i18n.defaultLocale,
                 },
                 {
                   headers: {
@@ -1039,22 +1082,7 @@ export default function LessonsManagementPage() {
             } catch (err) {
               handleApiError(err);
             } finally {
-              setNewExercise({
-                _id: "",
-                lessonId: "",
-                type: "translate",
-                instruction: "",
-                sourceText: "",
-                sourceLanguage: "en",
-                targetLanguage: "fr",
-                correctAnswer: [""],
-                options: ["", "", "", "", ""],
-                isNewWord: false,
-                audioUrl: "",
-                neutralAnswerImage: "",
-                badAnswerImage: "",
-                correctAnswerImage: "",
-              });
+              setNewExercise(createInitialExercise(currentLanguage));
               setIsExerciseDialogOpen(false);
               setIsLoading(false);
             }
@@ -1288,6 +1316,78 @@ export default function LessonsManagementPage() {
           }}
           isLoading={isLoading}
           isEdit={true}
+        />
+
+        {/* Delete Language Dialog */}
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => {
+            setIsDeleteDialogOpen(false);
+            setLanguageToDelete(null);
+          }}
+          title={intl.formatMessage({
+            id: "admin.lessons.delete.language.title",
+            defaultMessage: "Disable Program",
+          })}
+          description={intl.formatMessage(
+            {
+              id: "admin.lessons.delete.language.description",
+              defaultMessage:
+                "Are you sure you want to disable the program '{name}'? Learners will no longer see it in listings.",
+            },
+            { name: languageToDelete?.name }
+          )}
+          onConfirm={async () => {
+            if (!languageToDelete) {
+              return;
+            }
+
+            setIsLoading(true);
+            try {
+              const token = await getToken();
+              const response = await apiClient.delete(
+                `/api/admin/languages/${languageToDelete._id}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (response.status === 200) {
+                const updatedLanguages = data.languages.filter(
+                  (language) => language._id !== languageToDelete._id
+                );
+
+                setData({ languages: updatedLanguages });
+
+                if (updatedLanguages.length > 0) {
+                  const hasSelected = updatedLanguages.some(
+                    (language) => language._id === selectedLanguage
+                  );
+                  if (!hasSelected) {
+                    setSelectedLanguage(updatedLanguages[0]._id);
+                  }
+                } else {
+                  setSelectedLanguage("");
+                }
+
+                toast.success(
+                  intl.formatMessage({
+                    id: "admin.lessons.success.languageDeleted",
+                    defaultMessage: "Program disabled successfully",
+                  })
+                );
+              }
+            } catch (err) {
+              handleApiError(err);
+            } finally {
+              setIsLoading(false);
+              setLanguageToDelete(null);
+              setIsDeleteDialogOpen(false);
+            }
+          }}
+          isLoading={isLoading}
         />
 
         {/* Delete Chapter Dialog */}

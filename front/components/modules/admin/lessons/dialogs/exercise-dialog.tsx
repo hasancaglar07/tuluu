@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   Dialog,
@@ -21,6 +22,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { exerciseTypes } from "@/types";
+
+const optionSupportedTypes = exerciseTypes
+  .filter(({ supportsOptions }) => supportsOptions)
+  .map(({ value }) => value);
+const audioSupportedTypes = exerciseTypes
+  .filter(({ supportsAudio }) => supportsAudio)
+  .map(({ value }) => value);
 import type { Language } from "@/types/lessons";
 
 // Define the form type for new exercises
@@ -52,15 +61,6 @@ interface ExerciseDialogProps {
   isEdit: boolean;
 }
 
-// Exercise types
-const exerciseTypes = [
-  { value: "translate", label: "Translate" },
-  { value: "select", label: "Select" },
-  { value: "arrange", label: "Arrange" },
-  { value: "speak", label: "Speak" },
-  { value: "listen", label: "Listen" },
-];
-
 // Languages for exercises
 const exerciseLanguages = [
   { value: "en", label: "English" },
@@ -77,6 +77,13 @@ const exerciseLanguages = [
   { value: "tr", label: "Turkish" },
   { value: "hi", label: "Hindi" },
 ];
+
+const formatLanguageLabel = (code: string) => {
+  if (!code) return "-";
+  const normalized = code.toLowerCase();
+  const match = exerciseLanguages.find((lang) => lang.value === normalized);
+  return match ? `${match.label} (${normalized.toUpperCase()})` : normalized.toUpperCase();
+};
 
 /**
  * Exercise Dialog Component
@@ -104,6 +111,39 @@ export function ExerciseDialog({
   isLoading,
   isEdit,
 }: ExerciseDialogProps) {
+  const resolvedSourceLanguage =
+    currentLanguage?.baseLanguage ?? newExercise.sourceLanguage;
+  const resolvedTargetLanguage =
+    currentLanguage?.locale ?? currentLanguage?.baseLanguage ?? newExercise.targetLanguage;
+
+  useEffect(() => {
+    if (!isOpen || isEdit) {
+      return;
+    }
+
+    const source = currentLanguage?.baseLanguage ?? "";
+    const target =
+      currentLanguage?.locale ?? currentLanguage?.baseLanguage ?? "";
+
+    if (
+      (source && source !== newExercise.sourceLanguage) ||
+      (target && target !== newExercise.targetLanguage)
+    ) {
+      setNewExercise({
+        ...newExercise,
+        sourceLanguage: source || newExercise.sourceLanguage,
+        targetLanguage: target || newExercise.targetLanguage,
+      });
+    }
+  }, [
+    isOpen,
+    isEdit,
+    currentLanguage?.baseLanguage,
+    currentLanguage?.locale,
+    newExercise,
+    setNewExercise,
+  ]);
+
   /**
    * Helper function to update correct answer array
    */
@@ -158,12 +198,19 @@ export function ExerciseDialog({
    * Handles form submission with validation
    */
   const handleSubmit = async () => {
-    // Basic validation
+    const requiresOptions = optionSupportedTypes.includes(newExercise.type);
+    const hasOptions = (newExercise.options ?? []).some(
+      (option) => (option ?? "").trim().length > 0
+    );
+    const requiresAudio = audioSupportedTypes.includes(newExercise.type);
+
     if (
       !newExercise.lessonId ||
       !newExercise.instruction ||
       !newExercise.sourceText ||
-      !newExercise.correctAnswer[0]
+      !newExercise.correctAnswer[0] ||
+      (requiresOptions && !hasOptions) ||
+      (requiresAudio && !newExercise.audioUrl.trim())
     ) {
       return;
     }
@@ -178,19 +225,19 @@ export function ExerciseDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editExercise"
-                defaultMessage="Edit Exercise"
+                defaultMessage="Egzersizi Düzenle"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addNewExercise"
-                defaultMessage="Add New Exercise"
+                defaultMessage="Yeni Egzersiz Ekle"
               />
             )}
           </DialogTitle>
           <DialogDescription>
             <FormattedMessage
               id="admin.lessons.exerciseDialogDescription"
-              defaultMessage="Create a new exercise for a lesson."
+              defaultMessage="Bir ders için yeni egzersiz oluştur."
             />
           </DialogDescription>
         </DialogHeader>
@@ -201,7 +248,7 @@ export function ExerciseDialog({
             <Label htmlFor="exercise-lesson">
               <FormattedMessage
                 id="admin.lessons.lesson"
-                defaultMessage="Lesson"
+                defaultMessage="Ders"
               />
             </Label>
             <Select
@@ -211,7 +258,7 @@ export function ExerciseDialog({
               }
             >
               <SelectTrigger id="exercise-lesson">
-                <SelectValue placeholder="Select lesson" />
+                <SelectValue placeholder="Ders seçin" />
               </SelectTrigger>
               <SelectContent>
                 {currentLanguage &&
@@ -237,7 +284,7 @@ export function ExerciseDialog({
               <Label htmlFor="exercise-type">
                 <FormattedMessage
                   id="admin.lessons.exerciseType"
-                  defaultMessage="Exercise Type"
+                  defaultMessage="Egzersiz Türü"
                 />
               </Label>
               <Select
@@ -247,12 +294,15 @@ export function ExerciseDialog({
                 }
               >
                 <SelectTrigger id="exercise-type">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder="Tür seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  {exerciseTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
+                  {exerciseTypes.map(({ value, labelKey, defaultMessage }) => (
+                    <SelectItem key={value} value={value}>
+                      <FormattedMessage
+                        id={labelKey}
+                        defaultMessage={defaultMessage}
+                      />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -264,7 +314,7 @@ export function ExerciseDialog({
               <Label htmlFor="exercise-instruction">
                 <FormattedMessage
                   id="admin.lessons.instruction"
-                  defaultMessage="Instruction"
+                  defaultMessage="Yönerge"
                 />
               </Label>
               <Input
@@ -276,7 +326,7 @@ export function ExerciseDialog({
                     instruction: e.target.value,
                   })
                 }
-                placeholder="e.g. Translate this sentence"
+                placeholder="örn. Bu cümleyi çevirin"
               />
             </div>
           </div>
@@ -287,26 +337,21 @@ export function ExerciseDialog({
               <Label htmlFor="exercise-source-language">
                 <FormattedMessage
                   id="admin.lessons.sourceLanguage"
-                  defaultMessage="Source Language"
+                  defaultMessage="Kaynak Dil"
                 />
               </Label>
-              <Select
-                value={newExercise.sourceLanguage}
-                onValueChange={(value) =>
-                  setNewExercise({ ...newExercise, sourceLanguage: value })
-                }
-              >
-                <SelectTrigger id="exercise-source-language">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {exerciseLanguages.map((lang) => (
-                    <SelectItem key={lang.value} value={lang.value}>
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="exercise-source-language"
+                value={formatLanguageLabel(resolvedSourceLanguage || "")}
+                readOnly
+                disabled
+              />
+              <p className="text-xs text-muted-foreground">
+                <FormattedMessage
+                  id="admin.lessons.languageAutoHint"
+                  defaultMessage="Program dil ayarından otomatik alınır."
+                />
+              </p>
             </div>
 
             {/* Target Language */}
@@ -314,26 +359,21 @@ export function ExerciseDialog({
               <Label htmlFor="exercise-target-language">
                 <FormattedMessage
                   id="admin.lessons.targetLanguage"
-                  defaultMessage="Target Language"
+                  defaultMessage="Hedef Dil"
                 />
               </Label>
-              <Select
-                value={newExercise.targetLanguage}
-                onValueChange={(value) =>
-                  setNewExercise({ ...newExercise, targetLanguage: value })
-                }
-              >
-                <SelectTrigger id="exercise-target-language">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {exerciseLanguages.map((lang) => (
-                    <SelectItem key={lang.value} value={lang.value}>
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="exercise-target-language"
+                value={formatLanguageLabel(resolvedTargetLanguage || "")}
+                readOnly
+                disabled
+              />
+              <p className="text-xs text-muted-foreground">
+                <FormattedMessage
+                  id="admin.lessons.languageAutoHint"
+                  defaultMessage="Program dil ayarından otomatik alınır."
+                />
+              </p>
             </div>
           </div>
 
@@ -342,7 +382,7 @@ export function ExerciseDialog({
             <Label htmlFor="exercise-source-text">
               <FormattedMessage
                 id="admin.lessons.sourceText"
-                defaultMessage="Source Text"
+                defaultMessage="Kaynak Metin"
               />
             </Label>
             <Input
@@ -354,7 +394,7 @@ export function ExerciseDialog({
                   sourceText: e.target.value,
                 })
               }
-              placeholder="e.g. Hello"
+              placeholder="örn. Merhaba"
             />
           </div>
 
@@ -364,7 +404,7 @@ export function ExerciseDialog({
               <Label>
                 <FormattedMessage
                   id="admin.lessons.correctAnswers"
-                  defaultMessage="Correct Answers"
+                  defaultMessage="Doğru Cevaplar"
                 />
               </Label>
               <Button
@@ -381,7 +421,7 @@ export function ExerciseDialog({
                 <Input
                   value={answer}
                   onChange={(e) => updateCorrectAnswer(index, e.target.value)}
-                  placeholder={`Answer ${index + 1}`}
+                  placeholder={`Cevap ${index + 1}`}
                 />
                 {newExercise.correctAnswer.length > 1 && (
                   <Button
@@ -398,52 +438,56 @@ export function ExerciseDialog({
           </div>
 
           {/* Options for multiple choice */}
-          <div className="grid gap-2">
-            <div className="flex justify-between items-center">
-              <Label>
-                <FormattedMessage
-                  id="admin.lessons.optionsForSelect"
-                  defaultMessage="Options (for select and translate)"
-                />
-              </Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addOption}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {newExercise.options.map((option, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  value={option}
-                  onChange={(e) => updateOption(index, e.target.value)}
-                  placeholder={`Option ${index + 1}`}
-                />
+          {optionSupportedTypes.includes(newExercise.type) && (
+            <div className="grid gap-2">
+              <div className="flex justify-between items-center">
+                <Label>
+                  <FormattedMessage
+                    id="admin.lessons.optionsForSelect"
+                    defaultMessage="Seç & çevir için seçenekler"
+                  />
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addOption}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
-            ))}
-          </div>
+
+              {newExercise.options.map((option, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={option}
+                    onChange={(e) => updateOption(index, e.target.value)}
+                    placeholder={`Seçenek ${index + 1}`}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Audio URL */}
-          <div className="grid gap-2">
-            <Label htmlFor="exercise-audio">
-              <FormattedMessage
-                id="admin.lessons.audioUrl"
-                defaultMessage="Audio URL (optional)"
+          {audioSupportedTypes.includes(newExercise.type) && (
+            <div className="grid gap-2">
+              <Label htmlFor="exercise-audio">
+                <FormattedMessage
+                  id="admin.lessons.audioUrl"
+                  defaultMessage="Ses URL'si (opsiyonel)"
+                />
+              </Label>
+              <Input
+                id="exercise-audio"
+                value={newExercise.audioUrl}
+                onChange={(e) =>
+                  setNewExercise({ ...newExercise, audioUrl: e.target.value })
+                }
+                placeholder="örn. http://ornek.com/ses.mp3"
               />
-            </Label>
-            <Input
-              id="exercise-audio"
-              value={newExercise.audioUrl}
-              onChange={(e) =>
-                setNewExercise({ ...newExercise, audioUrl: e.target.value })
-              }
-              placeholder="e.g. http://example.com/audio.mp3"
-            />
-          </div>
+            </div>
+          )}
 
           {/* New Word Toggle */}
           <div className="flex items-center space-x-2">
@@ -455,10 +499,10 @@ export function ExerciseDialog({
               }
             />
             <Label htmlFor="exercise-new-word">
-              <FormattedMessage
-                id="admin.lessons.markAsNewWord"
-                defaultMessage="Mark as New Word"
-              />
+                <FormattedMessage
+                  id="admin.lessons.markAsNewWord"
+                  defaultMessage="Yeni Kelime Olarak İşaretle"
+                />
             </Label>
           </div>
         </div>
@@ -467,7 +511,7 @@ export function ExerciseDialog({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
@@ -477,6 +521,12 @@ export function ExerciseDialog({
               !newExercise.instruction ||
               !newExercise.sourceText ||
               !newExercise.correctAnswer[0] ||
+              (optionSupportedTypes.includes(newExercise.type) &&
+                (newExercise.options ?? []).every(
+                  (option) => !(option ?? "").trim()
+                )) ||
+              (audioSupportedTypes.includes(newExercise.type) &&
+                !newExercise.audioUrl.trim()) ||
               isLoading
             }
           >
@@ -484,12 +534,12 @@ export function ExerciseDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.saveChanges"
-                defaultMessage="Save Changes"
+                defaultMessage="Değişiklikleri Kaydet"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addExercise"
-                defaultMessage="Add Exercise"
+                defaultMessage="Egzersiz Ekle"
               />
             )}
           </Button>

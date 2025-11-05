@@ -191,7 +191,7 @@ export function UnitCard({
                       <ListChecks className="mr-2 h-4 w-4" />
                       <FormattedMessage
                         id="admin.lessons.addExercise"
-                        defaultMessage="Add Exercise"
+                        defaultMessage="Egzersiz Ekle"
                       />
                     </Button>
 
@@ -205,7 +205,7 @@ export function UnitCard({
                       <Layers className="mr-2 h-4 w-4" />
                       <FormattedMessage
                         id="admin.lessons.manageExercises"
-                        defaultMessage="Manage Exercises"
+                        defaultMessage="Egzersizleri Yönet"
                       />
                     </Button>
 

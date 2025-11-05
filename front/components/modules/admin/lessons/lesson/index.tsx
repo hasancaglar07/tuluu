@@ -49,19 +49,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ExerciseResponse, LessonResponseType } from "@/types";
+import { FormattedMessage } from "react-intl";
+import { ExerciseResponse, LessonResponseType, exerciseTypes } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { AxiosError } from "axios";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
-
-const exerciseTypes = [
-  { value: "translate", label: "Translate" },
-  { value: "select", label: "Select" },
-  { value: "arrange", label: "Arrange" },
-  { value: "speak", label: "Speak" },
-  { value: "listen", label: "Listen" },
-];
 
 // Languages for exercises
 const exerciseLanguages = [
@@ -72,15 +65,59 @@ const exerciseLanguages = [
   { value: "it", label: "Italian" },
 ];
 
+const moralValueOptions = [
+  { value: "patience", label: "Patience" },
+  { value: "gratitude", label: "Gratitude" },
+  { value: "kindness", label: "Kindness" },
+  { value: "honesty", label: "Honesty" },
+  { value: "sharing", label: "Sharing" },
+  { value: "mercy", label: "Mercy" },
+  { value: "justice", label: "Justice" },
+  { value: "respect", label: "Respect" },
+];
+
+const moralDisplayTimings = [
+  { value: "pre_lesson", label: "Before lesson" },
+  { value: "mid_lesson", label: "During lesson" },
+  { value: "post_lesson", label: "After lesson" },
+];
+
+const miniGameTypes = [
+  { value: "match", label: "Matching Game" },
+  { value: "quiz", label: "Quiz" },
+  { value: "puzzle", label: "Puzzle" },
+  { value: "story", label: "Story Time" },
+  { value: "breathing", label: "Breathing Exercise" },
+];
+
+const optionSupportedTypes = exerciseTypes
+  .filter(({ supportsOptions }) => supportsOptions)
+  .map(({ value }) => value);
+const audioSupportedTypes = exerciseTypes
+  .filter(({ supportsAudio }) => supportsAudio)
+  .map(({ value }) => value);
+
 export default function LessonDetail({
   lessonData,
 }: {
   lessonData: LessonResponseType;
 }) {
+  const formatLabel = (value: string | undefined) =>
+    (value ?? "")
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
   const router = useLocalizedRouter();
+
   const [lesson, setLesson] = useState(lessonData);
   const [isEditing, setIsEditing] = useState(false);
   const [editedLesson, setEditedLesson] = useState(lessonData);
+  const [miniGameConfigText, setMiniGameConfigText] = useState(
+    JSON.stringify(lessonData.miniGame?.config ?? {}, null, 2)
+  );
+  const [miniGameConfigError, setMiniGameConfigError] = useState<string | null>(
+    null
+  );
   const [activeTab, setActiveTab] = useState("overview");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -139,8 +176,23 @@ export default function LessonDetail({
 
   // Add these functions after the handleDeleteLesson function:
   const handleAddExercise = async () => {
+    const requiresOptions = optionSupportedTypes.includes(newExercise.type);
+    const trimmedOptions = newExercise.options
+      .map((opt) => (opt ?? "").trim())
+      .filter(Boolean);
+    if (requiresOptions && trimmedOptions.length === 0) {
+      toast.error("Please add at least one option for this exercise type.");
+      return;
+    }
+
+    const requiresAudio = audioSupportedTypes.includes(newExercise.type);
+    const trimmedAudio = newExercise.audioUrl.trim();
+    if (requiresAudio && !trimmedAudio) {
+      toast.error("Audio URL is required for this exercise type.");
+      return;
+    }
+
     setIsLoading(true);
-    // Check if language already exists
     const token = await getToken(); // or however you're managing auth
     try {
       const response = await apiClient.post(
@@ -156,9 +208,9 @@ export default function LessonDetail({
           sourceLanguage: newExercise.sourceLanguage.toLowerCase(),
           targetLanguage: newExercise.targetLanguage.toLowerCase(),
           correctAnswer: newExercise.correctAnswer.map((a) => a.trim()),
-          options: newExercise.options.map((opt) => opt.trim()).filter(Boolean),
+          options: requiresOptions ? trimmedOptions : [],
           isNewWord: newExercise.isNewWord,
-          audioUrl: newExercise.audioUrl.trim(),
+          audioUrl: trimmedAudio,
         },
         {
           headers: {
@@ -214,8 +266,24 @@ export default function LessonDetail({
   };
 
   const handleEditExercise = async () => {
+    const type = editingExercise?.type ?? "translate";
+    const requiresOptions = optionSupportedTypes.includes(type);
+    const trimmedOptions = (editingExercise?.options ?? [])
+      .map((opt) => (opt ?? "").trim())
+      .filter(Boolean);
+    if (requiresOptions && trimmedOptions.length === 0) {
+      toast.error("Please add at least one option for this exercise type.");
+      return;
+    }
+
+    const requiresAudio = audioSupportedTypes.includes(type);
+    const trimmedAudio = (editingExercise?.audioUrl ?? "").trim();
+    if (requiresAudio && !trimmedAudio) {
+      toast.error("Audio URL is required for this exercise type.");
+      return;
+    }
+
     setIsLoading(true);
-    // Check if language already exists
     const token = await getToken(); // or however you're managing auth
     try {
       const response = await apiClient.put(
@@ -231,11 +299,9 @@ export default function LessonDetail({
           sourceLanguage: editingExercise?.sourceLanguage,
           targetLanguage: editingExercise?.targetLanguage,
           correctAnswer: editingExercise?.correctAnswer.map((a) => a.trim()),
-          options: editingExercise?.options
-            .map((opt) => opt.trim())
-            .filter(Boolean),
+          options: requiresOptions ? trimmedOptions : [],
           isNewWord: editingExercise?.isNewWord,
-          audioUrl: editingExercise?.audioUrl.trim(),
+          audioUrl: trimmedAudio,
           neutralAnswerImage: editingExercise?.neutralAnswerImage.trim(),
           badAnswerImage: editingExercise?.badAnswerImage.trim(),
           correctAnswerImage: editingExercise?.correctAnswerImage.trim(),
@@ -553,6 +619,195 @@ export default function LessonDetail({
                   />
                   <Label htmlFor="premium">Premium Content</Label>
                 </div>
+
+                <div className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Moral Lesson</h4>
+                  <Label className="text-xs text-muted-foreground">Value</Label>
+                  <Select
+                    value={editedLesson.moralLesson?.value ?? "kindness"}
+                    onValueChange={(value) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        moralLesson: {
+                          value: value as typeof moralValueOptions[number]["value"],
+                          title: editedLesson.moralLesson?.title ?? "",
+                          storyText: editedLesson.moralLesson?.storyText ?? "",
+                          mediaUrl: editedLesson.moralLesson?.mediaUrl ?? "",
+                          displayTiming:
+                            editedLesson.moralLesson?.displayTiming ?? "post_lesson",
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select moral value" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {moralValueOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="grid gap-2">
+                    <Label htmlFor="moral-title">Title</Label>
+                    <Input
+                      id="moral-title"
+                      value={editedLesson.moralLesson?.title ?? ""}
+                      onChange={(event) =>
+                        setEditedLesson({
+                          ...editedLesson,
+                          moralLesson: {
+                            value:
+                              editedLesson.moralLesson?.value ?? "kindness",
+                            title: event.target.value,
+                            storyText:
+                              editedLesson.moralLesson?.storyText ?? "",
+                            mediaUrl:
+                              editedLesson.moralLesson?.mediaUrl ?? "",
+                            displayTiming:
+                              editedLesson.moralLesson?.displayTiming ?? "post_lesson",
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="moral-story">Story Text</Label>
+                    <Textarea
+                      id="moral-story"
+                      rows={3}
+                      value={editedLesson.moralLesson?.storyText ?? ""}
+                      onChange={(event) =>
+                        setEditedLesson({
+                          ...editedLesson,
+                          moralLesson: {
+                            value:
+                              editedLesson.moralLesson?.value ?? "kindness",
+                            title: editedLesson.moralLesson?.title ?? "",
+                            storyText: event.target.value,
+                            mediaUrl:
+                              editedLesson.moralLesson?.mediaUrl ?? "",
+                            displayTiming:
+                              editedLesson.moralLesson?.displayTiming ?? "post_lesson",
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="moral-media">Media URL</Label>
+                    <Input
+                      id="moral-media"
+                      value={editedLesson.moralLesson?.mediaUrl ?? ""}
+                      onChange={(event) =>
+                        setEditedLesson({
+                          ...editedLesson,
+                          moralLesson: {
+                            value:
+                              editedLesson.moralLesson?.value ?? "kindness",
+                            title: editedLesson.moralLesson?.title ?? "",
+                            storyText:
+                              editedLesson.moralLesson?.storyText ?? "",
+                            mediaUrl: event.target.value,
+                            displayTiming:
+                              editedLesson.moralLesson?.displayTiming ?? "post_lesson",
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                  <Label className="text-xs text-muted-foreground">Display Timing</Label>
+                  <Select
+                    value={editedLesson.moralLesson?.displayTiming ?? "post_lesson"}
+                    onValueChange={(value) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        moralLesson: {
+                          value:
+                            editedLesson.moralLesson?.value ?? "kindness",
+                          title: editedLesson.moralLesson?.title ?? "",
+                          storyText:
+                            editedLesson.moralLesson?.storyText ?? "",
+                          mediaUrl:
+                            editedLesson.moralLesson?.mediaUrl ?? "",
+                          displayTiming: value as
+                            typeof moralDisplayTimings[number]["value"],
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select timing" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {moralDisplayTimings.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Mini Game</h4>
+                  <Label className="text-xs text-muted-foreground">Type</Label>
+                  <Select
+                    value={editedLesson.miniGame?.type ?? "quiz"}
+                    onValueChange={(value) =>
+                      setEditedLesson({
+                        ...editedLesson,
+                        miniGame: {
+                          type: value as typeof miniGameTypes[number]["value"],
+                          config: editedLesson.miniGame?.config ?? {},
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select mini game" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {miniGameTypes.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="grid gap-2">
+                    <Label htmlFor="mini-config">Configuration (JSON)</Label>
+                    <Textarea
+                      id="mini-config"
+                      rows={4}
+                      value={miniGameConfigText}
+                      onChange={(event) => {
+                        setMiniGameConfigText(event.target.value);
+                        try {
+                          const parsed = JSON.parse(event.target.value || "{}");
+                          setMiniGameConfigError(null);
+                          setEditedLesson({
+                            ...editedLesson,
+                            miniGame: {
+                              type:
+                                editedLesson.miniGame?.type ?? "quiz",
+                              config: parsed,
+                            },
+                          });
+                        } catch (err) {
+                          setMiniGameConfigError("Invalid JSON configuration");
+                        }
+                      }}
+                    />
+                    {miniGameConfigError && (
+                      <p className="text-xs text-destructive">
+                        {miniGameConfigError}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ) : (
@@ -604,6 +859,50 @@ export default function LessonDetail({
                       Exercises
                     </h3>
                     <p className="text-lg">{lesson.exercises.length}</p>
+                  </div>
+
+                  <div className="col-span-2 border rounded-lg bg-muted/20 p-3">
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Character Focus
+                    </h3>
+                    {lesson.moralLesson ? (
+                      <div className="mt-2 space-y-1">
+                        <p className="text-sm">
+                          Value: {formatLabel(lesson.moralLesson.value)}
+                        </p>
+                        {lesson.moralLesson.title && (
+                          <p className="text-sm">{lesson.moralLesson.title}</p>
+                        )}
+                        {lesson.moralLesson.storyText && (
+                          <p className="text-xs text-muted-foreground">
+                            {lesson.moralLesson.storyText}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Display: {formatLabel(lesson.moralLesson.displayTiming)}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Not set</p>
+                    )}
+                  </div>
+
+                  <div className="col-span-2 border rounded-lg bg-muted/20 p-3">
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Mini Game
+                    </h3>
+                    {lesson.miniGame ? (
+                      <div className="mt-2 space-y-1">
+                        <p className="text-sm">
+                          Type: {formatLabel(lesson.miniGame.type)}
+                        </p>
+                        <p className="text-xs text-muted-foreground break-words">
+                          Config: {JSON.stringify(lesson.miniGame.config)}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Not configured</p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -873,9 +1172,12 @@ export default function LessonDetail({
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {exerciseTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
+                    {exerciseTypes.map(({ value, labelKey, defaultMessage }) => (
+                      <SelectItem key={value} value={value}>
+                        <FormattedMessage
+                          id={labelKey}
+                          defaultMessage={defaultMessage}
+                        />
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1003,50 +1305,54 @@ export default function LessonDetail({
               ))}
             </div>
 
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label>Options (for select and translate)</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setNewExercise(addOption(newExercise))}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              {newExercise.options.map((option, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    className="lowercase"
-                    value={option}
-                    onChange={(e) =>
-                      setNewExercise({
-                        ...newExercise,
-                        options: updateOption(
-                          index,
-                          e.target.value,
-                          newExercise
-                        ),
-                      })
-                    }
-                    placeholder={`Option ${index + 1}`}
-                  />
+            {optionSupportedTypes.includes(newExercise.type) && (
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label>Options (for select and translate)</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewExercise(addOption(newExercise))}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
-              ))}
-            </div>
+                {newExercise.options.map((option, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      className="lowercase"
+                      value={option}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          options: updateOption(
+                            index,
+                            e.target.value,
+                            newExercise
+                          ),
+                        })
+                      }
+                      placeholder={`Option ${index + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="exercise-audio">Audio URL (optional)</Label>
-              <Input
-                id="exercise-audio"
-                value={newExercise.audioUrl}
-                onChange={(e) =>
-                  setNewExercise({ ...newExercise, audioUrl: e.target.value })
-                }
-                placeholder="e.g. http://example.com/audio.mp3"
-              />
-            </div>
+            {audioSupportedTypes.includes(newExercise.type) && (
+              <div className="grid gap-2">
+                <Label htmlFor="exercise-audio">Audio URL (optional)</Label>
+                <Input
+                  id="exercise-audio"
+                  value={newExercise.audioUrl}
+                  onChange={(e) =>
+                    setNewExercise({ ...newExercise, audioUrl: e.target.value })
+                  }
+                  placeholder="e.g. http://example.com/audio.mp3"
+                />
+              </div>
+            )}
 
             <div className="flex items-center space-x-2">
               <Switch
@@ -1074,6 +1380,10 @@ export default function LessonDetail({
                 !newExercise.instruction ||
                 !newExercise.sourceText ||
                 !newExercise.correctAnswer[0] ||
+                (optionSupportedTypes.includes(newExercise.type) &&
+                  newExercise.options.every((opt) => !(opt ?? "").trim())) ||
+                (audioSupportedTypes.includes(newExercise.type) &&
+                  !newExercise.audioUrl.trim()) ||
                 isLoading
               }
             >
@@ -1111,9 +1421,12 @@ export default function LessonDetail({
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {exerciseTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
+                    {exerciseTypes.map(({ value, labelKey, defaultMessage }) => (
+                      <SelectItem key={value} value={value}>
+                        <FormattedMessage
+                          id={labelKey}
+                          defaultMessage={defaultMessage}
+                        />
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1255,60 +1568,68 @@ export default function LessonDetail({
               )}
             </div>
 
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label>Options (for select and translate)</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditingExercise(addOption(editingExercise))}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+            {optionSupportedTypes.includes(editingExercise?.type ?? "") && (
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label>Options (for select and translate)</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setEditingExercise(addOption(editingExercise))
+                    }
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {editingExercise?.options?.map(
+                  (option: string, index: number) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={option}
+                        onChange={(e) =>
+                          setEditingExercise({
+                            ...editingExercise,
+                            options: updateOption(
+                              index,
+                              e.target.value,
+                              editingExercise
+                            ),
+                          })
+                        }
+                        placeholder={`Option ${index + 1}`}
+                      />
+                    </div>
+                  )
+                )}
               </div>
-              {editingExercise?.options?.map(
-                (option: string, index: number) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={option}
-                      onChange={(e) =>
-                        setEditingExercise({
-                          ...editingExercise,
-                          options: updateOption(
-                            index,
-                            e.target.value,
-                            editingExercise
-                          ),
-                        })
-                      }
-                      placeholder={`Option ${index + 1}`}
-                    />
-                  </div>
-                )
-              )}
-            </div>
+            )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="edit-exercise-audio">Audio URL (optional)</Label>
-              <Input
-                id="edit-exercise-audio"
-                value={editingExercise?.audioUrl || ""}
-                onChange={(e) =>
-                  setEditingExercise({
-                    ...editingExercise,
-                    audioUrl: e.target.value,
-                  })
-                }
-                placeholder="e.g. http://example.com/audio.mp3"
-              />
-              {editingExercise?.audioUrl && (
-                <audio controls className="mt-1 w-full">
-                  <source src={editingExercise.audioUrl} type="audio/ogg" />
-                  Your browser does not support the audio element.
-                </audio>
-              )}
-            </div>
+            {audioSupportedTypes.includes(editingExercise?.type ?? "") && (
+              <div className="grid gap-2">
+                <Label htmlFor="edit-exercise-audio">
+                  Audio URL (optional)
+                </Label>
+                <Input
+                  id="edit-exercise-audio"
+                  value={editingExercise?.audioUrl || ""}
+                  onChange={(e) =>
+                    setEditingExercise({
+                      ...editingExercise,
+                      audioUrl: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. http://example.com/audio.mp3"
+                />
+                {editingExercise?.audioUrl && (
+                  <audio controls className="mt-1 w-full">
+                    <source src={editingExercise.audioUrl} type="audio/ogg" />
+                    Your browser does not support the audio element.
+                  </audio>
+                )}
+              </div>
+            )}
 
             <div className="grid gap-2">
               <Label htmlFor="exercise-neutralAnswerImage">
@@ -1430,6 +1751,12 @@ export default function LessonDetail({
                 !editingExercise?.instruction ||
                 !editingExercise?.sourceText ||
                 !editingExercise?.correctAnswer?.[0] ||
+                (optionSupportedTypes.includes(editingExercise?.type ?? "") &&
+                  (editingExercise?.options ?? []).every(
+                    (opt) => !(opt ?? "").trim()
+                  )) ||
+                (audioSupportedTypes.includes(editingExercise?.type ?? "") &&
+                  !(editingExercise?.audioUrl ?? "").trim()) ||
                 isLoading
               }
             >

@@ -1,3 +1,4 @@
+import "@/lib/polyfills/server-storage";
 import { Fredoka, Fira_Code } from "next/font/google";
 import "./globals.css";
 

@@ -23,8 +23,184 @@ export default {
   "welcome.readyText": "هيا بنا!",
 
   // Learn Section
-  "learn.title": "أريد أن أتعلم...",
+  "learn.title": "أي رحلة قيم تريد أن تبدأ؟",
+  "learn.subtitle": "اختر برنامجًا يغذي الامتنان واللطف والصبر من خلال القصص والألعاب وتمارين التأمل.",
   "learn.learners": "{count} متعلم",
+  "learn.ageGroup": "الفئة العمرية: {value}",
+  "learn.islamicContent": "يتضمن محتوى إسلامي",
+  "learn.empty.title": "لا توجد لغات متاحة",
+  "learn.empty": "لا توجد لغات متاحة الآن. الرجاء العودة لاحقًا.",
+
+  "category.all": "الكل",
+  "category.faith_morality": "الإيمان والأخلاق",
+  "category.quran_arabic": "القرآن واللغة العربية",
+  "category.math_logic": "الرياضيات والمنطق",
+  "category.science_discovery": "اكتشاف العلوم",
+  "category.language_learning": "تعلم اللغات",
+  "category.mental_spiritual": "نفسي وروحي",
+  "category.personal_social": "شخصي واجتماعي",
+  "category.undefined": "أخرى",
+
+  "ageGroup.kids_4-7": "الأطفال ٤-٧",
+  "ageGroup.kids_8-12": "الأطفال ٨-١٢",
+  "ageGroup.teens_13-17": "الناشئة ١٣-١٧",
+  "ageGroup.all": "كل الأعمار",
+
+  "difficulty.beginner": "مبتدئ",
+  "difficulty.intermediate": "متوسط",
+  "difficulty.advanced": "متقدم",
+
+  "miniGame.match": "لعبة المطابقة",
+  "miniGame.quiz": "اختبار سريع",
+  "miniGame.puzzle": "لغز",
+  "miniGame.story": "وقت القصة",
+  "miniGame.breathing": "تمرين التنفس",
+
+  "valuePoints.title": "قيم الشخصية",
+  "valuePoints.patience": "الصبر",
+  "valuePoints.gratitude": "الشكر",
+  "valuePoints.kindness": "اللطف",
+  "valuePoints.honesty": "الصدق",
+  "valuePoints.sharing": "المشاركة",
+  "valuePoints.mercy": "الرحمة",
+  "valuePoints.justice": "العدل",
+  "valuePoints.respect": "الاحترام",
+
+  "admin.nav.dashboard": "لوحة التحكم",
+  "admin.nav.lessons": "الدروس",
+  "admin.nav.users": "المستخدمون",
+  "admin.nav.quests": "المهام",
+  "admin.nav.shop": "المتجر",
+  "admin.nav.payments": "المدفوعات",
+  "admin.dashboard.stats.totalUsers": "إجمالي المستخدمين",
+  "admin.dashboard.stats.completedLessons": "الدروس المكتملة",
+  "admin.dashboard.stats.activeQuests": "المهام النشطة",
+  "admin.dashboard.stats.monthlyRevenue": "الإيراد الشهري",
+  "admin.dashboard.stats.monthlyChange": "التغير الشهري %{percentage}",
+  "admin.dashboard.stats.newQuests": "{count} مهام جديدة هذا الأسبوع",
+  "admin.dashboard.tabs.overview": "نظرة عامة",
+  "admin.lessons.tabs.skillTree": "شجرة المهارات",
+  "admin.lessons.tabs.languages": "البرامج",
+  "admin.lessons.tabs.chapters": "الفصول",
+  "admin.lessons.tabs.units": "الوحدات",
+  "admin.lessons.tabs.lessons": "الدروس",
+  "admin.lessons.noLanguages.title": "لا توجد برامج بعد",
+  "admin.lessons.title": "إدارة البرامج",
+  "admin.lessons.subtitle": "صمّم رحلات قيم متمحورة حول الطفل: برنامج → فصل → وحدة → لحظة تعلم",
+  "admin.lessons.addLanguage": "إضافة برنامج",
+  "admin.lessons.noLanguages.subtitle": "ابدأ بإنشاء أول برنامج قيم لديك.",
+  "admin.lessons.programCard.category": "التركيز الأساسي",
+  "admin.lessons.programCard.age": "الفئة العمرية",
+  "admin.lessons.programCard.difficulty": "المستوى",
+  "admin.lessons.programCard.values": "القيم",
+  "admin.lessons.programCard.focus": "محور التعلم",
+  "admin.lessons.programCard.spiritual": "يتضمن قصصًا روحية",
+  "admin.lessons.chapter.contentType": "نوع المحتوى",
+  "admin.lessons.chapter.moralValue": "قيمة محورية",
+  "admin.lessons.chapter.displayTiming": "يتم تقديمه",
+  "admin.lessons.chapter.miniGame": "لعبة مصغرة",
+  "admin.lessons.premium": "بريميوم",
+  "admin.lessons.addUnit": "إضافة وحدة",
+  "admin.lessons.editChapter": "تعديل الفصل",
+  "admin.lessons.deleteChapter": "حذف الفصل",
+  "admin.lessons.noUnits": "لا توجد وحدات بعد في هذا الفصل.",
+  "admin.lessons.addChapter": "إضافة فصل",
+  "admin.lessons.units": "الوحدات:",
+  "admin.lessons.yes": "نعم",
+  "admin.lessons.no": "لا",
+  "admin.lessons.selectLanguage": "اختر اللغة:",
+  "admin.lessons.status.label": "الحالة:",
+  "admin.lessons.status.active": "نشط",
+  "admin.lessons.status.inactive": "غير نشط",
+  "admin.lessons.chapters": "الفصول:",
+  "admin.lessons.edit": "تعديل",
+  "admin.lessons.delete": "حذف",
+  "admin.lessons.lessonsGridDescription":
+    "أدر جميع الدروس ضمن الوحدات والفصول لبرنامج {languageName}.",
+  "admin.lessons.addLesson": "إضافة درس",
+  "admin.lessons.noLessons.title": "لا توجد دروس بعد",
+  "admin.lessons.noLessons.subtitle":
+    "أنشئ الفصول والوحدات أولاً، ثم أضف الدروس لتقديم محتواك.",
+  "admin.lessons.test": "اختبار",
+  "admin.lessons.xpReward": "{xp} نقطة خبرة",
+  "admin.lessons.lessonPath": "{chapterTitle} → {unitTitle}",
+  "admin.lessons.editLesson": "تعديل الدرس",
+  "admin.lessons.deleteLesson": "حذف الدرس",
+  "admin.lessons.exercises": "التمارين:",
+  "admin.lessons.order": "الترتيب:",
+  "admin.lessons.type": "النوع:",
+  "admin.lessons.entryTest": "اختبار تحديد المستوى",
+  "admin.lessons.regularLesson": "درس عادي",
+  "admin.lessons.exerciseProgress": "تقدم التمارين",
+  "admin.lessons.baseLanguage": "اللغة الأساسية:",
+  "admin.lessons.editLanguage": "تعديل البرنامج",
+  "admin.lessons.noChapters.title": "لا توجد فصول بعد",
+  "admin.lessons.noChapters.subtitle":
+    "ابدأ بإنشاء أول فصل لبرنامج {languageName}.",
+  "admin.lessons.editUnit": "تعديل الوحدة",
+  "admin.lessons.deleteUnit": "حذف الوحدة",
+  "admin.lessons.noLessons": "لا توجد دروس بعد في هذه الوحدة.",
+  "admin.lessons.addExercise": "إضافة تمرين",
+  "admin.lessons.manageExercises": "إدارة التمارين",
+  "admin.lessons.unitsGridDescription":
+    "أدر جميع الوحدات عبر الفصول لبرنامج {languageName}.",
+  "admin.lessons.noUnits.title": "لا توجد وحدات بعد",
+  "admin.lessons.noUnits.subtitle":
+    "أنشئ الفصول أولاً، ثم أضف الوحدات لتنظيم دروسك.",
+  "admin.lessons.unitInChapter": "ضمن الفصل: {chapterTitle}",
+  "admin.lessons.lessons": "الدروس:",
+  "admin.lessons.expanded": "موسع:",
+  "admin.lessons.addNewChapter": "إضافة فصل جديد",
+  "admin.lessons.chapterDialogDescription":
+    "أنشئ فصلًا جديدًا لبرنامج {languageName}.",
+  "admin.lessons.description": "الوصف",
+  "admin.lessons.imageUrl": "رابط الصورة",
+  "admin.lessons.premiumContent": "محتوى بريميوم",
+  "admin.lessons.expandedByDefault": "موسع افتراضيًا",
+  "admin.lessons.cancel": "إلغاء",
+  "admin.lessons.saveChanges": "حفظ التغييرات",
+  "admin.lessons.confirmDelete": "تأكيد الحذف",
+  "admin.lessons.editExercise": "تعديل التمرين",
+  "admin.lessons.addNewExercise": "إضافة تمرين جديد",
+  "admin.lessons.exerciseDialogDescription":
+    "أنشئ تمرينًا جديدًا داخل درس.",
+  "admin.lessons.lesson": "الدرس",
+  "admin.lessons.exerciseType": "نوع التمرين",
+  "admin.lessons.exerciseType.translate": "ترجمة",
+  "admin.lessons.exerciseType.select": "اختر",
+  "admin.lessons.exerciseType.arrange": "رتب",
+  "admin.lessons.exerciseType.speak": "تحدث",
+  "admin.lessons.exerciseType.listen": "استمع",
+  "admin.lessons.instruction": "التعليمات",
+  "admin.lessons.sourceLanguage": "اللغة المصدر",
+  "admin.lessons.targetLanguage": "اللغة الهدف",
+  "admin.lessons.sourceText": "النص المصدر",
+  "admin.lessons.correctAnswers": "الإجابات الصحيحة",
+  "admin.lessons.optionsForSelect": "خيارات (للاختيار والترجمة)",
+  "admin.lessons.audioUrl": "رابط الصوت (اختياري)",
+  "admin.lessons.markAsNewWord": "وضع علامة ككلمة جديدة",
+  "admin.lessons.addNewLanguage": "إضافة برنامج جديد",
+  "admin.lessons.editLanguageDescription": "حدّث تفاصيل البرنامج.",
+  "admin.lessons.addLanguageDescription": "أضف برنامجًا جديدًا إلى عروضك التعليمية.",
+  "admin.lessons.name": "الاسم",
+  "admin.lessons.nativeName": "الاسم الأصلي",
+  "admin.lessons.flag": "العلم",
+  "admin.lessons.baseLanguageDescription":
+    "اللغة الأساسية هي اللغة التي يعرفها المستخدمون بالفعل ويتعلمون من خلالها.",
+  "admin.lessons.inactiveLanguageNote": "لن تظهر البرامج غير النشطة للمستخدمين.",
+  "admin.lessons.addNewLesson": "إضافة درس جديد",
+  "admin.lessons.lessonDialogDescription": "أنشئ درسًا جديدًا داخل وحدة.",
+  "admin.lessons.chapter": "الفصل",
+  "admin.lessons.unit": "الوحدة",
+  "admin.lessons.active": "نشط",
+  "admin.lessons.entryTestNote":
+    "استخدمه لقياس مستوى المتعلم عند عدم إكمال الوحدة السابقة.",
+  "admin.lessons.addNewUnit": "إضافة وحدة جديدة",
+  "admin.lessons.unitDialogDescription": "أنشئ وحدة جديدة داخل فصل.",
+  "admin.lessons.inactiveUnitNote": "لن تظهر الوحدات غير النشطة للمستخدمين.",
+  "displayTiming.pre_lesson": "قبل الدرس",
+  "displayTiming.mid_lesson": "خلال الدرس",
+  "displayTiming.post_lesson": "بعد الدرس",
 
   // Dashboard / Course Page
   "dashboard.toast.support":
@@ -666,4 +842,64 @@ export default {
   "learn.empty":
     "لا توجد لغات متاحة للتعلم في الوقت الحالي. يرجى التحقق مرة أخرى لاحقًا أو الاتصال بالدعم إذا كنت تعتقد أن هذه مشكلة.",
   "learn.error": "خطأ في جلب اللغات. يرجى المحاولة مرة أخرى.",
+
+  // About Page
+  "about.title": "عن TULU",
+  "about.mascot.alt": "تميمة TULU",
+  
+  // Mission Section
+  "about.mission.title": "مهمتنا",
+  "about.mission.paragraph1":
+    "في TULU، نؤمن بأن تعلم اللغات يجب أن يكون ممتعًا ومتاحًا وفعالاً. مهمتنا هي كسر حواجز اللغة وربط الناس عبر الثقافات من خلال تجارب تعليمية جذابة ومُلعّبة.",
+  "about.mission.paragraph2":
+    "سواء كنت تتعلم للسفر أو العمل أو النمو الشخصي، يجعل TULU من السهل بناء عادة تعلم اللغة اليومية التي تستمر.",
+  "about.mission.cta": "ابدأ التعلم اليوم",
+
+  // How It Works Section
+  "about.howItWorks.title": "كيف يعمل TULU",
+  "about.howItWorks.step1.title": "تعلم من خلال اللعب",
+  "about.howItWorks.step1.description":
+    "دروسنا القصيرة تبدو أشبه بالألعاب من الدراسة، مما يجعل التعلم مسببًا للإدمان وممتعًا.",
+  "about.howItWorks.step2.title": "تدرب يوميًا",
+  "about.howItWorks.step2.description":
+    "ابنِ سلسلة واكسب مكافآت من خلال التدرب لبضع دقائق فقط كل يوم.",
+  "about.howItWorks.step3.title": "تتبع تقدمك",
+  "about.howItWorks.step3.description":
+    "شاهد نفسك تتحسن مع XP والإنجازات والترقيات التي تبقيك متحفزًا.",
+
+  // Story Section
+  "about.story.title": "قصتنا",
+  "about.story.paragraph1":
+    "تأسست TULU في عام 2025 من قبل فريق من عشاق اللغات وخبراء تكنولوجيا التعليم الذين أرادوا إحداث ثورة في كيفية تعلم الناس للغات. محبطين من الأساليب التقليدية التي بدت مملة وغير فعالة، شرعنا في إنشاء منصة تجعل تعلم اللغة ممتعًا مثل لعب لعبة.",
+  "about.story.paragraph2":
+    "اليوم، تساعد TULU ملايين المتعلمين في جميع أنحاء العالم على إتقان لغات جديدة من خلال منهجنا المصمم علميًا وعناصر التلعيب الجذابة. تقنية التعلم التكيفية لدينا تخصص تجربة كل مستخدم، مع التركيز على المجالات التي يحتاجون فيها إلى أكثر ممارسة.",
+  "about.story.paragraph3":
+    "نحن نتطور ونوسع عروض اللغات لدينا باستمرار، مع التزام بجعل التعليم اللغوي عالي الجودة متاحًا للجميع، في كل مكان.",
+
+  // Community Section
+  "about.community.title": "انضم إلى مجتمعنا",
+  "about.community.description":
+    "كن جزءًا من مجتمعنا العالمي من متعلمي اللغات وابدأ رحلتك اليوم.",
+  "about.community.cta": "ابدأ مجانًا",
+
+  // Features (Gamification highlights)
+  "about.features.title": "لماذا TULU؟",
+  "about.features.gamification.title": "نظام التلعيب",
+  "about.features.gamification.description":
+    "اكسب XP مع كل درس مكتمل، أكمل المهام، حافظ على السلاسل اليومية، واصعد في لوحة المتصدرين. التعلم لم يكن بهذه المتعة من قبل!",
+  "about.features.hearts.title": "نظام القلوب",
+  "about.features.hearts.description":
+    "تفقد قلوبًا للإجابات الخاطئة، لكن لا تقلق! يمكنك شراء القلوب من المتجر أو كسبها مجانًا من خلال المهام اليومية.",
+  "about.features.progressive.title": "التعلم التدريجي",
+  "about.features.progressive.description":
+    "تُفتح الدروس بشكل تسلسلي. أكمل كل وحدة وفصل لفتح التالي. تقدم بوتيرتك الخاصة واستمتع بنجاحك.",
+  "about.features.tracking.title": "تتبع مفصل للتقدم",
+  "about.features.tracking.description":
+    "انظر نسبة إكمال كل درس، تتبع درسك النشط، وتصور رحلة التعلم الخاصة بك. حافظ على تحفيزك عاليًا دائمًا!",
+
+  // Footer
+  "about.footer.copyright": "© {year} TULU. جميع الحقوق محفوظة.",
+  "about.footer.terms": "شروط الخدمة",
+  "about.footer.contact": "اتصل بنا",
+  "about.footer.about": "معلومات عنا",
 } as const;

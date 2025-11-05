@@ -28,12 +28,10 @@ export const LessonSchema = z.object({
     .max(10000, "XP Reward must not be greater than 10000")
     .default(10),
 
-  imageUrl: z
-    .string()
-    .trim()
-    .max(100, "Title must be at most 100 characters")
-    .optional()
-    .default(""),
+  imageUrl: z.preprocess(
+    (val) => (val === "" || val === null ? undefined : val),
+    z.string().trim().max(500, "Image URL is too long").optional()
+  ),
 
   order: z.number().default(0),
 });

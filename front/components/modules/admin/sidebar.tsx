@@ -15,6 +15,7 @@ import {
   Dog,
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useIntl } from "react-intl";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,51 +34,61 @@ interface SidebarProps {
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useUser();
+  const intl = useIntl();
+  
   const routes = [
     {
-      label: "Dashboard",
+      labelKey: "admin.nav.dashboard",
+      label: intl.formatMessage({ id: "admin.nav.dashboard", defaultMessage: "Dashboard" }),
       icon: LayoutDashboard,
       href: "/admin",
       active: pathname === "/admin",
     },
     {
-      label: "Lessons",
+      labelKey: "admin.nav.lessons",
+      label: intl.formatMessage({ id: "admin.nav.lessons", defaultMessage: "Lessons" }),
       icon: BookOpen,
       href: "/admin/lessons",
       active: pathname.includes("/admin/lessons"),
     },
     {
-      label: "Users",
+      labelKey: "admin.nav.users",
+      label: intl.formatMessage({ id: "admin.nav.users", defaultMessage: "Users" }),
       icon: Users,
       href: "/admin/users",
       active: pathname.includes("/admin/users"),
     },
     {
-      label: "Quests",
+      labelKey: "admin.nav.quests",
+      label: intl.formatMessage({ id: "admin.nav.quests", defaultMessage: "Quests" }),
       icon: Star,
       href: "/admin/quests",
       active: pathname.includes("/admin/quests"),
     },
     {
-      label: "Shop",
+      labelKey: "admin.nav.shop",
+      label: intl.formatMessage({ id: "admin.nav.shop", defaultMessage: "Shop" }),
       icon: ShoppingBag,
       href: "/admin/shop",
       active: pathname.includes("/admin/shop"),
     },
     // {
-    //   label: "Translations",
+    //   labelKey: "admin.nav.translations",
+    //   label: intl.formatMessage({ id: "admin.nav.translations", defaultMessage: "Translations" }),
     //   icon: Languages,
     //   href: "/admin/translations",
     //   active: pathname.includes("/admin/translations"),
     // },
     // {
-    //   label: "seo",
+    //   labelKey: "admin.nav.seo",
+    //   label: intl.formatMessage({ id: "admin.nav.seo", defaultMessage: "SEO" }),
     //   icon: SearchCheck,
     //   href: "/admin/seo",
     //   active: pathname.includes("/admin/seo"),
     // },
     {
-      label: "Payments",
+      labelKey: "admin.nav.payments",
+      label: intl.formatMessage({ id: "admin.nav.payments", defaultMessage: "Payments" }),
       icon: CreditCard,
       href: "/admin/payments",
       active: pathname.includes("/admin/payments"),

@@ -29,7 +29,7 @@ const UnitSchema = new Schema(
     },
     isPremium: { type: Boolean, default: false },
     isExpanded: { type: Boolean, default: false },
-    imageUrl: { type: String, default: "", trim: true },
+    imageUrl: { type: String, default: "", trim: true, maxlength: 500 },
     order: {
       type: Number,
       default: 1,

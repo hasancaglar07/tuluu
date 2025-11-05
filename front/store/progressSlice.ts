@@ -9,6 +9,28 @@ import {
 import { IRootState } from ".";
 import { apiClient } from "@/lib/api-client";
 
+export type ValuePoints = {
+  patience: number;
+  gratitude: number;
+  kindness: number;
+  honesty: number;
+  sharing: number;
+  mercy: number;
+  justice: number;
+  respect: number;
+};
+
+export interface DailyLimits {
+  minutesAllowed: number;
+  minutesUsed: number;
+  lastResetAt: string | null;
+}
+
+export interface ParentalControls {
+  enabled: boolean;
+  guardianContact: string;
+}
+
 // Define progress state interface
 export interface ProgressState {
   currentChapter: Chapter | null;
@@ -21,10 +43,34 @@ export interface ProgressState {
   lastCompletedLesson: string | null;
   error: string | null;
   loading: boolean;
+  valuePoints: ValuePoints;
+  dailyLimits: DailyLimits;
+  parentalControls: ParentalControls;
 }
 
-// Initial state for progress
-const initialState: ProgressState = {
+const createDefaultValuePoints = (): ValuePoints => ({
+  patience: 0,
+  gratitude: 0,
+  kindness: 0,
+  honesty: 0,
+  sharing: 0,
+  mercy: 0,
+  justice: 0,
+  respect: 0,
+});
+
+const createDefaultDailyLimits = (): DailyLimits => ({
+  minutesAllowed: 0,
+  minutesUsed: 0,
+  lastResetAt: null,
+});
+
+const createDefaultParentalControls = (): ParentalControls => ({
+  enabled: false,
+  guardianContact: "",
+});
+
+const createInitialProgressState = (): ProgressState => ({
   currentChapter: null,
   currentUnit: null,
   currentLesson: null,
@@ -35,14 +81,24 @@ const initialState: ProgressState = {
   lastCompletedLesson: null,
   error: null,
   loading: false,
-};
+  valuePoints: createDefaultValuePoints(),
+  dailyLimits: createDefaultDailyLimits(),
+  parentalControls: createDefaultParentalControls(),
+});
 
-export const fetchUserProgress = createAsyncThunk(
+// Initial state for progress
+const initialState: ProgressState = createInitialProgressState();
+
+export const fetchUserProgress = createAsyncThunk<
+  ProgressState & {
+    valuePoints?: ValuePoints;
+    dailyLimits?: DailyLimits;
+    parentalControls?: ParentalControls;
+  },
+  { languageId: string; token: string }
+>(
   "progress/fetchUserProgress",
-  async (
-    { languageId, token }: { languageId: string; token: string },
-    thunkAPI
-  ) => {
+  async ({ languageId, token }, thunkAPI) => {
     try {
       const response = await apiClient.get(`/api/progress`, {
         headers: {
@@ -125,7 +181,7 @@ export const progressSlice = createSlice({
 
     // Action to reset progress
     resetProgress: () => {
-      return initialState;
+      return createInitialProgressState();
     },
 
     markLessonAsPassed: (
@@ -160,6 +216,28 @@ export const progressSlice = createSlice({
         state.completedUnits.push(lastUnit);
       }
     },
+
+    updateValuePoints: (
+      state,
+      action: PayloadAction<{ key: keyof ValuePoints; amount: number }>
+    ) => {
+      const { key, amount } = action.payload;
+      state.valuePoints[key] = Math.max(
+        0,
+        state.valuePoints[key] + amount
+      );
+    },
+
+    setDailyLimits: (state, action: PayloadAction<DailyLimits>) => {
+      state.dailyLimits = action.payload;
+    },
+
+    setParentalControls: (
+      state,
+      action: PayloadAction<ParentalControls>
+    ) => {
+      state.parentalControls = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -169,18 +247,50 @@ export const progressSlice = createSlice({
       })
       .addCase(
         fetchUserProgress.fulfilled,
-        (state: ProgressState, action: PayloadAction<ProgressState>) => {
-          // Overwrite the entire state with fetched data
-          state.completedLessons = action.payload.completedLessons || [];
-          state.completedUnits = action.payload.completedUnits || [];
-          state.completedChapters = action.payload.completedChapters || [];
-          state.currentLesson = action.payload.currentLesson || null;
-          state.currentUnit = action.payload.currentUnit || null;
-          state.currentChapter = action.payload.currentChapter || null;
-          state.unitColor = action.payload.unitColor;
-          state.lastCompletedLesson =
-            action.payload.lastCompletedLesson || null;
-          // Keep loading and error under control
+        (
+          state: ProgressState,
+          action: PayloadAction<
+            ProgressState & {
+              valuePoints?: ValuePoints;
+              dailyLimits?: DailyLimits;
+              parentalControls?: ParentalControls;
+            }
+          >
+        ) => {
+          const {
+            completedLessons = [],
+            completedUnits = [],
+            completedChapters = [],
+            currentLesson = null,
+            currentUnit = null,
+            currentChapter = null,
+            unitColor,
+            lastCompletedLesson = null,
+            valuePoints,
+            dailyLimits,
+            parentalControls,
+          } = action.payload;
+
+          state.completedLessons = completedLessons;
+          state.completedUnits = completedUnits;
+          state.completedChapters = completedChapters;
+          state.currentLesson = currentLesson;
+          state.currentUnit = currentUnit;
+          state.currentChapter = currentChapter;
+          state.unitColor = unitColor ?? state.unitColor;
+          state.lastCompletedLesson = lastCompletedLesson;
+          state.valuePoints = valuePoints
+            ? { ...createDefaultValuePoints(), ...valuePoints }
+            : createDefaultValuePoints();
+          state.dailyLimits = dailyLimits
+            ? { ...createDefaultDailyLimits(), ...dailyLimits }
+            : createDefaultDailyLimits();
+          state.parentalControls = parentalControls
+            ? {
+                ...createDefaultParentalControls(),
+                ...parentalControls,
+              }
+            : createDefaultParentalControls();
           state.loading = false;
           state.error = null;
         }
@@ -205,6 +315,9 @@ export const {
   completeLesson,
   resetProgress,
   markLessonAsPassed,
+  updateValuePoints,
+  setDailyLimits,
+  setParentalControls,
 } = progressSlice.actions;
 
 export default progressSlice.reducer;

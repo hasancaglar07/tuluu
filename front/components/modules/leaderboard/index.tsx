@@ -138,7 +138,7 @@ export default function LeaderboardPage() {
             <span className="ml-2 text-gray-600">
               <FormattedMessage
                 id="leaderboard.loading"
-                defaultMessage="Chargement du classement..."
+                defaultMessage="Loading leaderboard..."
               />
             </span>
           </div>
@@ -150,7 +150,7 @@ export default function LeaderboardPage() {
             <Button onClick={fetchLeaderboard} variant="outline">
               <FormattedMessage
                 id="leaderboard.retry"
-                defaultMessage="Réessayer"
+                defaultMessage="Retry"
               />
             </Button>
           </div>
@@ -162,7 +162,7 @@ export default function LeaderboardPage() {
       <div className="p-4 border-t border-gray-200 text-center text-sm text-gray-500">
         <FormattedMessage
           id="leaderboard.realtime"
-          defaultMessage="Le classement est mis à jour en temps réel"
+          defaultMessage="The leaderboard is updated in real-time"
         />
       </div>
     </div>
@@ -181,7 +181,7 @@ const LeaderboardHeader = ({ onBack }: { onBack: () => void }) => (
         <ArrowLeft className="h-6 w-6" />
       </Button>
       <h1 className="text-xl font-bold">
-        <FormattedMessage id="leaderboard.title" defaultMessage="Classement" />
+        <FormattedMessage id="leaderboard.title" defaultMessage="Leaderboard" />
       </h1>
     </div>
   </div>
@@ -204,7 +204,7 @@ const LeaderboardFilters = ({
     <div className="relative flex-1">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
       <Input
-        placeholder="Rechercher un utilisateur..."
+        placeholder="Kullanici ara..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="pl-10"
@@ -213,12 +213,12 @@ const LeaderboardFilters = ({
     </div>
     <Select value={timeFilter} onValueChange={setTimeFilter} disabled={loading}>
       <SelectTrigger className="w-full sm:w-[180px]">
-        <SelectValue placeholder="Période" />
+        <SelectValue placeholder="Donem" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="week">Cette semaine</SelectItem>
-        <SelectItem value="month">Ce mois</SelectItem>
-        <SelectItem value="allTime">Tout le temps</SelectItem>
+        <SelectItem value="week">Bu hafta</SelectItem>
+        <SelectItem value="month">Bu ay</SelectItem>
+        <SelectItem value="allTime">Tum zamanlar</SelectItem>
       </SelectContent>
     </Select>
   </div>
@@ -252,7 +252,7 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
       <div className="text-center py-8 text-gray-500">
         <FormattedMessage
           id="leaderboard.noUsers"
-          defaultMessage="Aucun utilisateur trouvé"
+          defaultMessage="No users found"
         />
       </div>
     );
@@ -262,19 +262,19 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
     <div className="space-y-4">
       <div className="flex justify-between items-center px-4 py-2 font-bold text-gray-500 text-sm">
         <div className="w-12 text-center">
-          <FormattedMessage id="leaderboard.rank" defaultMessage="RANG" />
+          <FormattedMessage id="leaderboard.rank" defaultMessage="RANK" />
         </div>
         <div className="flex-1">
           <FormattedMessage
             id="leaderboard.user"
-            defaultMessage="UTILISATEUR"
+            defaultMessage="USER"
           />
         </div>
         <div className="w-20 text-center">
           <FormattedMessage id="leaderboard.xp" defaultMessage="XP" />
         </div>
         <div className="w-20 text-center hidden sm:block">
-          <FormattedMessage id="leaderboard.streak" defaultMessage="SÉRIE" />
+          <FormattedMessage id="leaderboard.streak" defaultMessage="STREAK" />
         </div>
       </div>
 
@@ -312,7 +312,7 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
                   <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
                     <FormattedMessage
                       id="leaderboard.you"
-                      defaultMessage="Vous"
+                      defaultMessage="You"
                     />
                   </span>
                 )}

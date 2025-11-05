@@ -37,9 +37,9 @@ import type { Metadata } from "next";
 import { LocaleLink } from "@/components/custom/locale-link";
 
 export const metadata: Metadata = {
-  title: "Help & Support | TULU",
+  title: "Yardım & Destek | TULU",
   description:
-    "Get help with TULU. Find answers to common questions or contact our support team.",
+    "TULU ile ilgili yardım alın. Sık sorulan soruların cevaplarını bulun veya destek ekibimizle iletişime geçin.",
 };
 
 export default function HelpPage() {
@@ -50,11 +50,11 @@ export default function HelpPage() {
       <Container className="py-12">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-4">
-            Help & Support Center
+            Yardım & Destek Merkezi
           </h1>
           <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-            Find answers to common questions, browse our knowledge base, or
-            contact our support team for personalized assistance.
+            Sık sorulan soruların cevaplarını bulun, bilgi bankamıza göz atın veya
+            kişiselleştirilmiş yardım için destek ekibimizle iletişime geçin.
           </p>
 
           {/* <div className="relative mb-12">
@@ -210,73 +210,70 @@ export default function HelpPage() {
 
           <Tabs defaultValue="faq" className="mb-12">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="faq">Frequently Asked Questions</TabsTrigger>
-              <TabsTrigger value="guides">User Guides</TabsTrigger>
-              <TabsTrigger value="contact">Contact Support</TabsTrigger>
-              <TabsTrigger value="community">Community</TabsTrigger>
+              <TabsTrigger value="faq">Sık Sorulan Sorular</TabsTrigger>
+              <TabsTrigger value="guides">Kullanıcı Rehberleri</TabsTrigger>
+              <TabsTrigger value="contact">Destek İletişim</TabsTrigger>
+              <TabsTrigger value="community">Topluluk</TabsTrigger>
             </TabsList>
 
             <TabsContent value="faq" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold mb-4">
-                    Learning & Progress
+                    Öğrenme & İlerleme
                   </h3>
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-1">
-                      <AccordionTrigger>How do streaks work?</AccordionTrigger>
+                      <AccordionTrigger>Seriler nasıl çalışır?</AccordionTrigger>
                       <AccordionContent>
                         <p>
-                          Streaks track how many consecutive days you&nbsp;ve
-                          completed at least one lesson. To maintain your
-                          streak, you need to complete at least one lesson each
-                          day. If you miss a day, your streak will reset to
-                          zero. You can use a Streak Freeze item from the shop
-                          to protect your streak for one day of inactivity.
+                          Seriler, art arda kaç gün en az bir ders tamamladığınızı takip eder. 
+                          Serinizi korumak için her gün en az bir ders tamamlamanız gerekir. 
+                          Bir gün kaçırırsanız, seriniz sıfırlanır. Bir günlük hareketsizlik 
+                          için serinizi korumak amacıyla mağazadan Seri Dondurma öğesi kullanabilirsiniz.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="item-2">
                       <AccordionTrigger>
-                        What are gems and how do I earn them?
+                        Mücevherler nedir ve nasıl kazanırım?
                       </AccordionTrigger>
                       <AccordionContent>
                         <p>
-                          Gems are TULU&apos;s virtual currency. You can
-                          earn gems by:
+                          Mücevherler TULU&apos;nun sanal para birimidir. Mücevherleri 
+                          şu yollarla kazanabilirsiniz:
                         </p>
                         <ul className="list-disc pl-5 space-y-1 mt-2">
-                          <li>Completing lessons</li>
-                          <li>Achieving perfect scores</li>
-                          <li>Completing quests and achievements</li>
-                          <li>Maintaining your streak</li>
-                          <li>Leveling up</li>
+                          <li>Dersleri tamamlayarak</li>
+                          <li>Mükemmel puanlar alarak</li>
+                          <li>Görevleri ve başarıları tamamlayarak</li>
+                          <li>Serinizi koruyarak</li>
+                          <li>Seviye atlayarak</li>
                         </ul>
                         <p className="mt-2">
-                          You can use gems to purchase items in the shop, such
-                          as Streak Freezes, bonus lessons, and character
-                          customizations.
+                          Mücevherleri mağazadan Seri Dondurma, bonus dersler ve 
+                          karakter özelleştirmeleri gibi öğeleri satın almak için kullanabilirsiniz.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="item-3">
                       <AccordionTrigger>
-                        How do I change the language I&apos;m learning?
+                        Öğrendiğim dili nasıl değiştirebilirim?
                       </AccordionTrigger>
                       <AccordionContent>
-                        <p>To change your learning language:</p>
+                        <p>Öğrenme dilinizi değiştirmek için:</p>
                         <ol className="list-decimal pl-5 space-y-2 mt-2">
-                          <li>Go to your profile settings</li>
-                          <li>Select -Learning Language-</li>
-                          <li>Choose your new language from the list</li>
-                          <li>Confirm your selection</li>
+                          <li>Profil ayarlarınıza gidin</li>
+                          <li>-Öğrenme Dili- seçeneğini seçin</li>
+                          <li>Listeden yeni dilinizi seçin</li>
+                          <li>Seçiminizi onaylayın</li>
                         </ol>
                         <p className="mt-2">
-                          Note that changing your language will start you at the
-                          beginning of the new language course, but your
-                          progress in previous languages will be saved.
+                          Dilinizi değiştirdiğinizde yeni dil kursunun başından 
+                          başlayacağınızı, ancak önceki dillerdeki ilerlemenizin 
+                          kaydedileceğini unutmayın.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
@@ -285,73 +282,70 @@ export default function HelpPage() {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-4">
-                    Account & Subscription
+                    Hesap & Abonelik
                   </h3>
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-4">
                       <AccordionTrigger>
-                        How do I reset my password?
+                        Şifremi nasıl sıfırlarım?
                       </AccordionTrigger>
                       <AccordionContent>
-                        <p className="mb-2">To reset your password:</p>
+                        <p className="mb-2">Şifrenizi sıfırlamak için:</p>
                         <ol className="list-decimal pl-5 space-y-2">
-                          <li>Go to the login screen</li>
-                          <li>Click on -Forgot Password-</li>
+                          <li>Giriş ekranına gidin</li>
+                          <li>-Şifremi Unuttum- seçeneğine tıklayın</li>
                           <li>
-                            Enter the email address associated with your account
+                            Hesabınızla ilişkili e-posta adresini girin
                           </li>
-                          <li>Check your email for a password reset link</li>
-                          <li>Follow the link to create a new password</li>
+                          <li>Şifre sıfırlama bağlantısı için e-postanızı kontrol edin</li>
+                          <li>Yeni bir şifre oluşturmak için bağlantıyı takip edin</li>
                         </ol>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="item-5">
                       <AccordionTrigger>
-                        What&apos;s the difference between free and premium
-                        accounts?
+                        Ücretsiz ve premium hesaplar arasındaki fark nedir?
                       </AccordionTrigger>
                       <AccordionContent>
                         <p>
-                          Free accounts give you access to basic lessons and
-                          features, while Premium accounts offer:
+                          Ücretsiz hesaplar size temel derslere ve özelliklere erişim 
+                          sağlarken, Premium hesaplar şunları sunar:
                         </p>
                         <ul className="list-disc pl-5 space-y-1 mt-2">
                           <li>
-                            Unlimited hearts (no waiting to continue learning)
+                            Sınırsız kalpler (öğrenmeye devam etmek için bekleme yok)
                           </li>
-                          <li>No ads</li>
-                          <li>Offline lessons</li>
-                          <li>Progress quizzes</li>
-                          <li>Mastery quizzes</li>
-                          <li>Unlimited skill test-outs</li>
-                          <li>Personalized learning plan</li>
+                          <li>Reklamsız deneyim</li>
+                          <li>Çevrimdışı dersler</li>
+                          <li>İlerleme testleri</li>
+                          <li>Ustalık testleri</li>
+                          <li>Sınırsız beceri testi atlamaları</li>
+                          <li>Kişiselleştirilmiş öğrenme planı</li>
                         </ul>
                         <p className="mt-2">
-                          Premium subscriptions are available on monthly or
-                          annual plans, with the annual plan offering
-                          significant savings.
+                          Premium abonelikler aylık veya yıllık planlar halinde 
+                          sunulmaktadır ve yıllık plan önemli tasarruf sağlar.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="item-6">
                       <AccordionTrigger>
-                        How do I cancel my subscription?
+                        Aboneliğimi nasıl iptal ederim?
                       </AccordionTrigger>
                       <AccordionContent>
-                        <p>To cancel your subscription:</p>
+                        <p>Aboneliğinizi iptal etmek için:</p>
                         <ol className="list-decimal pl-5 space-y-2 mt-2">
-                          <li>Go to your profile settings</li>
-                          <li>Select -Subscription</li>
-                          <li>Click on -Cancel Subscription-</li>
-                          <li>Follow the prompts to confirm cancellation</li>
+                          <li>Profil ayarlarınıza gidin</li>
+                          <li>-Abonelik- seçeneğini seçin</li>
+                          <li>-Aboneliği İptal Et- seçeneğine tıklayın</li>
+                          <li>İptal onayı için yönergeleri takip edin</li>
                         </ol>
                         <p className="mt-2">
-                          Your premium features will remain active until the end
-                          of your current billing period. After that, your
-                          account will revert to a free account, but all your
-                          progress will be saved.
+                          Premium özellikleriniz mevcut fatura döneminizin sonuna kadar 
+                          aktif kalacaktır. Bundan sonra, hesabınız ücretsiz bir hesaba 
+                          dönüşecektir, ancak tüm ilerlemeniz kaydedilecektir.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
@@ -361,7 +355,7 @@ export default function HelpPage() {
 
               <div className="mt-8 text-center">
                 <Button className="bg-blue-600 hover:bg-blue-700">
-                  View All FAQs
+                  Tüm SSS'leri Görüntüle
                 </Button>
               </div>
             </TabsContent>
@@ -376,14 +370,13 @@ export default function HelpPage() {
                       </div>
                       <div className="p-6">
                         <h3 className="font-bold text-lg mb-2">
-                          Getting Started Guide
+                          Başlangıç Rehberi
                         </h3>
                         <p className="text-gray-600 mb-4">
-                          Learn the basics of TULU and start your language
-                          journey
+                          TULU'nun temellerini öğrenin ve dil yolculuğunuza başlayın
                         </p>
                         <div className="flex items-center text-[#1cb0f6] font-medium">
-                          Read guide <ChevronRight className="h-4 w-4 ml-1" />
+                          Rehberi oku <ChevronRight className="h-4 w-4 ml-1" />
                         </div>
                       </div>
                     </LocaleLink>
@@ -398,13 +391,13 @@ export default function HelpPage() {
                       </div>
                       <div className="p-6">
                         <h3 className="font-bold text-lg mb-2">
-                          Effective Practice Tips
+                          Etkili Pratik İpuçları
                         </h3>
                         <p className="text-gray-600 mb-4">
-                          Strategies to maximize your learning and retention
+                          Öğrenmenizi ve hafızanızı en üst düzeye çıkaracak stratejiler
                         </p>
                         <div className="flex items-center text-[#ff4b4b] font-medium">
-                          Read guide <ChevronRight className="h-4 w-4 ml-1" />
+                          Rehberi oku <ChevronRight className="h-4 w-4 ml-1" />
                         </div>
                       </div>
                     </LocaleLink>
@@ -439,13 +432,13 @@ export default function HelpPage() {
                       </div>
                       <div className="p-6">
                         <h3 className="font-bold text-lg mb-2">
-                          Premium Features Guide
+                          Premium Özellikler Rehberi
                         </h3>
                         <p className="text-gray-600 mb-4">
-                          Explore all the benefits of a Premium subscription
+                          Premium aboneliğin tüm avantajlarını keşfedin
                         </p>
                         <div className="flex items-center text-[#ffc800] font-medium">
-                          Read guide <ChevronRight className="h-4 w-4 ml-1" />
+                          Rehberi oku <ChevronRight className="h-4 w-4 ml-1" />
                         </div>
                       </div>
                     </LocaleLink>

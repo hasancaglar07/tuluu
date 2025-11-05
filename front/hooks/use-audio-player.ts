@@ -19,6 +19,28 @@ export function useAudioPlayer() {
   const playAudio = async (exercise: Exercise) => {
     if (!exercise?.sourceText) return;
 
+    const hasCustomAudio =
+      typeof exercise.audioUrl === "string" && exercise.audioUrl.trim().length > 0;
+
+    if (hasCustomAudio) {
+      try {
+        setIsSpeaking(true);
+        const audio = new Audio(exercise.audioUrl as string);
+        audio.play();
+        audio.onended = () => {
+          setIsSpeaking(false);
+        };
+        audio.onerror = () => {
+          setIsSpeaking(false);
+        };
+        return;
+      } catch (err) {
+        console.error("Failed to play provided audio URL", err);
+        setIsSpeaking(false);
+        // Fall back to TTS below
+      }
+    }
+
     const token = await getToken();
 
     // Voice ID mapping for different languages

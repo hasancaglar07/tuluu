@@ -99,6 +99,26 @@ interface QuestHistoryItem {
   };
 }
 
+const EMPTY_ANALYTICS: QuestAnalytics = {
+  overview: {
+    totalAssigned: 0,
+    totalStarted: 0,
+    totalCompleted: 0,
+    totalAbandoned: 0,
+    completionRate: 0,
+    averageTimeToComplete: 0,
+    averageProgress: 0,
+    abandonmentRate: 0,
+  },
+  dailyActivity: [],
+  segmentation: {
+    byLevel: { beginners: 0, intermediate: 0, advanced: 0 },
+    byLanguage: { spanish: 0, french: 0, german: 0 },
+    byPlatform: { mobile: 0, desktop: 0, tablet: 0 },
+  },
+  recentActivities: [],
+};
+
 export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -156,7 +176,36 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       );
 
       if (response.data.success) {
-        setAnalytics(response.data.data);
+        const analyticsData = response.data.data ?? {};
+        const overview = {
+          ...EMPTY_ANALYTICS.overview,
+          ...(analyticsData.overview ?? {}),
+        };
+        const segmentation = {
+          byLevel: {
+            ...EMPTY_ANALYTICS.segmentation.byLevel,
+            ...(analyticsData.segmentation?.byLevel ?? {}),
+          },
+          byLanguage: {
+            ...EMPTY_ANALYTICS.segmentation.byLanguage,
+            ...(analyticsData.segmentation?.byLanguage ?? {}),
+          },
+          byPlatform: {
+            ...EMPTY_ANALYTICS.segmentation.byPlatform,
+            ...(analyticsData.segmentation?.byPlatform ?? {}),
+          },
+        };
+
+        setAnalytics({
+          overview,
+          dailyActivity: Array.isArray(analyticsData.dailyActivity)
+            ? analyticsData.dailyActivity
+            : [],
+          segmentation,
+          recentActivities: Array.isArray(analyticsData.recentActivities)
+            ? analyticsData.recentActivities
+            : [],
+        });
       }
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -696,7 +745,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                 <div className="flex items-center justify-center h-32">
                   <Loader2 className="h-6 w-6 animate-spin" />
                 </div>
-              ) : analytics && analytics.recentActivities.length > 0 ? (
+              ) : analytics?.recentActivities.length ? (
                 <div className="space-y-4">
                   {analytics.recentActivities
                     .slice(0, 3)
@@ -711,7 +760,8 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <p className="text-sm font-medium">
-                              User {activity.clerkId.slice(0, 8)}... -{" "}
+                              User {(activity.clerkId ?? "unknown").slice(0, 8)}
+                              ... -{" "}
                               {activity.status}
                             </p>
                             <p className="text-xs text-muted-foreground">

@@ -1,3 +1,10 @@
+import type {
+  LanguageCategory,
+  ThemeMetadata,
+  MoralLessonDetails,
+  MiniGameDetails,
+} from ".";
+
 /**
  * Type definitions for the Lessons Management system
  *
@@ -36,6 +43,8 @@ export interface Lesson {
   unitId?: string;
   order: number;
   exercises: Exercise[];
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 export interface Unit {
@@ -62,6 +71,9 @@ export interface Chapter {
   order: number;
   isActive: boolean;
   units: Unit[];
+  contentType?: "lesson" | "story" | "game" | "meditation" | "quiz" | "activity";
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 export interface Language {
@@ -72,7 +84,15 @@ export interface Language {
   baseLanguage: string;
   isActive: boolean;
   imageUrl: string;
+  category: LanguageCategory;
+  themeMetadata: ThemeMetadata;
+  locale: string;
   chapters: Chapter[];
+  stats?: {
+    chapters: number;
+    units: number;
+    lessons: number;
+  };
 }
 
 // Form state types for creating new items
@@ -84,6 +104,9 @@ export interface NewLanguageForm {
   baseLanguage: string;
   imageUrl: string;
   isActive: boolean;
+  category: LanguageCategory;
+  themeMetadata: ThemeMetadata;
+  locale: string;
 }
 
 export interface NewChapterForm {
@@ -217,6 +240,8 @@ export interface Lesson {
   unitId?: string;
   order: number;
   exercises: Exercise[];
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 export interface Unit {
@@ -243,6 +268,9 @@ export interface Chapter {
   order: number;
   isActive: boolean;
   units: Unit[];
+  contentType?: "lesson" | "story" | "game" | "meditation" | "quiz" | "activity";
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 export interface Language {
@@ -253,5 +281,7 @@ export interface Language {
   baseLanguage: string;
   isActive: boolean;
   imageUrl: string;
+  category: LanguageCategory;
+  themeMetadata: ThemeMetadata;
   chapters: Chapter[];
 }

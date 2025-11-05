@@ -705,4 +705,64 @@ export default {
   "learn.loading": "Chargement des leçons...",
   "learn.error": "Erreur lors du chargement des leçons. Veuillez réessayer.",
   "learn.noLessons": "Aucune leçon trouvée",
+
+  // About Page
+  "about.title": "À Propos de TULU",
+  "about.mascot.alt": "Mascotte TULU",
+  
+  // Mission Section
+  "about.mission.title": "Notre Mission",
+  "about.mission.paragraph1":
+    "Chez TULU, nous croyons que l'apprentissage des langues doit être amusant, accessible et efficace. Notre mission est de briser les barrières linguistiques et de connecter les gens à travers les cultures grâce à des expériences d'apprentissage gamifiées et engageantes.",
+  "about.mission.paragraph2":
+    "Que vous appreniez pour voyager, travailler ou vous développer personnellement, TULU facilite la création d'une habitude d'apprentissage des langues quotidienne qui perdure.",
+  "about.mission.cta": "Commencez à Apprendre Aujourd'hui",
+
+  // How It Works Section
+  "about.howItWorks.title": "Comment Fonctionne TULU",
+  "about.howItWorks.step1.title": "Apprenez en Jouant",
+  "about.howItWorks.step1.description":
+    "Nos leçons courtes ressemblent plus à des jeux qu'à de l'étude, rendant l'apprentissage addictif et amusant.",
+  "about.howItWorks.step2.title": "Pratiquez Quotidiennement",
+  "about.howItWorks.step2.description":
+    "Créez une série et gagnez des récompenses en pratiquant seulement quelques minutes chaque jour.",
+  "about.howItWorks.step3.title": "Suivez Vos Progrès",
+  "about.howItWorks.step3.description":
+    "Regardez-vous progresser avec des XP, des réalisations et des montées de niveau qui vous gardent motivé.",
+
+  // Story Section
+  "about.story.title": "Notre Histoire",
+  "about.story.paragraph1":
+    "TULU a été fondé en 2025 par une équipe de passionnés de langues et d'experts en technologie éducative qui voulaient révolutionner la façon dont les gens apprennent les langues. Frustrés par les méthodes traditionnelles qui semblaient ennuyeuses et inefficaces, nous nous sommes mis à créer une plateforme qui rend l'apprentissage des langues aussi agréable que de jouer à un jeu.",
+  "about.story.paragraph2":
+    "Aujourd'hui, TULU aide des millions d'apprenants dans le monde entier à maîtriser de nouvelles langues grâce à notre programme conçu scientifiquement et à nos éléments de gamification engageants. Notre technologie d'apprentissage adaptatif personnalise l'expérience de chaque utilisateur, en se concentrant sur les domaines où ils ont le plus besoin de pratique.",
+  "about.story.paragraph3":
+    "Nous évoluons et élargissons constamment notre offre linguistique, avec un engagement à rendre l'éducation linguistique de qualité accessible à tous, partout.",
+
+  // Community Section
+  "about.community.title": "Rejoignez Notre Communauté",
+  "about.community.description":
+    "Faites partie de notre communauté mondiale d'apprenants de langues et commencez votre voyage aujourd'hui.",
+  "about.community.cta": "Commencez Gratuitement",
+
+  // Features (Gamification highlights)
+  "about.features.title": "Pourquoi TULU ?",
+  "about.features.gamification.title": "Système de Gamification",
+  "about.features.gamification.description":
+    "Gagnez des XP à chaque leçon terminée, complétez des quêtes, maintenez des séries quotidiennes et montez dans le classement. L'apprentissage n'a jamais été aussi amusant !",
+  "about.features.hearts.title": "Système de Cœurs",
+  "about.features.hearts.description":
+    "Vous perdez des cœurs pour les mauvaises réponses, mais ne vous inquiétez pas ! Vous pouvez acheter des cœurs dans la boutique ou les gagner gratuitement grâce aux quêtes quotidiennes.",
+  "about.features.progressive.title": "Apprentissage Progressif",
+  "about.features.progressive.description":
+    "Les leçons se débloquent séquentiellement. Complétez chaque unité et chapitre pour débloquer le suivant. Progressez à votre rythme et profitez de votre succès.",
+  "about.features.tracking.title": "Suivi Détaillé des Progrès",
+  "about.features.tracking.description":
+    "Voyez le pourcentage d'achèvement de chaque leçon, suivez votre leçon active et visualisez votre parcours d'apprentissage. Gardez toujours votre motivation élevée !",
+
+  // Footer
+  "about.footer.copyright": "© {year} TULU. Tous droits réservés.",
+  "about.footer.terms": "Conditions d'Utilisation",
+  "about.footer.contact": "Contactez-Nous",
+  "about.footer.about": "À Propos de Nous",
 } as const;

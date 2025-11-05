@@ -1,0 +1,23 @@
+{
+  "name": "iman-ahlak-import",
+  "version": "1.0.0",
+  "description": "İman & Ahlak programı için MongoDB bulk import script'i",
+  "type": "module",
+  "main": "import-iman-ahlak.js",
+  "scripts": {
+    "import": "node import-iman-ahlak.js",
+    "start": "node import-iman-ahlak.js"
+  },
+  "keywords": [
+    "mongodb",
+    "import",
+    "iman",
+    "ahlak",
+    "education"
+  ],
+  "author": "TULU Team",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^8.0.0"
+  }
+}

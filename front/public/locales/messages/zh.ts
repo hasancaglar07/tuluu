@@ -655,4 +655,53 @@ export default {
   "learn.empty": "没有找到课程",
   "learn.error": "加载课程时出错",
   "learn.loading": "正在加载课程...",
+
+  // About Page
+  "about.title": "关于我们",
+  "about.mascot.alt": "TULU 吉祥物",
+  
+  "about.mission.title": "我们的使命",
+  "about.mission.paragraph1":
+    "在 TULU，我们相信语言学习应该是一次激动人心的旅程，而不是繁重的任务。我们的使命是通过游戏化、互动课程和个性化学习体验，让语言学习变得易于获取、引人入胜且有效。",
+  "about.mission.paragraph2":
+    "我们设想一个世界，语言障碍成为连接文化和促进全球理解的机会。通过结合尖端技术和经过验证的教学方法，我们赋予每个人实现学习目标的能力。",
+  "about.mission.cta": "开始您的旅程",
+  
+  "about.howItWorks.title": "运作方式",
+  "about.howItWorks.step1.title": "1. 选择您喜欢的语言",
+  "about.howItWorks.step1.description":
+    "从各种语言中选择并设置您当前的熟练程度。我们的平台根据您的需求进行调整。",
+  "about.howItWorks.step2.title": "2. 通过互动课程学习",
+  "about.howItWorks.step2.description":
+    "完成引人入胜的练习，练习真实生活场景，并获得即时反馈。每节课程都旨在培养您的技能。",
+  "about.howItWorks.step3.title": "3. 跟踪您的进度",
+  "about.howItWorks.step3.description":
+    "通过详细的分析监控您的成就，赚取 XP 积分，并在排行榜上与其他学习者竞争。",
+  
+  "about.story.title": "我们的故事",
+  "about.story.paragraph1":
+    "TULU 由一群热爱语言的人创立，他们希望让语言学习对每个人都更加容易获得。我们看到传统方法往往枯燥且效果不佳，因此决定创建更好的解决方案。",
+  "about.story.paragraph2":
+    "经过多年的研究和开发，我们打造了一个将游戏的兴奋与科学验证的学习技术相结合的平台。我们的方法提供经过验证的结果，同时使过程变得有趣和有益。",
+  "about.story.paragraph3":
+    "今天，我们自豪地为全球成千上万的学习者提供服务，帮助他们实现语言学习目标。每一天，我们都在不断创新和改进，确保我们的用户获得最佳体验。",
+  
+  "about.community.title": "加入我们的社区",
+  "about.community.description":
+    "成为来自世界各地数百万学习者的一部分。一起练习，分享经验，互相帮助在语言学习之旅中取得成功。",
+  
+  "about.features.title": "游戏化功能",
+  "about.features.xp.title": "赚取 XP 积分",
+  "about.features.xp.description": "完成课程和练习时获得经验值",
+  "about.features.streaks.title": "保持连续记录",
+  "about.features.streaks.description": "建立每日连续记录以保持一致练习并获得奖励",
+  "about.features.leaderboards.title": "在排行榜上竞争",
+  "about.features.leaderboards.description": "与朋友和全球学习者在排名中竞争",
+  "about.features.achievements.title": "解锁成就",
+  "about.features.achievements.description": "达到里程碑并获得特殊徽章和奖励",
+  
+  "about.footer.description":
+    "使用 TULU，语言学习是一段每个单词都有回报的旅程。",
+  "about.footer.cta": "立即开始",
+  "about.footer.copyright": "© {year} TULU。保留所有权利。",
 } as const;

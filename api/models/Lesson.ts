@@ -59,7 +59,7 @@ const LessonSchema = new Schema(
     imageUrl: {
       type: String,
       trim: true,
-      maxlength: 100,
+      maxlength: 500,
       default: "",
     },
     order: {

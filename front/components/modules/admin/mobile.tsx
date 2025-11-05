@@ -13,6 +13,7 @@ import {
   Star,
   CreditCard,
 } from "lucide-react";
+import { useIntl, FormattedMessage } from "react-intl";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,62 +22,71 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 
-// Navigation items
-const navItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: <Home className="h-5 w-5" />,
-    exact: true,
-  },
-  {
-    title: "Utilisateurs",
-    href: "/admin/users",
-    icon: <Users className="h-5 w-5" />,
-    subItems: [
-      { title: "Liste des utilisateurs", href: "/admin/users" },
-      { title: "Ajouter un utilisateur", href: "/admin/users/create" },
-      { title: "Rôles et permissions", href: "/admin/users/roles" },
-    ],
-  },
-  {
-    title: "Leçons",
-    href: "/admin/lessons",
-    icon: <BookOpen className="h-5 w-5" />,
-    subItems: [
-      { title: "Liste des leçons", href: "/admin/lessons" },
-      { title: "Ajouter une leçon", href: "/admin/lessons/create" },
-      { title: "Chapitres", href: "/admin/lessons/chapters" },
-      { title: "Unités", href: "/admin/lessons/units" },
-    ],
-  },
-  {
-    title: "Quêtes",
-    href: "/admin/quests",
-    icon: <Star className="h-5 w-5" />,
-    subItems: [
-      { title: "Liste des quêtes", href: "/admin/quests" },
-      { title: "Ajouter une quête", href: "/admin/quests/create" },
-    ],
-  },
-  {
-    title: "Paiements",
-    href: "/admin/payments",
-    icon: <CreditCard className="h-5 w-5" />,
-    subItems: [
-      { title: "Transactions", href: "/admin/payments" },
-      { title: "Abonnements", href: "/admin/payments/subscriptions" },
-      { title: "Paramètres", href: "/admin/payments/settings" },
-    ],
-  },
-  {
-    title: "Paramètres",
-    href: "/admin/settings",
-    icon: <Settings className="h-5 w-5" />,
-  },
-];
 export default function Mobile() {
   const pathname = usePathname();
+  const intl = useIntl();
+  
+  // Navigation items with i18n
+  const navItems = [
+    {
+      titleKey: "admin.nav.dashboard",
+      title: intl.formatMessage({ id: "admin.nav.dashboard", defaultMessage: "Dashboard" }),
+      href: "/admin",
+      icon: <Home className="h-5 w-5" />,
+      exact: true,
+    },
+    {
+      titleKey: "admin.nav.users",
+      title: intl.formatMessage({ id: "admin.nav.users", defaultMessage: "Users" }),
+      href: "/admin/users",
+      icon: <Users className="h-5 w-5" />,
+      subItems: [
+        { titleKey: "admin.nav.users.list", title: intl.formatMessage({ id: "admin.nav.users.list", defaultMessage: "User List" }), href: "/admin/users" },
+        { titleKey: "admin.nav.users.add", title: intl.formatMessage({ id: "admin.nav.users.add", defaultMessage: "Add User" }), href: "/admin/users/create" },
+        { titleKey: "admin.nav.users.roles", title: intl.formatMessage({ id: "admin.nav.users.roles", defaultMessage: "Roles & Permissions" }), href: "/admin/users/roles" },
+      ],
+    },
+    {
+      titleKey: "admin.nav.lessons",
+      title: intl.formatMessage({ id: "admin.nav.lessons", defaultMessage: "Lessons" }),
+      href: "/admin/lessons",
+      icon: <BookOpen className="h-5 w-5" />,
+      subItems: [
+        { titleKey: "admin.nav.lessons.list", title: intl.formatMessage({ id: "admin.nav.lessons.list", defaultMessage: "Lesson List" }), href: "/admin/lessons" },
+        { titleKey: "admin.nav.lessons.add", title: intl.formatMessage({ id: "admin.nav.lessons.add", defaultMessage: "Add Lesson" }), href: "/admin/lessons/create" },
+        { titleKey: "admin.nav.lessons.chapters", title: intl.formatMessage({ id: "admin.nav.lessons.chapters", defaultMessage: "Chapters" }), href: "/admin/lessons/chapters" },
+        { titleKey: "admin.nav.lessons.units", title: intl.formatMessage({ id: "admin.nav.lessons.units", defaultMessage: "Units" }), href: "/admin/lessons/units" },
+      ],
+    },
+    {
+      titleKey: "admin.nav.quests",
+      title: intl.formatMessage({ id: "admin.nav.quests", defaultMessage: "Quests" }),
+      href: "/admin/quests",
+      icon: <Star className="h-5 w-5" />,
+      subItems: [
+        { titleKey: "admin.nav.quests.list", title: intl.formatMessage({ id: "admin.nav.quests.list", defaultMessage: "Quest List" }), href: "/admin/quests" },
+        { titleKey: "admin.nav.quests.add", title: intl.formatMessage({ id: "admin.nav.quests.add", defaultMessage: "Add Quest" }), href: "/admin/quests/create" },
+      ],
+    },
+    {
+      titleKey: "admin.nav.payments",
+      title: intl.formatMessage({ id: "admin.nav.payments", defaultMessage: "Payments" }),
+      href: "/admin/payments",
+      icon: <CreditCard className="h-5 w-5" />,
+      subItems: [
+        { titleKey: "admin.nav.payments.transactions", title: intl.formatMessage({ id: "admin.nav.payments.transactions", defaultMessage: "Transactions" }), href: "/admin/payments" },
+        { titleKey: "admin.nav.payments.subscriptions", title: intl.formatMessage({ id: "admin.nav.payments.subscriptions", defaultMessage: "Subscriptions" }), href: "/admin/payments/subscriptions" },
+        { titleKey: "admin.nav.payments.settings", title: intl.formatMessage({ id: "admin.nav.payments.settings", defaultMessage: "Settings" }), href: "/admin/payments/settings" },
+      ],
+    },
+    {
+      titleKey: "admin.nav.settings",
+      title: intl.formatMessage({ id: "admin.nav.settings", defaultMessage: "Settings" }),
+      href: "/admin/settings",
+      icon: <Settings className="h-5 w-5" />,
+    },
+  ];
+  
   // Expandable nav items state
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
     {}
@@ -247,7 +257,9 @@ export default function Mobile() {
                   size="sm"
                 >
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Paramètres</span>
+                  <span>
+                    <FormattedMessage id="admin.nav.settings" defaultMessage="Settings" />
+                  </span>
                 </Button>
                 <Button
                   variant="outline"
@@ -255,7 +267,9 @@ export default function Mobile() {
                   size="sm"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Déconnexion</span>
+                  <span>
+                    <FormattedMessage id="admin.nav.logout" defaultMessage="Logout" />
+                  </span>
                 </Button>
               </div>
             </div>

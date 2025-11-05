@@ -1,6 +1,6 @@
 "use client";
 
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,29 +38,7 @@ export function LanguagesGridView({
   onEditLanguage,
   onDeleteLanguage,
 }: LanguagesGridViewProps) {
-  // Helper function to get language details by ID
-  const getLanguageById = (id: string) => {
-    const availableLanguages = [
-      { _id: "fr", name: "French", nativeName: "Français", flag: "🇫🇷" },
-      { _id: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
-      { _id: "es", name: "Spanish", nativeName: "Español", flag: "🇪🇸" },
-      { _id: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪" },
-      { _id: "it", name: "Italian", nativeName: "Italiano", flag: "🇮🇹" },
-      { _id: "pt", name: "Portuguese", nativeName: "Português", flag: "🇵🇹" },
-      { _id: "ja", name: "Japanese", nativeName: "日本語", flag: "🇯🇵" },
-      { _id: "zh", name: "Chinese", nativeName: "中文", flag: "🇨🇳" },
-      { _id: "ko", name: "Korean", nativeName: "한국어", flag: "🇰🇷" },
-      { _id: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺" },
-      { _id: "ar", name: "Arabic", nativeName: "العربية", flag: "🇸🇦" },
-    ];
-
-    return (
-      availableLanguages.find((lang) => lang._id === id) || {
-        name: id,
-        flag: "🌐",
-      }
-    );
-  };
+  const intl = useIntl();
 
   return (
     <>
@@ -68,101 +46,190 @@ export function LanguagesGridView({
         <h2 className="text-xl font-bold">
           <FormattedMessage
             id="admin.lessons.tabs.languages"
-            defaultMessage="Languages"
+            defaultMessage="Programs"
           />
         </h2>
         <Button onClick={onAddLanguage}>
           <Globe className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addLanguage"
-            defaultMessage="Add Language"
+            defaultMessage="Add Program"
           />
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {languages.map((language) => (
-          <Card key={language._id}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-2xl">{language.flag}</span>
-                {language.name}
-              </CardTitle>
-              <CardDescription>{language.nativeName}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    <FormattedMessage
-                      id="admin.lessons.baseLanguage"
-                      defaultMessage="Base Language:"
-                    />
-                  </span>
-                  <span className="flex items-center">
-                    {getLanguageById(language.baseLanguage).flag}{" "}
-                    {getLanguageById(language.baseLanguage).name}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    <FormattedMessage
-                      id="admin.lessons.status.label"
-                      defaultMessage="Status:"
-                    />
-                  </span>
-                  <Badge variant={language.isActive ? "default" : "secondary"}>
-                    {language.isActive ? (
-                      <FormattedMessage
-                        id="admin.lessons.status.active"
-                        defaultMessage="Active"
-                      />
-                    ) : (
-                      <FormattedMessage
-                        id="admin.lessons.status.inactive"
-                        defaultMessage="Inactive"
-                      />
+        {languages.map((language) => {
+          const themeMetadata = language.themeMetadata ?? {
+            islamicContent: false,
+            ageGroup: "all",
+            moralValues: [],
+            educationalFocus: "",
+            difficultyLevel: "beginner",
+          };
+
+          const moralValues = themeMetadata.moralValues ?? [];
+
+          return (
+            <Card key={language._id}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="text-2xl">{language.flag}</span>
+                  {language.name}
+                </CardTitle>
+                <CardDescription>{language.nativeName}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="default">
+                      {intl.formatMessage({
+                        id: `category.${language.category || "undefined"}`,
+                        defaultMessage:
+                          language.category ||
+                          intl.formatMessage({
+                            id: "category.undefined",
+                            defaultMessage: "Other",
+                          }),
+                      })}
+                    </Badge>
+                    {themeMetadata.islamicContent && (
+                      <Badge variant="secondary">
+                        <FormattedMessage
+                          id="admin.lessons.programCard.spiritual"
+                          defaultMessage="Includes spiritual storytelling"
+                        />
+                      </Badge>
                     )}
-                  </Badge>
+                    <Badge variant="outline">
+                      {intl.formatMessage({
+                        id: `difficulty.${themeMetadata.difficultyLevel}`,
+                        defaultMessage: themeMetadata.difficultyLevel,
+                      })}
+                    </Badge>
+                  </div>
+
+                  <div className="grid gap-2 text-sm text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>
+                        <FormattedMessage
+                          id="admin.lessons.programCard.age"
+                          defaultMessage="Age Group"
+                        />
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {intl.formatMessage({
+                          id: `ageGroup.${themeMetadata.ageGroup}`,
+                          defaultMessage: themeMetadata.ageGroup,
+                        })}
+                      </span>
+                    </div>
+                    {themeMetadata.educationalFocus && (
+                      <div className="flex justify-between">
+                        <span>
+                          <FormattedMessage
+                            id="admin.lessons.programCard.focus"
+                            defaultMessage="Learning Focus"
+                          />
+                        </span>
+                        <span className="font-medium text-foreground text-right">
+                          {themeMetadata.educationalFocus}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>
+                        <FormattedMessage
+                          id="admin.lessons.status.label"
+                          defaultMessage="Status:"
+                        />
+                      </span>
+                      <Badge
+                        variant={language.isActive ? "default" : "secondary"}
+                      >
+                        {language.isActive ? (
+                          <FormattedMessage
+                            id="admin.lessons.status.active"
+                            defaultMessage="Active"
+                          />
+                        ) : (
+                          <FormattedMessage
+                            id="admin.lessons.status.inactive"
+                            defaultMessage="Inactive"
+                          />
+                        )}
+                      </Badge>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">
+                        <FormattedMessage
+                          id="admin.lessons.programCard.values"
+                          defaultMessage="Values"
+                        />
+                      </span>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {moralValues.length === 0 ? (
+                          <Badge variant="outline" className="text-xs">
+                            <FormattedMessage
+                              id="admin.lessons.no"
+                              defaultMessage="No"
+                            />
+                          </Badge>
+                        ) : (
+                          moralValues.map((value) => (
+                            <Badge key={value} variant="secondary" className="text-xs">
+                              {intl.formatMessage({
+                                id: `valuePoints.${value}`,
+                                defaultMessage: value,
+                              })}
+                            </Badge>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>
+                        <FormattedMessage
+                          id="admin.lessons.chapters"
+                          defaultMessage="Chapters:"
+                        />
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {language.chapters.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEditLanguage(language)}
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      <FormattedMessage
+                        id="admin.lessons.edit"
+                        defaultMessage="Edit"
+                      />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onDeleteLanguage(language)}
+                      disabled={languages.length === 1}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <FormattedMessage
+                        id="admin.lessons.delete"
+                        defaultMessage="Delete"
+                      />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    <FormattedMessage
-                      id="admin.lessons.chapters"
-                      defaultMessage="Chapters:"
-                    />
-                  </span>
-                  <span>{language.chapters.length}</span>
-                </div>
-                <div className="flex justify-between mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onEditLanguage(language)}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    <FormattedMessage
-                      id="admin.lessons.edit"
-                      defaultMessage="Edit"
-                    />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onDeleteLanguage(language)}
-                    disabled={languages.length === 1}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    <FormattedMessage
-                      id="admin.lessons.delete"
-                      defaultMessage="Delete"
-                    />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </>
   );

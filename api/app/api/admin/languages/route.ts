@@ -10,6 +10,7 @@ import UserProgress from "@/models/UserProgress";
 import User from "@/models/User";
 import Exercise from "@/models/Exercise";
 import { auth } from "@clerk/nextjs/server";
+import { MongoServerError } from "mongodb";
 
 /**
  * @swagger
@@ -401,6 +402,19 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
+    const duplicateKey =
+      (error as { code?: number })?.code === 11000 ||
+      (error instanceof MongoServerError && error.code === 11000);
+
+    if (duplicateKey) {
+      return NextResponse.json(
+        {
+          message:
+            "This programme already exists for the selected site language.",
+        },
+        { status: 400 }
+      );
+    }
     console.error("Error creating language:", error);
     return NextResponse.json(
       { error: "Failed to create language" },

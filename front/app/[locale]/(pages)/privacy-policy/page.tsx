@@ -10,137 +10,134 @@ export default function PrivacyPolicyPage() {
       <Container className="py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-8">
-            Privacy Policy
+            Gizlilik Politikası
           </h1>
 
           <div className="bg-gray-50 p-4 rounded-lg mb-8">
-            <p className="text-gray-600">Last Updated: May 1, 2025</p>
+            <p className="text-gray-600">Son Güncelleme: 1 Mayıs 2025</p>
           </div>
 
           <div className="prose prose-lg max-w-none">
             <p>
-              At TULU, we take your privacy seriously. This Privacy Policy
-              explains how we collect, use, disclose, and safeguard your
-              information when you use our language learning application and
-              website.
+              TULU'da gizliliğinizi ciddiye alıyoruz. Bu Gizlilik Politikası, 
+              dil öğrenme uygulamamızı ve web sitemizi kullandığınızda bilgilerinizi 
+              nasıl topladığımızı, kullandığımızı, ifşa ettiğimizi ve koruduğumuzu açıklar.
             </p>
 
             <div className="space-y-8 mt-10">
-              <h4>Information We Collect</h4>
+              <h4>Topladığımız Bilgiler</h4>
               <p>
-                We collect information that you provide directly to us when you:
+                Aşağıdaki durumlarda doğrudan bize sağladığınız bilgileri topluyoruz:
               </p>
               <ul>
-                <li>Create an account</li>
-                <li>Complete your profile</li>
-                <li>Use our language learning features</li>
-                <li>Participate in quizzes or tests</li>
-                <li>Make purchases</li>
-                <li>Contact customer support</li>
-                <li>Respond to surveys or promotions</li>
+                <li>Hesap oluşturduğunuzda</li>
+                <li>Profilinizi tamamladığınızda</li>
+                <li>Dil öğrenme özelliklerimizi kullandığınızda</li>
+                <li>Testlere veya sınavlara katıldığınızda</li>
+                <li>Satın alma yaptığınızda</li>
+                <li>Müşteri desteğiyle iletişime geçtiğinizde</li>
+                <li>Anketlere veya promosyonlara yanıt verdiğinizde</li>
               </ul>
 
-              <p>This information may include:</p>
+              <p>Bu bilgiler şunları içerebilir:</p>
               <ul>
-                <li>Name, email address, and password</li>
-                <li>Profile information (such as profile picture)</li>
-                <li>Language preferences and learning goals</li>
+                <li>Ad, e-posta adresi ve şifre</li>
+                <li>Profil bilgileri (profil resmi gibi)</li>
+                <li>Dil tercihleri ve öğrenme hedefleri</li>
                 <li>
-                  Payment information (processed by our payment providers)
+                  Ödeme bilgileri (ödeme sağlayıcılarımız tarafından işlenir)
                 </li>
-                <li>Your progress and performance data</li>
-                <li>Device information and usage data</li>
+                <li>İlerleme ve performans verileriniz</li>
+                <li>Cihaz bilgileri ve kullanım verileri</li>
               </ul>
 
-              <h4>How We Use Your Information</h4>
-              <p>We use the information we collect to:</p>
+              <h4>Bilgilerinizi Nasıl Kullanıyoruz</h4>
+              <p>Topladığımız bilgileri şu amaçlarla kullanıyoruz:</p>
               <ul>
-                <li>Provide, maintain, and improve our services</li>
-                <li>Create and manage your account</li>
-                <li>Process transactions</li>
+                <li>Hizmetlerimizi sağlamak, sürdürmek ve geliştirmek</li>
+                <li>Hesabınızı oluşturmak ve yönetmek</li>
+                <li>İşlemleri gerçekleştirmek</li>
                 <li>
-                  Track your progress and personalize your learning experience
+                  İlerlemenizi takip etmek ve öğrenme deneyiminizi kişiselleştirmek
                 </li>
                 <li>
-                  Send you technical notices, updates, and support messages
+                  Size teknik bildirimler, güncellemeler ve destek mesajları göndermek
                 </li>
-                <li>Respond to your comments and questions</li>
-                <li>Develop new features and services</li>
-                <li>Monitor and analyze usage patterns</li>
+                <li>Yorumlarınıza ve sorularınıza yanıt vermek</li>
+                <li>Yeni özellikler ve hizmetler geliştirmek</li>
+                <li>Kullanım modellerini izlemek ve analiz etmek</li>
                 <li>
-                  Protect against, identify, and prevent fraud and other illegal
-                  activity
+                  Dolandırıcılık ve diğer yasadışı faaliyetlere karşı korumak, 
+                  tanımlamak ve önlemek
                 </li>
               </ul>
 
-              <h4>Sharing Your Information</h4>
-              <p>We may share your information with:</p>
+              <h4>Bilgilerinizi Paylaşma</h4>
+              <p>Bilgilerinizi şu kişilerle paylaşabiliriz:</p>
               <ul>
-                <li>Service providers who perform services on our behalf</li>
+                <li>Bizim adımıza hizmet sunan hizmet sağlayıcılar</li>
                 <li>
-                  Partners with whom we offer co-branded services or promotions
+                  Ortak markalı hizmetler veya promosyonlar sunduğumuz iş ortakları
                 </li>
                 <li>
-                  Other users (such as for leaderboards, but limited to username
-                  and score)
+                  Diğer kullanıcılar (lider tabloları gibi, ancak kullanıcı adı 
+                  ve puanla sınırlı)
                 </li>
                 <li>
-                  In response to legal process or when we believe it&apos;s
-                  necessary to protect our rights
+                  Yasal süreçlere yanıt olarak veya haklarımızı korumak için 
+                  gerekli olduğuna inandığımızda
                 </li>
-                <li>In connection with a merger, sale, or acquisition</li>
+                <li>Birleşme, satış veya devralma ile bağlantılı olarak</li>
               </ul>
 
-              <h4>Your Choices</h4>
-              <p>You can manage your information and privacy preferences by:</p>
+              <h4>Seçenekleriniz</h4>
+              <p>Bilgilerinizi ve gizlilik tercihlerinizi şu yollarla yönetebilirsiniz:</p>
               <ul>
-                <li>Updating your account profile</li>
-                <li>Adjusting notification settings</li>
-                <li>Opting out of promotional communications</li>
-                <li>Requesting deletion of your account</li>
+                <li>Hesap profilinizi güncelleme</li>
+                <li>Bildirim ayarlarını düzenleme</li>
+                <li>Promosyon iletişimlerinden çıkma</li>
+                <li>Hesabınızın silinmesini talep etme</li>
               </ul>
 
-              <h4>Data Security</h4>
+              <h4>Veri Güvenliği</h4>
               <p>
-                We implement appropriate technical and organizational measures
-                to protect your personal information. However, no method of
-                transmission over the Internet or electronic storage is 100%
-                secure, so we cannot guarantee absolute security.
+                Kişisel bilgilerinizi korumak için uygun teknik ve organizasyonel 
+                önlemler uyguluyoruz. Ancak, İnternet üzerinden iletim veya elektronik 
+                depolama yöntemi %100 güvenli değildir, bu nedenle mutlak güvenliği 
+                garanti edemeyiz.
               </p>
 
-              <h4>Children&apos;s Privacy</h4>
+              <h4>Çocukların Gizliliği</h4>
               <p>
-                Our services are not directed to children under 13. If we learn
-                we have collected personal information from a child under 13, we
-                will delete that information as quickly as possible. If you
-                believe a child under 13 has provided us with personal
-                information, please contact us.
+                Hizmetlerimiz 13 yaşın altındaki çocuklara yönelik değildir. 13 yaşın 
+                altındaki bir çocuktan kişisel bilgi topladığımızı öğrenirsek, bu bilgiyi 
+                mümkün olan en kısa sürede sileriz. 13 yaşın altındaki bir çocuğun bize 
+                kişisel bilgi verdiğine inanıyorsanız, lütfen bizimle iletişime geçin.
               </p>
 
-              <h4>International Data Transfers</h4>
+              <h4>Uluslararası Veri Transferleri</h4>
               <p>
-                Your information may be transferred to, and processed in,
-                countries other than the country in which you reside. These
-                countries may have data protection laws that are different from
-                the laws of your country.
+                Bilgileriniz, ikamet ettiğiniz ülke dışındaki ülkelere aktarılabilir 
+                ve işlenebilir. Bu ülkelerin veri koruma yasaları, ülkenizin yasalarından 
+                farklı olabilir.
               </p>
 
-              <h4>Changes to This Policy</h4>
+              <h4>Politikadaki Değişiklikler</h4>
               <p>
-                We may update this Privacy Policy from time to time. We will
-                notify you of any changes by posting the new Privacy Policy on
-                this page and updating the -Last Updated- date.
+                Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Yeni Gizlilik 
+                Politikasını bu sayfada yayınlayarak ve &quot;Son Güncelleme&quot; 
+                tarihini güncelleyerek sizi değişikliklerden haberdar edeceğiz.
               </p>
 
-              <h4>Contact Us</h4>
+              <h4>Bize Ulaşın</h4>
               <p>
-                If you have any questions about this Privacy Policy, please
-                contact us at:
+                Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, 
+                lütfen bizimle iletişime geçin:
               </p>
               <p>
-                <strong>Email:</strong> privacy@tulu.com
+                <strong>E-posta:</strong> privacy@tulu.com
                 <br />
-                <strong>Address:</strong> 123 Language Lane, San Francisco, CA
+                <strong>Adres:</strong> 123 Language Lane, San Francisco, CA
                 94103
               </p>
             </div>
@@ -154,16 +151,16 @@ export default function PrivacyPolicyPage() {
             <p>© {new Date().getFullYear()} TULU. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-4">
               <LocaleLink href="/terms" className="hover:underline">
-                Terms of Service
+                Kullanım Koşulları
               </LocaleLink>
               <LocaleLink
                 href="https://www.patreon.com/messages/8b25e025c56c4d47a903cd9b02049c63?mode=campaign&tab=chats"
                 className="hover:underline"
               >
-                Contact Us
+                Bize Ulaşın
               </LocaleLink>
               <LocaleLink href="/about" className="hover:underline">
-                About Us
+                Hakkımızda
               </LocaleLink>
             </div>
           </div>

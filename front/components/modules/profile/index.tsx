@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -56,6 +57,7 @@ type Settings = {
 export default function Profile() {
   const router = useLocalizedRouter();
   const userData = useSelector((state: IRootState) => state.user);
+  const intl = useIntl();
 
   const { user } = useUser();
   const primaryEmail = user?.primaryEmailAddressId
@@ -96,14 +98,22 @@ export default function Profile() {
   const handleLogout = async () => {
     setIsLoading(true);
     await signOut();
-    toast.success("You logged out", {
-      description: "Catch you later, alligator! 🐶​",
-      // Optional: custom styling to make it look like a variant
-      className: "bg-warning-500", // you can define custom classes for different variants (like success, error, etc.)
-      closeButton: true, // Optional: Adds a close button
-      position: "top-center", // Optional: Position the toast (can be top-right, top-center, etc.)
-      duration: 10000, // Optional: auto close after 5 seconds
-    });
+    toast.success(
+      intl.formatMessage({
+        id: "toast.logout.success",
+        defaultMessage: "You logged out",
+      }),
+      {
+        description: intl.formatMessage({
+          id: "toast.logout.description",
+          defaultMessage: "Catch you later, alligator! 🐶​",
+        }),
+        className: "bg-warning-500",
+        closeButton: true,
+        position: "top-center",
+        duration: 10000,
+      }
+    );
 
     setShowLogoutDialog(false);
     setIsLoading(false);
@@ -112,7 +122,19 @@ export default function Profile() {
 
   // Handle account deletion
   const handleDeleteAccount = () => {
-    if (deleteConfirmation === "SUPPRIMER") {
+    if (deleteConfirmation === "DELETE") {
+      toast.warning(
+        intl.formatMessage({
+          id: "toast.delete.warning",
+          defaultMessage: "Account deleted",
+        }),
+        {
+          description: intl.formatMessage({
+            id: "toast.delete.description",
+            defaultMessage: "Your journey ends here... but we'll miss you! 💔",
+          }),
+        }
+      );
       setShowDeleteDialog(false);
       router.push("/");
     }
@@ -145,7 +167,9 @@ export default function Profile() {
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <h1 className="text-xl font-bold">Profil</h1>
+          <h1 className="text-xl font-bold">
+            <FormattedMessage id="profile.title" defaultMessage="Profile" />
+          </h1>
         </div>
       </div>
 
@@ -169,10 +193,10 @@ export default function Profile() {
 
             <div>
               <h2 className="font-bold text-xl">
-                {user?.username || "Utilisateur"}
+                {user?.username || intl.formatMessage({ id: "profile.user.default", defaultMessage: "User" })}
               </h2>
               <p className="text-gray-600">
-                {primaryEmail || "utilisateur@example.com"}
+                {primaryEmail || "user@example.com"}
               </p>
               <div className="flex items-center gap-4 mt-1">
                 <div className="flex items-center gap-1 text-sm">
@@ -181,11 +205,23 @@ export default function Profile() {
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <span className="text-orange-500">🔥</span>
-                  <span className="font-medium">{userData.streak} jours</span>
+                  <span className="font-medium">
+                    <FormattedMessage
+                      id="profile.streak.days"
+                      defaultMessage="{days} days"
+                      values={{ days: userData.streak }}
+                    />
+                  </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Heart className="h-4 w-4 text-red-500" fill="currentColor" />
-                  <span className="font-medium">{userData.hearts} cœurs</span>
+                  <span className="font-medium">
+                    <FormattedMessage
+                      id="profile.hearts.count"
+                      defaultMessage="{hearts} hearts"
+                      values={{ hearts: userData.hearts }}
+                    />
+                  </span>
                 </div>
               </div>
             </div>
@@ -196,7 +232,9 @@ export default function Profile() {
               whileHover={{ scale: 1.02 }}
               className="p-4 border border-gray-200 rounded-xl bg-blue-50"
             >
-              <h3 className="font-bold mb-1">Niveau</h3>
+              <h3 className="font-bold mb-1">
+                <FormattedMessage id="profile.stats.level" defaultMessage="Level" />
+              </h3>
               <div className="text-2xl font-bold text-blue-600">
                 {Math.floor(userData.xp / 1000) + 1}
               </div>
@@ -206,9 +244,10 @@ export default function Profile() {
               whileHover={{ scale: 1.02 }}
               className="p-4 border border-gray-200 rounded-xl bg-green-50"
             >
-              <h3 className="font-bold mb-1">Leçons complétées</h3>
+              <h3 className="font-bold mb-1">
+                <FormattedMessage id="profile.stats.completed" defaultMessage="Completed Lessons" />
+              </h3>
               <div className="text-2xl font-bold text-green-600">
-                {/* This would come from progress state in a real app */}
                 {Math.floor(userData.xp / 100)}
               </div>
             </m.div>
@@ -231,15 +270,19 @@ export default function Profile() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Bell className="h-5 w-5 text-blue-500" />
-              <h2 className="font-bold text-lg">Notifications</h2>
+              <h2 className="font-bold text-lg">
+                <FormattedMessage id="settings.notifications.title" defaultMessage="Notifications" />
+              </h2>
             </div>
 
             <div className="space-y-4 pl-7">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Rappel quotidien</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.notifications.daily.title" defaultMessage="Daily Reminder" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Recevez un rappel pour pratiquer chaque jour
+                    <FormattedMessage id="settings.notifications.daily.description" defaultMessage="Receive a reminder to practice each day" />
                   </p>
                 </div>
                 <Switch
@@ -252,9 +295,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Progrès hebdomadaire</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.notifications.weekly.title" defaultMessage="Weekly Progress" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Recevez un résumé de vos progrès chaque semaine
+                    <FormattedMessage id="settings.notifications.weekly.description" defaultMessage="Receive a summary of your progress each week" />
                   </p>
                 </div>
                 <Switch
@@ -267,9 +312,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Nouvelles fonctionnalités</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.notifications.features.title" defaultMessage="New Features" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Soyez informé des nouvelles fonctionnalités
+                    <FormattedMessage id="settings.notifications.features.description" defaultMessage="Be informed about new features" />
                   </p>
                 </div>
                 <Switch
@@ -282,9 +329,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Activité des amis</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.notifications.friends.title" defaultMessage="Friend Activity" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Recevez des notifications sur l&apos;activité de vos amis
+                    <FormattedMessage id="settings.notifications.friends.description" defaultMessage="Receive notifications about your friends' activity" />
                   </p>
                 </div>
                 <Switch
@@ -303,15 +352,19 @@ export default function Profile() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Settings className="h-5 w-5 text-green-500" />
-              <h2 className="font-bold text-lg">Accessibilité</h2>
+              <h2 className="font-bold text-lg">
+                <FormattedMessage id="settings.accessibility.title" defaultMessage="Accessibility" />
+              </h2>
             </div>
 
             <div className="space-y-4 pl-7">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Contraste élevé</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.accessibility.contrast.title" defaultMessage="High Contrast" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Augmente le contraste pour une meilleure lisibilité
+                    <FormattedMessage id="settings.accessibility.contrast.description" defaultMessage="Increases contrast for better readability" />
                   </p>
                 </div>
                 <Switch
@@ -324,9 +377,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Texte plus grand</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.accessibility.text.title" defaultMessage="Larger Text" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Augmente la taille du texte dans l&paos;application
+                    <FormattedMessage id="settings.accessibility.text.description" defaultMessage="Increases text size throughout the app" />
                   </p>
                 </div>
                 <Switch
@@ -339,9 +394,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Réduire les animations</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.accessibility.animations.title" defaultMessage="Reduce Animations" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Réduit ou désactive les animations
+                    <FormattedMessage id="settings.accessibility.animations.description" defaultMessage="Reduces or disables animations" />
                   </p>
                 </div>
                 <Switch
@@ -355,10 +412,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    Compatibilité lecteur d&apos;écran
+                    <FormattedMessage id="settings.accessibility.screen.title" defaultMessage="Screen Reader Compatibility" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    Optimise l&apos;application pour les lecteurs d&apos;écran
+                    <FormattedMessage id="settings.accessibility.screen.description" defaultMessage="Optimizes the app for screen readers" />
                   </p>
                 </div>
                 <Switch
@@ -377,15 +434,19 @@ export default function Profile() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Globe className="h-5 w-5 text-purple-500" />
-              <h2 className="font-bold text-lg">Préférences</h2>
+              <h2 className="font-bold text-lg">
+                <FormattedMessage id="settings.preferences.title" defaultMessage="Preferences" />
+              </h2>
             </div>
 
             <div className="space-y-4 pl-7">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Mode sombre</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.preferences.dark.title" defaultMessage="Dark Mode" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Utiliser le thème sombre
+                    <FormattedMessage id="settings.preferences.dark.description" defaultMessage="Use dark theme" />
                   </p>
                 </div>
                 <Switch
@@ -398,9 +459,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Effets sonores</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.preferences.sound.title" defaultMessage="Sound Effects" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Activer les effets sonores
+                    <FormattedMessage id="settings.preferences.sound.description" defaultMessage="Enable sound effects" />
                   </p>
                 </div>
                 <Switch
@@ -413,9 +476,11 @@ export default function Profile() {
 
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Voix off</h3>
+                  <h3 className="font-medium">
+                    <FormattedMessage id="settings.preferences.voice.title" defaultMessage="Voice Over" />
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    Activer la lecture audio des phrases
+                    <FormattedMessage id="settings.preferences.voice.description" defaultMessage="Enable audio reading of phrases" />
                   </p>
                 </div>
                 <Switch
@@ -434,7 +499,9 @@ export default function Profile() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <User className="h-5 w-5 text-red-500" />
-              <h2 className="font-bold text-lg">Compte</h2>
+              <h2 className="font-bold text-lg">
+                <FormattedMessage id="settings.danger.title" defaultMessage="Danger zone" />
+              </h2>
             </div>
 
             <div className="flex justify-between w-full">
@@ -446,7 +513,9 @@ export default function Profile() {
               >
                 <div role="button" className="flex items-center gap-2">
                   <LogOut className="h-4 w-4 text-gray-500" />
-                  <span>Se déconnecter</span>
+                  <span>
+                    <FormattedMessage id="settings.logout.button" defaultMessage="Log Out" />
+                  </span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </Button>
@@ -459,7 +528,9 @@ export default function Profile() {
               >
                 <div className="flex items-center gap-2">
                   <Trash2 className="h-4 w-4" />
-                  <span>Supprimer mon compte</span>
+                  <span>
+                    <FormattedMessage id="settings.delete.button" defaultMessage="Delete Account" />
+                  </span>
                 </div>
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -472,10 +543,11 @@ export default function Profile() {
       <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Se déconnecter</DialogTitle>
+            <DialogTitle>
+              <FormattedMessage id="dialog.logout.title" defaultMessage="Log Out" />
+            </DialogTitle>
             <DialogDescription>
-              Êtes-vous sûr de vouloir vous déconnecter ? Vous pourrez vous
-              reconnecter à tout moment.
+              <FormattedMessage id="dialog.logout.description" defaultMessage="Are you sure you want to log out? You can log back in at any time." />
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -483,14 +555,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setShowLogoutDialog(false)}
             >
-              Annuler
+              <FormattedMessage id="dialog.logout.cancel" defaultMessage="Cancel" />
             </Button>
             <Button
               variant="default"
               disabled={isLoading}
               onClick={handleLogout}
             >
-              Se déconnecter
+              <FormattedMessage id="dialog.logout.confirm" defaultMessage="Log Out" />
               {isLoading && <Loader2 className="animate-spin" />}
             </Button>
           </DialogFooter>
@@ -502,24 +574,23 @@ export default function Profile() {
         <DialogContent className="w-full">
           <DialogHeader>
             <DialogTitle className="text-red-500">
-              Supprimer mon compte
+              <FormattedMessage id="dialog.delete.title" defaultMessage="Delete Account" />
             </DialogTitle>
             <DialogDescription>
-              Cette action est irréversible. Toutes vos données, y compris votre
-              progression, seront définitivement supprimées.
+              <FormattedMessage id="dialog.delete.description" defaultMessage="This action is irreversible. All your data, including your progress, will be permanently deleted." />
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
             <p className="text-sm text-gray-500 mb-2">
-              Pour confirmer, veuillez saisir &apos;SUPPRIMER&apos; ci-dessous :
+              <FormattedMessage id="dialog.delete.confirmation" defaultMessage="To confirm, please type 'DELETE' below:" />
             </p>
             <input
               type="text"
               value={deleteConfirmation}
               onChange={(e) => setDeleteConfirmation(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="SUPPRIMER"
+              placeholder={intl.formatMessage({ id: "dialog.delete.placeholder", defaultMessage: "DELETE" })}
             />
           </div>
 
@@ -528,14 +599,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
             >
-              Annuler
+              <FormattedMessage id="dialog.delete.cancel" defaultMessage="Cancel" />
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteAccount}
-              disabled={deleteConfirmation !== "SUPPRIMER"}
+              disabled={deleteConfirmation !== "DELETE"}
             >
-              Supprimer définitivement
+              <FormattedMessage id="dialog.delete.confirm" defaultMessage="Delete Permanently" />
             </Button>
           </DialogFooter>
         </DialogContent>

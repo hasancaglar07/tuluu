@@ -9,6 +9,9 @@ import User from "@/models/User";
 import Exercise from "@/models/Exercise";
 import { auth } from "@clerk/nextjs/server";
 
+const SUPPORTED_LOCALES = ["en", "fr", "ar", "hi", "zh", "es", "tr"];
+const DEFAULT_LOCALE = "tr";
+
 export interface RewardType {
   xp: number;
   gems: number;
@@ -922,10 +925,55 @@ export async function GET(req: NextRequest) {
 
     const { userId } = await auth();
 
-    const languages = await Language.find({});
-
     const { searchParams } = new URL(req.url);
     const action = searchParams.get("action");
+    const category = searchParams.get("category");
+    const ageGroup = searchParams.get("ageGroup");
+    const localeParam = searchParams.get("locale");
+
+    const languageFilter: Record<string, unknown> = {};
+
+    if (category) {
+      languageFilter.category = category;
+    }
+
+    if (ageGroup) {
+      languageFilter["themeMetadata.ageGroup"] = ageGroup;
+    }
+
+    const normalizedLocale = SUPPORTED_LOCALES.includes(localeParam ?? "")
+      ? localeParam
+      : null;
+
+    const effectiveLocale = normalizedLocale ?? (action ? DEFAULT_LOCALE : null);
+
+    if (effectiveLocale) {
+      languageFilter.locale = effectiveLocale;
+    }
+
+    const normalizeThemeMetadata = (metadata?: {
+      islamicContent?: boolean;
+      ageGroup?: string;
+      moralValues?: string[];
+      educationalFocus?: string | null;
+      difficultyLevel?: string;
+    }) => ({
+      islamicContent: metadata?.islamicContent ?? false,
+      ageGroup: metadata?.ageGroup ?? "all",
+      moralValues: metadata?.moralValues ?? [],
+      educationalFocus: metadata?.educationalFocus ?? null,
+      difficultyLevel: metadata?.difficultyLevel ?? "beginner",
+    });
+
+    const normalizeLanguage = (language: any) => ({
+      ...language,
+      category: language.category ?? "language_learning",
+      locale: language.locale ?? DEFAULT_LOCALE,
+      themeMetadata: normalizeThemeMetadata(language.themeMetadata),
+    });
+
+    const languagesFromDb = await Language.find(languageFilter).lean();
+    const languages = languagesFromDb.map(normalizeLanguage);
 
     if (action === "learn" && userId) {
       const totalStats = await UserProgress.getTotalStats(userId);
@@ -957,7 +1005,6 @@ export async function GET(req: NextRequest) {
         acc[lang.languageId] = lang.userCount;
         return acc;
       }, {} as Record<string, number>);
-      const languages = await Language.find();
 
       // Get all UserProgress for user and languages
       const userProgressList = await UserProgress.find({
@@ -965,9 +1012,34 @@ export async function GET(req: NextRequest) {
         languageId: { $in: languages.map((lang) => lang._id) },
       }).lean();
 
+      const normalizeProgress = (progress: any) => ({
+        ...progress,
+        valuePoints: {
+          patience: 0,
+          gratitude: 0,
+          kindness: 0,
+          honesty: 0,
+          sharing: 0,
+          mercy: 0,
+          justice: 0,
+          respect: 0,
+          ...(progress?.valuePoints ?? {}),
+        },
+        dailyLimits: {
+          minutesAllowed: progress?.dailyLimits?.minutesAllowed ?? 0,
+          minutesUsed: progress?.dailyLimits?.minutesUsed ?? 0,
+          lastResetAt: progress?.dailyLimits?.lastResetAt ?? null,
+        },
+        parentalControls: {
+          enabled: progress?.parentalControls?.enabled ?? false,
+          guardianContact: progress?.parentalControls?.guardianContact ?? "",
+        },
+      });
+      const normalizedProgressList = userProgressList.map(normalizeProgress);
+
       // Define the type for progressMap
       const progressMap: Record<string, UserProgressType> = {};
-      userProgressList.forEach((progress) => {
+      normalizedProgressList.forEach((progress) => {
         progressMap[progress.languageId] = progress as UserProgressType;
       });
 
@@ -1040,6 +1112,8 @@ export async function GET(req: NextRequest) {
                         imageUrl: lesson.imageUrl || "",
                         xpReward: lesson.xpReward || 10,
                         order: lesson.order || 10,
+                        moralLesson: chapter.moralLesson || null,
+                        miniGame: chapter.miniGame || null,
                         exercises: formattedExercises,
                       };
                     })
@@ -1062,29 +1136,57 @@ export async function GET(req: NextRequest) {
               return {
                 id: chapter._id,
                 title: chapter.title,
+                description: chapter.description || "",
                 isPremium: chapter.isPremium || false,
                 isCompleted: isChapterCompleted,
                 isExpanded: true,
+                contentType: chapter.contentType || "lesson",
+                moralLesson: chapter.moralLesson || null,
+                miniGame: chapter.miniGame || null,
                 units: formattedUnits,
               };
             })
           );
 
+          const chapterCount = formattedChapters.length;
+          const unitCount = formattedChapters.reduce((acc, chapter) => {
+            return acc + (chapter.units?.length ?? 0);
+          }, 0);
+          const lessonCount = formattedChapters.reduce((acc, chapter) => {
+            const lessonsInChapter = chapter.units?.reduce((unitAcc, unit) => {
+              return unitAcc + (unit.lessons?.length ?? 0);
+            }, 0);
+            return acc + (lessonsInChapter ?? 0);
+          }, 0);
+
           return {
             _id: language._id,
             name: language.name,
+            nativeName: language.nativeName ?? "",
             imageUrl: language.imageUrl,
             baseLanguage: language.baseLanguage,
             flag: language.flag,
+            isActive: language.isActive ?? true,
+            category: language.category ?? "language_learning",
+            themeMetadata: language.themeMetadata ?? normalizeThemeMetadata(),
             isCompleted: isLanguageCompleted,
             userCount: userCountMap[language._id.toString()] || 0,
+            stats: {
+              chapters: chapterCount,
+              units: unitCount,
+              lessons: lessonCount,
+            },
             chapters: formattedChapters,
           };
         })
       );
 
       return NextResponse.json(
-        { languages: lessons, user: user, progress: userProgressList },
+        {
+          languages: lessons,
+          user: user,
+          progress: normalizedProgressList,
+        },
         { status: 200 }
       );
     }

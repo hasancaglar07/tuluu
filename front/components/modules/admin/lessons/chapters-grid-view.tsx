@@ -1,6 +1,6 @@
 "use client";
 
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import type { Language } from "@/types/lessons";
 
@@ -27,6 +28,7 @@ export function ChaptersGridView({
   currentLanguage,
   onAddChapter,
 }: ChaptersGridViewProps) {
+  const intl = useIntl();
   return (
     <>
       <div className="flex justify-between items-center">
@@ -50,13 +52,21 @@ export function ChaptersGridView({
           currentLanguage.chapters.map((chapter) => (
             <Card key={chapter._id}>
               <CardHeader>
-                <CardTitle>{chapter.title}</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Badge variant="outline">
+                    {intl.formatMessage({
+                      id: `contentType.${chapter.contentType ?? "lesson"}`,
+                      defaultMessage: chapter.contentType ?? "Lesson",
+                    })}
+                  </Badge>
+                  {chapter.title}
+                </CardTitle>
                 <CardDescription>{chapter.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground">
                       <FormattedMessage
                         id="admin.lessons.units"
                         defaultMessage="Units:"
@@ -65,7 +75,7 @@ export function ChaptersGridView({
                     <span>{chapter.units.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground">
                       <FormattedMessage
                         id="admin.lessons.premium"
                         defaultMessage="Premium:"
@@ -85,6 +95,57 @@ export function ChaptersGridView({
                       )}
                     </span>
                   </div>
+                  {chapter.moralLesson?.value && (
+                    <div>
+                      <span className="text-muted-foreground block">
+                        <FormattedMessage
+                          id="admin.lessons.chapter.moralValue"
+                          defaultMessage="Moral Focus"
+                        />
+                      </span>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        <Badge variant="secondary" className="text-xs">
+                          {intl.formatMessage({
+                            id: `valuePoints.${chapter.moralLesson.value}`,
+                            defaultMessage: chapter.moralLesson.value,
+                          })}
+                        </Badge>
+                        {chapter.moralLesson.title && (
+                          <Badge variant="outline" className="text-xs">
+                            {chapter.moralLesson.title}
+                          </Badge>
+                        )}
+                      </div>
+                      {chapter.moralLesson.displayTiming && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          <FormattedMessage
+                            id="admin.lessons.chapter.displayTiming"
+                            defaultMessage="Shared"
+                          />
+                          : {intl.formatMessage({
+                            id: `displayTiming.${chapter.moralLesson.displayTiming}`,
+                            defaultMessage: chapter.moralLesson.displayTiming,
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {chapter.miniGame?.type && (
+                    <div>
+                      <span className="text-muted-foreground block">
+                        <FormattedMessage
+                          id="admin.lessons.chapter.miniGame"
+                          defaultMessage="Mini Game"
+                        />
+                      </span>
+                      <Badge variant="outline" className="text-xs mt-1">
+                        {intl.formatMessage({
+                          id: `miniGame.${chapter.miniGame.type}`,
+                          defaultMessage: chapter.miniGame.type,
+                        })}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

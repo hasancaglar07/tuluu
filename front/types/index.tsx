@@ -6,7 +6,51 @@ export type SubscriptionType = "free" | "premium";
 // Define lesson status
 export type LessonStatus = "locked" | "available" | "completed";
 
-// Define lesson type
+export type LanguageCategory =
+  | "faith_morality"
+  | "quran_arabic"
+  | "math_logic"
+  | "science_discovery"
+  | "language_learning"
+  | "mental_spiritual"
+  | "personal_social";
+
+export type ThemeAgeGroup = "kids_4-7" | "kids_8-12" | "teens_13-17" | "all";
+
+export interface ThemeMetadata {
+  islamicContent: boolean;
+  ageGroup: ThemeAgeGroup;
+  moralValues: string[];
+  educationalFocus?: string | null;
+  difficultyLevel: "beginner" | "intermediate" | "advanced";
+}
+
+export type MoralValue =
+  | "patience"
+  | "gratitude"
+  | "kindness"
+  | "honesty"
+  | "sharing"
+  | "mercy"
+  | "justice"
+  | "respect";
+
+export type MoralDisplayTiming = "pre_lesson" | "mid_lesson" | "post_lesson";
+
+export interface MoralLessonDetails {
+  value: MoralValue;
+  title?: string;
+  storyText?: string;
+  mediaUrl?: string;
+  displayTiming?: MoralDisplayTiming;
+}
+
+export type MiniGameType = "match" | "quiz" | "puzzle" | "story" | "breathing";
+
+export interface MiniGameDetails {
+  type: MiniGameType;
+  config?: Record<string, unknown>;
+}
 
 // Define chapter with units
 export interface Chapter {
@@ -18,6 +62,9 @@ export interface Chapter {
   isCompleted: boolean;
   isExpanded?: boolean;
   order: number;
+  contentType?: "lesson" | "story" | "game" | "meditation" | "quiz" | "activity";
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
   language?: {
     id: string;
     name: string;
@@ -64,6 +111,8 @@ export interface LessonContent {
   imageUrl: string;
   order: number;
   status: LessonStatus;
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 // SEO Types
@@ -109,6 +158,15 @@ export interface User {
   // Clerk metadata (you can make these more specific if you know the structure)
   publicMetadata: UserPublicMetadata;
   privateMetadata: UserPrivateMetadata;
+  parentalControls?: {
+    enabled: boolean;
+    guardianContact?: string;
+  };
+  dailyLimits?: {
+    minutesAllowed: number;
+    minutesUsed: number;
+    lastResetAt?: Date | string | null;
+  };
 
   // Additional app data
   userCompletedLessons: number;
@@ -208,6 +266,15 @@ export type AppUser = {
   // Clerk metadata (you can make these more specific if you know the structure)
   publicMetadata: UserPublicMetadata;
   privateMetadata: UserPrivateMetadata;
+  parentalControls?: {
+    enabled: boolean;
+    guardianContact?: string;
+  };
+  dailyLimits?: {
+    minutesAllowed: number;
+    minutesUsed: number;
+    lastResetAt?: Date | string | null;
+  };
 
   // Additional app data
   userCompletedLessons: number;
@@ -352,11 +419,36 @@ export type Subscription = {
   subscriptionStatus: "active" | "inactive";
 };
 export const exerciseTypes = [
-  { value: "translate", label: "Translate" },
-  { value: "select", label: "Select" },
-  { value: "arrange", label: "Arrange" },
-  { value: "speak", label: "Speak" },
-  { value: "listen", label: "Listen" },
+  {
+    value: "translate",
+    labelKey: "admin.lessons.exerciseType.translate",
+    defaultMessage: "Translate",
+    supportsOptions: true,
+  },
+  {
+    value: "select",
+    labelKey: "admin.lessons.exerciseType.select",
+    defaultMessage: "Select",
+    supportsOptions: true,
+  },
+  {
+    value: "arrange",
+    labelKey: "admin.lessons.exerciseType.arrange",
+    defaultMessage: "Arrange",
+    supportsOptions: true,
+  },
+  {
+    value: "speak",
+    labelKey: "admin.lessons.exerciseType.speak",
+    defaultMessage: "Speak",
+    supportsAudio: true,
+  },
+  {
+    value: "listen",
+    labelKey: "admin.lessons.exerciseType.listen",
+    defaultMessage: "Listen",
+    supportsAudio: true,
+  },
 ];
 
 export interface TargetCriteria {
@@ -669,9 +761,13 @@ export type Language = {
   name: string;
   imageUrl: string;
   baseLanguage: string;
+  nativeName: string;
   flag: string;
   isCompleted: boolean;
+  isActive: boolean;
   userCount: number;
+  category: LanguageCategory;
+  themeMetadata: ThemeMetadata;
   chapters: Chapter[];
 };
 
@@ -725,6 +821,8 @@ export interface Lesson {
   order: number;
   exercises: Exercise[];
   status?: "completed" | "locked" | "available";
+  moralLesson?: MoralLessonDetails | null;
+  miniGame?: MiniGameDetails | null;
 }
 
 export interface Unit {

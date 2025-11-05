@@ -21,6 +21,14 @@ export interface LessonsState {
   loading: boolean;
 }
 
+const defaultThemeMetadata = {
+  islamicContent: false,
+  ageGroup: "all",
+  moralValues: [] as string[],
+  educationalFocus: null as string | null,
+  difficultyLevel: "beginner" as const,
+};
+
 const language = {
   _id: "",
   name: "",
@@ -31,13 +39,15 @@ const language = {
   isCompleted: false,
   isActive: false,
   userCount: 0,
+  category: "language_learning" as const,
+  themeMetadata: defaultThemeMetadata,
   chapters: [],
 };
 
 const initialState: LessonsState = {
   chapters: chaptersData,
   lessonContents: lessonContentsData,
-  language: language,
+  language: { ...language, themeMetadata: { ...defaultThemeMetadata } },
   isLoading: false,
   currentChapter: "",
   currentUnit: "",

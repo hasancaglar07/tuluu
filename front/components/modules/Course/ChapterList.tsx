@@ -61,6 +61,7 @@ export const ChapterList = ({
               <h4>
                 <FormattedMessage
                   id="dashboard.chapter.title"
+                  defaultMessage="Chapter {order}: {title}"
                   values={{ order: chapter.order, title: chapter.title }}
                 />
               </h4>
@@ -73,7 +74,10 @@ export const ChapterList = ({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      <FormattedMessage id="dashboard.chapter.premiumLocked" />
+                      <FormattedMessage
+                        id="dashboard.chapter.premiumLocked"
+                        defaultMessage="Premium content - Subscribe to unlock"
+                      />
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -85,7 +89,10 @@ export const ChapterList = ({
                   transition={{ type: "spring", stiffness: 500, damping: 10 }}
                 >
                   <Badge className="bg-primary-500">
-                    <FormattedMessage id="dashboard.chapter.completed" />
+                    <FormattedMessage
+                      id="dashboard.chapter.completed"
+                      defaultMessage="COMPLETED"
+                    />
                   </Badge>
                 </m.div>
               )}

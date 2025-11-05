@@ -1,0 +1,210 @@
+PRESET 1 — “Dinle ve seç” (Listen)
+
+Egzersiz Türü: Listen
+
+Yönerge: Sesi dinle ve Elif harfini seç.
+
+Doğru Cevaplar: Elif
+
+Seç & çevir için seçenekler (Options):
+
+Elif
+
+Be
+
+Te
+
+Nun
+
+Sin
+
+Ses URL’si (opsiyonel): https://cdn.senin-domainin.com/audio/elif.mp3
+
+Not: “Doğru Cevaplar” metni Options içindeki metinle birebir aynı olmalı. O yüzden burada “Elif” kullandık.
+
+PRESET 2 — “Hangisi ا ?” (Select)
+
+Egzersiz Türü: Select
+
+Yönerge: Aşağıdaki harflerden Elif’i (ا) seç.
+
+Doğru Cevaplar: ا
+
+Seçenekler:
+
+ا
+
+ب
+
+ت
+
+ن
+
+س
+
+Ses URL’si: (boş bırak)
+
+İstersen “Ses URL’si”ne aynı sesi verip sorudan önce bir “dinle” deneyimi de sağlayabilirsin.
+
+PRESET 3 — “Bu harfin adı ne?” (Translate)
+
+Egzersiz Türü: Translate
+
+Yönerge: Bu harfin adını Türkçe yaz: ا
+
+Doğru Cevaplar: Elif
+
+Seçenekler: (boş bırak)
+
+Ses URL’si: (boş bırak)
+
+Bu tipte “Doğru Cevaplar” tek kelime: Elif. Büyük-küçük harf farkını platform nasıl ele alıyorsa ona göre ek varyantlar da yazabilirsin: Elif, elif
+
+PRESET 4 — “Söyle” (Speak)
+
+Egzersiz Türü: Speak
+
+Yönerge: Mikrofona “Elif” de (ا).
+
+Doğru Cevaplar:
+
+Elif
+
+ا
+
+Seçenekler: (boş bırak)
+
+Ses URL’si: https://cdn.senin-domainin.com/audio/elif-model.mp3
+
+Bazı sistemler “Speak”te de bir referans metin ister; o yüzden “Doğru Cevaplar”a hem Elif hem ا koyduk (ikisini de doğru say).
+
+PRESET 5 — “Yazım adımlarını sırala” (Arrange)
+
+Egzersiz Türü: Arrange
+
+Yönerge: Elif harfini yazma adımlarını doğru sıraya diz.
+
+Doğru Cevaplar:
+
+Üste nokta koyma – Başla
+
+Yukarıdan aşağıya düz çizgi çiz
+
+Kalemi kaldır – Bitir
+
+Seçenekler (aynı metinler, karışık sırayla gir):
+
+Kalemi kaldır – Bitir
+
+Yukarıdan aşağıya düz çizgi çiz
+
+Üste nokta koyma – Başla
+
+Ses URL’si: (boş bırak)
+
+
+
+🧠 2. Ünite: Be Harfiyle Tanışıyorum
+🎧 1. Egzersiz – Listen
+
+Amaç: Be harfinin sesini tanımak
+
+Egzersiz Türü: Listen
+
+Yönerge: Sesi dinle ve Be harfini seç.
+
+Doğru Cevaplar: Be
+
+Seç & çevir için seçenekler:
+
+Be
+
+Elif
+
+Te
+
+Nun
+
+Sin
+
+Ses URL’si: https://example.com/audio/be.mp3
+
+✅ Yeni Kelime Olarak İşaretle açık
+
+🅱️ 2. Egzersiz – Select
+
+Amaç: Görsel olarak Be harfini ayırt etme
+
+Egzersiz Türü: Select
+
+Yönerge: Aşağıdaki harflerden Be’yi (ب) seç.
+
+Doğru Cevaplar: ب
+
+Seçenekler:
+
+ب
+
+ا
+
+ت
+
+ن
+
+س
+
+Ses URL’si: (boş bırak)
+
+✍️ 3. Egzersiz – Translate
+
+Amaç: Arapça harfi ismiyle ilişkilendirmek
+
+Egzersiz Türü: Translate
+
+Yönerge: Bu harfin adını Türkçe yaz: ب
+
+Doğru Cevaplar: Be
+
+Seçenekler: (boş bırak)
+
+Ses URL’si: (boş bırak)
+
+🗣️ 4. Egzersiz – Speak
+
+Amaç: Telaffuzu öğretmek
+
+Egzersiz Türü: Speak
+
+Yönerge: Mikrofona "Be" de (ب).
+
+Doğru Cevaplar:
+
+Be
+
+ب
+
+Ses URL’si: https://example.com/audio/be-model.mp3
+
+🧩 5. Egzersiz – Arrange
+
+Amaç: Yazım sırasını kavratmak
+
+Egzersiz Türü: Arrange
+
+Yönerge: Be harfini yazma adımlarını doğru sıraya diz.
+
+Doğru Cevaplar:
+
+Kalemi soldan sağa doğru hafif eğik başlat
+
+Altına bir nokta koy
+
+Kalemi kaldır – Bitir
+
+Seçenekler (karışık sırayla):
+
+Kalemi kaldır – Bitir
+
+Altına bir nokta koy
+
+Kalemi soldan sağa doğru hafif eğik başlat

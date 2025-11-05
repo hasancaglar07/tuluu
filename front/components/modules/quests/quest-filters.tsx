@@ -43,7 +43,7 @@ export function QuestFilters({
         >
           <FormattedMessage
             id={filter.messageId}
-            defaultMessage={filter.value}
+            defaultMessage={filter.value.charAt(0).toUpperCase() + filter.value.slice(1)}
           />
         </Button>
       ))}

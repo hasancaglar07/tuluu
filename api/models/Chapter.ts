@@ -32,6 +32,7 @@ const ChapterSchema = new Schema(
       type: String,
       default: "",
       trim: true,
+      maxlength: 500,
     },
     order: {
       type: Number,
@@ -42,6 +43,58 @@ const ChapterSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    contentType: {
+      type: String,
+      enum: ["lesson", "story", "game", "meditation", "quiz", "activity"],
+      default: "lesson",
+    },
+    moralLesson: {
+      value: {
+        type: String,
+        enum: [
+          "patience",
+          "gratitude",
+          "kindness",
+          "honesty",
+          "sharing",
+          "mercy",
+          "justice",
+          "respect",
+        ],
+        default: "kindness",
+      },
+      title: {
+        type: String,
+        trim: true,
+        maxlength: 150,
+      },
+      storyText: {
+        type: String,
+        trim: true,
+        maxlength: 1500,
+      },
+      mediaUrl: {
+        type: String,
+        trim: true,
+        maxlength: 255,
+      },
+      displayTiming: {
+        type: String,
+        enum: ["pre_lesson", "mid_lesson", "post_lesson"],
+        default: "post_lesson",
+      },
+    },
+    miniGame: {
+      type: {
+        type: String,
+        enum: ["match", "quiz", "puzzle", "story", "breathing"],
+        default: "quiz",
+      },
+      config: {
+        type: Schema.Types.Mixed,
+        default: {},
+      },
     },
   },
   { timestamps: true }

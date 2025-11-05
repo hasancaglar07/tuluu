@@ -1080,14 +1080,21 @@ export async function GET(
     await connectDB();
     const { id } = await params;
 
-    // Find user by clerkId
-    const user = await User.findByClerkId(id);
+    // Find user by clerkId. If the requesting user is fetching their own data,
+    // automatically create a profile record to avoid 404s on first login.
+    let user = await User.findByClerkId(id);
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 404 }
-      );
+      if (id !== userId) {
+        return NextResponse.json(
+          { success: false, error: "User not found" },
+          { status: 404 }
+        );
+      }
+
+      user = await User.create({ clerkId: id });
     }
+
+    const userDocumentId = user.id;
 
     // Parse query parameters
     const { searchParams } = new URL(request.url);
@@ -1117,7 +1124,7 @@ export async function GET(
 
     // Fetch user quest progress for all quests
     const userQuests = await UserQuest.find({
-      userId: user._id,
+      userId: userDocumentId,
     }).lean();
 
     // Create a map of user quest progress by questId for quick lookup
@@ -1287,7 +1294,7 @@ export async function GET(
 
     // Get user stats
     const completedCount = await UserQuest.countDocuments({
-      clerkId: user.clerkId,
+      userId: userDocumentId,
       status: "completed",
       completedAt: {
         $gte: new Date(new Date().setDate(new Date().getDate() - 30)),
@@ -1296,7 +1303,7 @@ export async function GET(
 
     // Get total quests assigned to user
     const totalAssignedQuests = await UserQuest.countDocuments({
-      clerkId: user.clerkId,
+      userId: userDocumentId,
     });
 
     return NextResponse.json({
@@ -1349,6 +1356,7 @@ export async function PUT(
         { status: 404 }
       );
     }
+    const userDocumentId = user.id;
     const { conditionType = "complete_lessons", incrementValue = 1 } =
       await request.json();
 
@@ -1370,7 +1378,7 @@ export async function PUT(
 
     // Step 2: Get user's current quests (in progress or completed)
     const existingUserQuests = await UserQuest.find({
-      userId: user._id,
+      userId: userDocumentId,
       status: { $in: ["in_progress", "completed"] },
     }).select("questId");
 
@@ -1392,13 +1400,13 @@ export async function PUT(
 
     // Step 4: Check if user already has the quest (shouldn't happen, but safe check)
     let userQuest = await UserQuest.findOne({
-      userId: user._id,
+      userId: userDocumentId,
       questId: availableQuest._id,
     }).populate("questId");
 
     if (!userQuest) {
       userQuest = await UserQuest.assignQuestToUser(
-        user._id.toString(),
+        userDocumentId,
         availableQuest._id.toString(),
         availableQuest.endDate,
         "auto_assigned"
@@ -1409,7 +1417,7 @@ export async function PUT(
 
     // Step 5: Update quest progress
     const updatedUserQuest = await UserQuest.updateQuestProgress(
-      user._id.toString(),
+      userDocumentId,
       availableQuest._id.toString(),
       conditionType,
       incrementValue
@@ -1429,7 +1437,7 @@ export async function PUT(
       updatedUserQuest.rewardsClaimed.length === 0
     ) {
       claimedRewards = await UserQuest.claimQuestRewards(
-        user._id.toString(),
+        userDocumentId,
         userQuest._id.toString()
       );
 

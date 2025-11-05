@@ -1,0 +1,79 @@
+🧠 1. Ana Fikir ve Felsefe
+
+“Eğlenerek öğren, yarışarak geliş, iyilikle büyü.”
+
+Her dersin sonunda sadece bilgi değil, değer kazandıracak mini mesajlar: sabır, şükür, yardımlaşma, dürüstlük…
+
+Her ülke çocuğu kendi dilinde oynayacak, ama ortak İslami temeller ve evrensel değerlerle bağlanacak.
+
+🏗️ 2. Kategorik Yapı (Ana Menü)
+
+Ana ekranda çocuk “Ben şunu öğrenmek istiyorum” dediğinde aşağıdaki 7 ana kategori karşısına çıkar:
+
+İman & Ahlak
+Dua, peygamber hayatları, güzel davranışlar, Allah sevgisi.
+🕋 Mini oyunlar: “Peygamber kim söyledi?”, “Doğru davranış seç”, “Hikayeyi tamamla”
+
+Kur’an & Arapça
+Harfleri tanı, sureleri dinle, kelime ezberle, tecvid renklendirmeli oyun.
+🔤 Mini oyun: “Harf avı”, “Anlamı bul”, “Dinle ve eşleştir”.
+
+Matematik & Mantık
+Sayı oyunları, işlemler, geometrik eşleştirmeler.
+➕ Mini yarışma: “Sayıları topla, yıldız kazan.”
+
+Bilim & Keşif
+Bitkiler, hayvanlar, gezegenler, mucitler, Müslüman bilim insanları.
+🔭 Mini görev: “El-Cezeri’nin makinesini tamamla.”
+
+Dil Öğrenimi (TR / EN / AR / FR / ES)
+Çocuk kendi anadilinde diğer dilleri öğrenir ama kelimeler ahlakla harmanlanır:
+🗣️ “Kindness”, “Mercy”, “Patience” gibi kavramlar üzerinden öğretim.
+
+Zihin & Ruhsal Gelişim
+Meditasyon, nefes alıştırması, sabır oyunları, zikir temelli rahatlama.
+🌿 Mini modül: “Derin nefes al – Kalbini dinle.”
+
+Kişisel Gelişim & Sosyal Beceriler
+Empati, yardımlaşma, temizlik, paylaşma oyunları.
+👭 Mini görev: “Arkadaşına yardım et – puan kazan!”
+
+🧩 3. Oyunlaştırma Sistemi (Duolingo Mantığı)
+
+XP (İlmi Puan): Her yapılan etkinlikte artar.
+
+Altın Yıldızlar: Doğru cevap sayısına göre kazanılır.
+
+Günlük Hedef: 5 dk – 10 dk – 15 dk seçenekleri.
+
+Seviye Yükselme: “Mekke Seviye 1”, “Medine Seviye 2”, “Endülüs Seviye 3”…
+
+4. Global Çokdillilik Yapısı
+
+Platformun çokdilli mimarisi:
+
+Arayüz: EN, TR, AR, FR, ES, ID, UR (geliştirilebilir)
+
+Ders içerikleri: aynı tema, farklı dil ama aynı ahlaki yapı.
+
+Seslendirmeler yerel aksanla çocuk sesleriyle yapılabilir.
+
+6. Yarışma & Sosyal Sistem
+
+Haftalık turnuvalar: “En çok dua ezberleyen”, “En çok yardım puanı kazanan.”
+
+Arkadaş daveti: Davetle puan kazan.
+
+Topluluk panosu: Küresel sıralama (çocuk isimleri gizli avatarlarla).
+
+İyilik puanları: Gerçek dünyada yapılan iyilikleri öğretmen/veli onaylayabilir.
+
+---
+
+**İçerik Yönetimi Notu**
+
+Admin panelindeki “Program Yönetimi” ekranı artık sadece dil derslerini değil,
+bu vizyondaki tüm değer temelli yolculukları tanımlamak için kullanılıyor. Her
+programda kategori (sabır, şükür, yardımlaşma vb.), yaş grubu, moral değerler ve
+mini oyun/hikâye türleri tek formdan yönetiliyor; böylece hikâye, etkinlik ve
+yansıma oturumları aynı altyapıdan yayımlanabiliyor.

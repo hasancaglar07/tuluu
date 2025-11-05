@@ -628,7 +628,29 @@ export async function GET(req: NextRequest) {
       acc[lang.languageId] = lang.userCount;
       return acc;
     }, {} as Record<string, number>);
-    const languages = await Language.find();
+
+    const normalizeThemeMetadata = (metadata?: {
+      islamicContent?: boolean;
+      ageGroup?: string;
+      moralValues?: string[];
+      educationalFocus?: string | null;
+      difficultyLevel?: string;
+    }) => ({
+      islamicContent: metadata?.islamicContent ?? false,
+      ageGroup: metadata?.ageGroup ?? "all",
+      moralValues: metadata?.moralValues ?? [],
+      educationalFocus: metadata?.educationalFocus ?? null,
+      difficultyLevel: metadata?.difficultyLevel ?? "beginner",
+    });
+
+    const normalizeLanguage = (language: any) => ({
+      ...language,
+      category: language.category ?? "language_learning",
+      themeMetadata: normalizeThemeMetadata(language.themeMetadata),
+    });
+
+    const languagesFromDb = await Language.find().lean();
+    const languages = languagesFromDb.map(normalizeLanguage);
 
     // Get all UserProgress for user and languages
     const userProgressList = await UserProgress.find({
@@ -636,10 +658,35 @@ export async function GET(req: NextRequest) {
       languageId: { $in: languages.map((lang) => lang._id) },
     }).lean();
 
+    const normalizeProgress = (progress: any) => ({
+      ...progress,
+      valuePoints: {
+        patience: 0,
+        gratitude: 0,
+        kindness: 0,
+        honesty: 0,
+        sharing: 0,
+        mercy: 0,
+        justice: 0,
+        respect: 0,
+        ...(progress?.valuePoints ?? {}),
+      },
+      dailyLimits: {
+        minutesAllowed: progress?.dailyLimits?.minutesAllowed ?? 0,
+        minutesUsed: progress?.dailyLimits?.minutesUsed ?? 0,
+        lastResetAt: progress?.dailyLimits?.lastResetAt ?? null,
+      },
+      parentalControls: {
+        enabled: progress?.parentalControls?.enabled ?? false,
+        guardianContact: progress?.parentalControls?.guardianContact ?? "",
+      },
+    });
+    const normalizedProgressList = userProgressList.map(normalizeProgress);
+
     // Define the type for progressMap
 
     const progressMap: Record<string, UserProgressType> = {};
-    userProgressList.forEach((progress) => {
+    normalizedProgressList.forEach((progress) => {
       progressMap[progress.languageId] = progress as UserProgressType;
     });
 
@@ -716,6 +763,8 @@ export async function GET(req: NextRequest) {
                       imageUrl: lesson.imageUrl || "",
                       xpReward: lesson.xpReward || 10,
                       order: lesson.order || 10,
+                      moralLesson: chapter.moralLesson || null,
+                      miniGame: chapter.miniGame || null,
                       exercises: formattedExercises,
                     };
                   })
@@ -745,6 +794,9 @@ export async function GET(req: NextRequest) {
               imageUrl: chapter.imageUrl || "",
               order: chapter.order || 0,
               description: chapter.description,
+              contentType: chapter.contentType || "lesson",
+              moralLesson: chapter.moralLesson || null,
+              miniGame: chapter.miniGame || null,
               units: formattedUnits,
             };
           })
@@ -759,6 +811,8 @@ export async function GET(req: NextRequest) {
           flag: language.flag,
           isCompleted: isLanguageCompleted,
           isActive: language.isActive,
+          category: language.category,
+          themeMetadata: language.themeMetadata,
           userCount: userCountMap[language._id.toString()] || 0,
           chapters: formattedChapters,
         };
@@ -791,6 +845,9 @@ export async function GET(req: NextRequest) {
         currentChapter: currentProgressData?.currentChapter,
         currentUnit: currentProgressData?.currentUnit,
         currentLesson: currentProgressData?.currentLesson,
+        valuePoints: currentProgressData?.valuePoints,
+        dailyLimits: currentProgressData?.dailyLimits,
+        parentalControls: currentProgressData?.parentalControls,
         language: {
           _id: specificLanguage?._id,
           name: specificLanguage?.name,
@@ -800,6 +857,8 @@ export async function GET(req: NextRequest) {
           flag: specificLanguage?.flag,
           isCompleted: specificLanguage?.isCompleted,
           isActive: specificLanguage?.isActive,
+          category: specificLanguage?.category,
+          themeMetadata: specificLanguage?.themeMetadata,
         },
       },
       { status: 200 }

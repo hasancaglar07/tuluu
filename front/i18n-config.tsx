@@ -29,7 +29,7 @@ export const i18n = {
       image: "https://cdn-icons-png.flaticon.com/128/197/197518.png",
     },
   ],
-  defaultLocale: "en",
+  defaultLocale: "tr",
 };
 
 export type I18nConfig = typeof i18n;
