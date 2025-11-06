@@ -34,11 +34,11 @@ export default function FooterLanding() {
 
             <li>
               <Link
-                href="https://youtu.be/K-_EqSy-pgI?si=JS2bOhUE_YFLsDPp"
+                href="https://tulukitap.com/"
                 target="_blank"
                 className="text-gray-500 hover:text-gray-900"
               >
-                <FormattedMessage id="footer.youtube" />
+                <FormattedMessage id="footer.tulukitap" />
               </Link>
             </li>
           </ul>

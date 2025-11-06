@@ -15,7 +15,7 @@ export default {
   "footer.about": "About",
   "footer.help": "Help and Support",
   "footer.privacy": "Privacy and Terms",
-  "footer.youtube": "YouTube",
+  "footer.tulukitap": "Tulu Kitap",
 
   // Welcome Flow
   "welcome.intro": "Hi! I'm Tulu.",

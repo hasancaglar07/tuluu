@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { useIntl } from "react-intl";
 import {
   Card,
   CardContent,
@@ -38,6 +39,7 @@ export default function ClerkSetup({
   onBack,
   onLoading,
 }: ClerkSetupProps) {
+  const intl = useIntl();
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const [clerkStatus, setClerkStatus] = useState("checking"); // checking, connected, disconnected, error
@@ -136,7 +138,7 @@ export default function ClerkSetup({
   };
 
   const getAuthStatusBadge = () => {
-    if (!isLoaded) return <Badge variant="outline">Loading...</Badge>;
+    if (!isLoaded) return <Badge variant="outline">{intl.formatMessage({ id: "common.loading" })}</Badge>;
     if (isSignedIn)
       return <Badge className="bg-green-500">✓ Authenticated</Badge>;
     return <Badge variant="secondary">Not Signed In</Badge>;
