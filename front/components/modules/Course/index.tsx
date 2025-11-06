@@ -21,7 +21,6 @@ import { UserStats } from "./UserStats";
 import { ViewToggle } from "./ViewToggle";
 import { ChapterList } from "./ChapterList";
 import { GameView } from "./GameView";
-import ValuePointsPanel from "./ValuePointsPanel";
 
 /**
  * Main dashboard component for users to navigate through chapters, units, and lessons
@@ -359,10 +358,6 @@ export default function Course({
         subscription={subscription}
         handleUpgradeToPremium={handleUpgradeToPremium}
       />
-
-      <div className="w-full flex justify-center mt-4">
-        <ValuePointsPanel />
-      </div>
 
       {/* View Toggle */}
       <div className="hidden md:flex w-full max-w-3xl mt-4 mb-2">

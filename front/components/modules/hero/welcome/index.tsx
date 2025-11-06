@@ -43,29 +43,27 @@ export default function Welcome() {
 
   return (
     <>
-      <section className="py-20 flex-1 flex justify-center items-center">
+      <section className="py-8 sm:py-12 md:py-20 pb-32 md:pb-40 flex-1 flex justify-center items-center min-h-screen">
         <Container>
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex flex-col gap-10 relative">
-              <div className="flex justify-center">
-                {/* Utilisation de FormattedMessage directement dans JSX */}
-                {/* Ici on remplace le TypingAnimation text par FormattedMessage */}
-                {/* Si TypingAnimation accepte children ou text, adapte en conséquence */}
-                <TypingAnimation
-                  key={text}
-                  className="text-2xl font-bold"
-                  // Si TypingAnimation accepte un string "text", on peut fournir le texte traduit ainsi:
-                  text={text}
-                  speed={30}
-                />
-              </div>
-              <div className="flex items-center justify-center w-full">
-                <Lottie
-                  animationData={welcomeMascotAnimation}
-                  loop={true}
-                  style={{ width: 1020, height: 600 }}
-                />
-              </div>
+          <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
+            <div className="flex justify-center px-4 text-center">
+              {/* Utilisation de FormattedMessage directement dans JSX */}
+              {/* Ici on remplace le TypingAnimation text par FormattedMessage */}
+              {/* Si TypingAnimation accepte children ou text, adapte en conséquence */}
+              <TypingAnimation
+                key={text}
+                className="text-xl sm:text-2xl md:text-3xl font-bold"
+                // Si TypingAnimation accepte un string "text", on peut fournir le texte traduit ainsi:
+                text={text}
+                speed={30}
+              />
+            </div>
+            <div className="flex items-center justify-center w-full max-w-full overflow-hidden">
+              <Lottie
+                animationData={welcomeMascotAnimation}
+                loop={true}
+                className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl h-auto"
+              />
             </div>
           </div>
         </Container>

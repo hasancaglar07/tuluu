@@ -24,6 +24,7 @@ import { DeleteAccountDialog } from "./delete-account-dialog";
 import Loading from "@/components/custom/loading";
 import { AccessibilitySettings } from "./accessibility-settings";
 import { apiClient } from "@/lib/api-client";
+import ValuePointsPanel from "../Course/ValuePointsPanel";
 
 /**
  * Type definition for user settings structure
@@ -370,6 +371,10 @@ export default function ProfileEdit() {
             </TabsContent>
           </Tabs>
         </form>
+
+        <div className="mt-10">
+          <ValuePointsPanel />
+        </div>
       </div>
 
       {/* Dialog Components */}

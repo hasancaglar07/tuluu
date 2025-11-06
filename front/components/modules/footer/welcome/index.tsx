@@ -39,14 +39,15 @@ export default function FooterWelcome({
   };
 
   return (
-    <section className="py-10 md:px-20 border-t border-t-gray-200 bg-white dark:bg-gray-900 dark:border-t-gray-700">
+    <section className="fixed bottom-0 left-0 right-0 py-4 sm:py-6 md:py-10 md:px-20 border-t border-t-gray-200 bg-white dark:bg-gray-900 dark:border-t-gray-700 shadow-lg z-50 pb-safe">
       <Container>
-        <div className="flex justify-end">
+        <div className="flex justify-center sm:justify-end">
           <Button
             variant="primary"
             size="lg"
             onClick={handleClick}
             disabled={isLoading}
+            className="w-full sm:w-auto min-w-[200px]"
           >
             {/* 🌍 Localized CTA button text */}
             {intl.formatMessage({
