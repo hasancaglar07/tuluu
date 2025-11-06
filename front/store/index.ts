@@ -6,7 +6,8 @@ import lessonsReducer from "./lessonsSlice";
 import settingsReducer from "./settingsSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import type { WebStorage } from "redux-persist";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import type { TypedUseSelectorHook } from "react-redux";
 
 type UniversalStorage = {
   getItem: (key: string) => Promise<string | null>;
@@ -96,3 +97,4 @@ export type AppDispatch = typeof store.dispatch; //app dsipatch type
 export const persistor = persistStore(store);
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export type IRootState = ReturnType<typeof store.getState>; // store type
+export const useAppSelector: TypedUseSelectorHook<IRootState> = useSelector;

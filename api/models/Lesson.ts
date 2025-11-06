@@ -68,6 +68,73 @@ const LessonSchema = new Schema(
       min: [1, "Order must be at least 1"],
       max: [20, "Order cannot be more than 20"],
     },
+    storyPages: {
+      type: [
+        new Schema(
+          {
+            pageNumber: {
+              type: Number,
+              required: true,
+              min: 1,
+            },
+            imageUrl: {
+              type: String,
+              required: true,
+              trim: true,
+              maxlength: 500,
+            },
+            audioUrl: {
+              type: String,
+              trim: true,
+              maxlength: 500,
+              default: "",
+            },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
+    storyMetadata: {
+      bookId: {
+        type: String,
+        trim: true,
+        maxlength: 100,
+      },
+      displayName: {
+        type: String,
+        trim: true,
+        maxlength: 150,
+      },
+      coverImageUrl: {
+        type: String,
+        trim: true,
+        maxlength: 500,
+      },
+      themeColor: {
+        type: String,
+        trim: true,
+        maxlength: 50,
+      },
+      ageBadge: {
+        type: String,
+        trim: true,
+        maxlength: 50,
+      },
+      hasAudio: {
+        type: Boolean,
+        default: false,
+      },
+      supportedLocales: {
+        type: [String],
+        default: [],
+      },
+      primaryLocale: {
+        type: String,
+        trim: true,
+        maxlength: 10,
+      },
+    },
 
     isTest: { type: Boolean, default: false },
   },

@@ -13,7 +13,8 @@ export type LanguageCategory =
   | "science_discovery"
   | "language_learning"
   | "mental_spiritual"
-  | "personal_social";
+  | "personal_social"
+  | "story_library";
 
 export type ThemeAgeGroup = "kids_4-7" | "kids_8-12" | "teens_13-17" | "all";
 
@@ -113,6 +114,25 @@ export interface LessonContent {
   status: LessonStatus;
   moralLesson?: MoralLessonDetails | null;
   miniGame?: MiniGameDetails | null;
+  storyPages?: StoryPage[];
+  storyMetadata?: StoryMetadata | null;
+}
+
+export interface StoryPage {
+  pageNumber: number;
+  imageUrl: string;
+  audioUrl?: string;
+}
+
+export interface StoryMetadata {
+  bookId?: string;
+  displayName?: string;
+  coverImageUrl?: string;
+  themeColor?: string;
+  ageBadge?: string;
+  hasAudio?: boolean;
+  supportedLocales?: string[];
+  primaryLocale?: string;
 }
 
 // SEO Types

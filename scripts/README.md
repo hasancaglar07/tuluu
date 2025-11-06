@@ -198,6 +198,84 @@ Language (Program)
 ### Toplam İçerik
 - **Bölüm:** 10
 - **Ünite:** 30 (ortalama 3/bölüm)
+
+---
+
+## 📚 Story Kitap Import'u
+
+### Adım 1: Vercel Blob Kurulumu
+
+1. **Vercel Dashboard'a git:**
+   - [Vercel Dashboard](https://vercel.com/dashboard) > Storage > Blob
+   - "Create Store" butonuna tıkla
+   - Store adı: `tulu-stories` (veya istediğin)
+
+2. **Token'ı kopyala:**
+   - Store oluşturduktan sonra "Copy Token" butonuna tıkla
+   - Token'ı kopyala (örn: `vercel_blob_rw_xxxxx`)
+
+3. **Environment dosyası oluştur:**
+   ```bash
+   cd scripts
+   cp .env.example .env
+   ```
+   
+   `.env` dosyasına token'ı ekle:
+   ```bash
+   BLOB_READ_WRITE_TOKEN=vercel_blob_rw_xxxxxxxxxxxxxxxxxxxxx
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tulu-platform
+   ```
+
+4. **Bağımlılıkları yükle:**
+   ```bash
+   npm install
+   ```
+
+### Adım 2: Varlıkları Vercel Blob'a Yükle
+
+Kitap görsellerini ve audio dosyalarını Vercel Blob'a yükle:
+
+```bash
+npm run upload:assets
+```
+
+Bu komut:
+- ✅ `scripts/Books/*/cover.jpg` dosyalarını yükler
+- ✅ `scripts/Books/*/pages/*.jpg` dosyalarını yükler
+- ✅ `scripts/Books/*/audio/*.mp3` dosyalarını yükler (varsa)
+- ✅ Manifest dosyalarını Vercel Blob URL'leri ile otomatik günceller
+
+**Beklenen çıktı:**
+```
+🚀 Vercel Blob Upload başlıyor...
+
+📚 Yükleniyor: hersey-olabilen-zurafa...
+  ✅ Kapak: https://xxxxx.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/cover.jpg
+  📄 36 sayfa yükleniyor...
+  ✅ page-001.jpg
+  ✅ page-002.jpg
+  ...
+  ✅ page-036.jpg
+✨ hersey-olabilen-zurafa tamamlandı!
+
+==================================================
+🎉 Upload işlemi tamamlandı!
+✅ Başarılı: 1 kitap
+📝 Manifest dosyaları güncellendi.
+==================================================
+```
+
+### Adım 3: Kitapları MongoDB'ye Import Et
+
+Manifest'leri güncellenmiş kitapları MongoDB'ye aktar:
+
+```bash
+npm run import:stories
+```
+
+Script `scripts/Books/*/manifest.json` dosyalarını okuyarak her kitabı `story` içerik tipinde Chapter/Unit/Lesson olarak içeri aktarır ve sayfa görsellerini `Lesson.storyPages` alanına işler.
+
+**Not:** Manifest örneği `scripts/Books/hersey-olabilen-zurafa/manifest.json` dosyasında güncel tutulmaktadır.
 - **Ders:** 124
 - **Egzersiz:** 1,612
 - **Toplam XP:** 22,737

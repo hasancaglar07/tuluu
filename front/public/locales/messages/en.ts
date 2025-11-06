@@ -3,6 +3,8 @@ export default {
   "header.site_language": "Site Language",
 
   // Hero Section
+  "hero.title": "BUILDING MINDS WITH KNOWLEDGE, HEARTS WITH VALUES.",
+  "hero.subtitle": "A new generation learning universe that nurtures with patience, gratitude, and love.",
   "hero.description":
     "An enjoyable way to learn a new language — where absolute beginners become confident speakers, lessons feel like games, and every word earns you rewards!",
   "hero.getStarted": "Get Started",
@@ -10,6 +12,12 @@ export default {
   "hero.languages": "Languages Available",
   "hero.learners": "Active Learners",
   "hero.visits": "Daily Visits",
+
+  // Auth Pages
+  "auth.signin.noAccount": "Don't have an account?",
+  "auth.signin.signUp": "Sign up",
+  "auth.signup.haveAccount": "Have an account?",
+  "auth.signup.signIn": "Sign in",
 
   // Footer
   "footer.about": "About",
@@ -1318,4 +1326,40 @@ export default {
   "about.footer.terms": "Terms of Service",
   "about.footer.contact": "Contact Us",
   "about.footer.about": "About Us",
+
+  // Story Library & Reader
+  "stories.library.title": "Story Library",
+  "stories.library.subtitle": "Choose a book, turn the pages, and follow the narration together with your little explorer.",
+  "stories.library.empty": "No story books are available yet.",
+  "stories.library.emptyDescription": "New adventures will be added very soon.",
+  "stories.library.premiumBadge": "Premium",
+  "stories.library.audioBadge": "Audio",
+  "stories.library.pages": "{count} pages",
+  "stories.library.xpReward": "+{xp} XP",
+  "stories.library.readNow": "Read now",
+  
+  "stories.reader.notFound": "Story not found",
+  "stories.reader.notFoundDescription": "Please return to the library and pick another adventure.",
+  "stories.reader.backToLibrary": "Back to library",
+  "stories.reader.noPage": "Page not available",
+  "stories.reader.pageIndicator": "Page {current} of {total}",
+  "stories.reader.xpReward": "Reward: {xp} XP",
+  "stories.reader.totalPages": "{count} illustrated pages",
+  "stories.reader.ageRange": "Recommended ages: {badge}",
+  "stories.reader.audioAvailable": "Page narration available",
+  "stories.reader.previous": "Previous",
+  "stories.reader.next": "Next",
+  "stories.reader.audioOn": "Audio playing",
+  "stories.reader.audioOff": "Enable audio",
+  "stories.reader.completedButton": "Story already completed",
+  "stories.reader.completing": "Updating progress…",
+  "stories.reader.completeStory": "Finish story",
+  "stories.reader.completed": "Story completed! XP added to your progress.",
+  "stories.reader.completeError": "We could not update your progress right now.",
+  
+  // Sidebar - Story Library
+  "sidebar.storyLibrary": "STORY LIBRARY",
+  
+  // Category - Story Library
+  "category.story_library": "Story Library",
 } as const;

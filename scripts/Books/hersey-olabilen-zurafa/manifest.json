@@ -1,152 +1,180 @@
 {
-  "bookId": "SUPABASE-CONTENT-ID-BURAYA",
+  "bookId": "hersey-olabilen-zurafa",
   "title": "hersey-olabilen-zurafa",
+  "displayName": "Her Şey Olabilen Zürafa",
+  "description": "Küçük bir zürafanın hayal gücüyle her şeye dönüşebildiği eğlenceli hikaye.",
   "totalPages": 36,
   "hasAudio": false,
+  "primaryLocale": "tr",
+  "supportedLocales": [
+    "tr"
+  ],
+  "ageBadge": "4-7",
+  "themeColor": "bg-[#f97316]",
+  "isPremium": false,
+  "xpReward": 15,
+  "language": {
+    "name": "Story Library TR",
+    "nativeName": "Masal Kütüphanesi",
+    "flag": "📚",
+    "baseLanguage": "turkish",
+    "category": "story_library",
+    "themeMetadata": {
+      "islamicContent": false,
+      "ageGroup": "kids_4-7",
+      "moralValues": [
+        "kindness",
+        "respect"
+      ],
+      "educationalFocus": "hayal gücü ve özgüven",
+      "difficultyLevel": "beginner"
+    }
+  },
   "pages": [
     {
       "pageNumber": 1,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-001.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-001.jpg"
     },
     {
       "pageNumber": 2,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-002.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-002.jpg"
     },
     {
       "pageNumber": 3,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-003.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-003.jpg"
     },
     {
       "pageNumber": 4,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-004.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-004.jpg"
     },
     {
       "pageNumber": 5,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-005.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-005.jpg"
     },
     {
       "pageNumber": 6,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-006.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-006.jpg"
     },
     {
       "pageNumber": 7,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-007.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-007.jpg"
     },
     {
       "pageNumber": 8,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-008.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-008.jpg"
     },
     {
       "pageNumber": 9,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-009.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-009.jpg"
     },
     {
       "pageNumber": 10,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-010.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-010.jpg"
     },
     {
       "pageNumber": 11,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-011.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-011.jpg"
     },
     {
       "pageNumber": 12,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-012.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-012.jpg"
     },
     {
       "pageNumber": 13,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-013.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-013.jpg"
     },
     {
       "pageNumber": 14,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-014.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-014.jpg"
     },
     {
       "pageNumber": 15,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-015.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-015.jpg"
     },
     {
       "pageNumber": 16,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-016.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-016.jpg"
     },
     {
       "pageNumber": 17,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-017.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-017.jpg"
     },
     {
       "pageNumber": 18,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-018.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-018.jpg"
     },
     {
       "pageNumber": 19,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-019.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-019.jpg"
     },
     {
       "pageNumber": 20,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-020.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-020.jpg"
     },
     {
       "pageNumber": 21,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-021.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-021.jpg"
     },
     {
       "pageNumber": 22,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-022.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-022.jpg"
     },
     {
       "pageNumber": 23,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-023.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-023.jpg"
     },
     {
       "pageNumber": 24,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-024.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-024.jpg"
     },
     {
       "pageNumber": 25,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-025.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-025.jpg"
     },
     {
       "pageNumber": 26,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-026.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-026.jpg"
     },
     {
       "pageNumber": 27,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-027.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-027.jpg"
     },
     {
       "pageNumber": 28,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-028.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-028.jpg"
     },
     {
       "pageNumber": 29,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-029.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-029.jpg"
     },
     {
       "pageNumber": 30,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-030.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-030.jpg"
     },
     {
       "pageNumber": 31,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-031.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-031.jpg"
     },
     {
       "pageNumber": 32,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-032.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-032.jpg"
     },
     {
       "pageNumber": 33,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-033.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-033.jpg"
     },
     {
       "pageNumber": 34,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-034.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-034.jpg"
     },
     {
       "pageNumber": 35,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-035.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-035.jpg"
     },
     {
       "pageNumber": 36,
-      "imageUrl": "books/hersey-olabilen-zurafa/pages/page-036.jpg"
+      "imageUrl": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/pages/page-036.jpg"
     }
-  ]
+  ],
+  "coverImage": "https://qoeecnjzfldx8oht.public.blob.vercel-storage.com/books/hersey-olabilen-zurafa/cover.jpg"
 }

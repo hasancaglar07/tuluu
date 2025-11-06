@@ -3,15 +3,21 @@ export default {
   "header.site_language": "Site Dili",
 
   // Hero Section - Landing Page
-  "hero.title": "Küçük kalpler için iyilikle dolu bir ögrenme dünyası.",
-  "hero.subtitle": "Tulu, çocukların hem zihnini hem kalbini egiten yeni nesil bir ögrenme evrenidir.",
+  "hero.title": "ZİHNİ BİLGİYLE, KALBİ DEĞERLERLE İNŞA EDER.",
+  "hero.subtitle": "Sabır, şükür ve sevgiyle büyüten yeni nesil öğrenme evreni.",
   "hero.description":
     "Dualar, hikâyeler, bilimsel kesifler ve deger oyunlarıyla çocuklar; sabırla, şükürle ve sevgiyle büyür.",
-  "hero.getStarted": "Ücretsiz Başla",
+  "hero.getStarted": "Şimdi Başla",
   "hero.haveAccount": "Zaten hesabım var",
   "hero.languages": "Ana Kategori",
   "hero.learners": "Öğrenci Ailemiz",
   "hero.visits": "Günlük Aktif Kullanıcı",
+
+  // Auth Pages
+  "auth.signin.noAccount": "Hesabın yok mu?",
+  "auth.signin.signUp": "Kayıt Ol",
+  "auth.signup.haveAccount": "Hesabın var mı?",
+  "auth.signup.signIn": "Giriş Yap",
 
   // Footer
   "footer.about": "Hakkında",
@@ -1356,4 +1362,40 @@ export default {
   "unit.maybeLater": "belki sonra",
   "unit.passTest": "Testi Geç",
   "unit.image.alt": "Ünite görseli",
+
+  // Story Library & Reader
+  "stories.library.title": "Hikaye Kütüphanesi",
+  "stories.library.subtitle": "Bir kitap seç, sayfaları çevir ve küçük kâşifin ile birlikte hikâyeyi takip et.",
+  "stories.library.empty": "Henüz hikaye kitabı bulunmuyor.",
+  "stories.library.emptyDescription": "Yeni maceralar çok yakında eklenecek.",
+  "stories.library.premiumBadge": "Premium",
+  "stories.library.audioBadge": "Sesli",
+  "stories.library.pages": "{count} sayfa",
+  "stories.library.xpReward": "+{xp} XP",
+  "stories.library.readNow": "Şimdi oku",
+  
+  "stories.reader.notFound": "Hikaye bulunamadı",
+  "stories.reader.notFoundDescription": "Lütfen kütüphaneye dön ve başka bir macera seç.",
+  "stories.reader.backToLibrary": "Kütüphaneye dön",
+  "stories.reader.noPage": "Sayfa mevcut değil",
+  "stories.reader.pageIndicator": "Sayfa {current} / {total}",
+  "stories.reader.xpReward": "Ödül: {xp} XP",
+  "stories.reader.totalPages": "{count} resimli sayfa",
+  "stories.reader.ageRange": "Önerilen yaş: {badge}",
+  "stories.reader.audioAvailable": "Sayfa anlatımı mevcut",
+  "stories.reader.previous": "Önceki",
+  "stories.reader.next": "Sonraki",
+  "stories.reader.audioOn": "Ses oynatılıyor",
+  "stories.reader.audioOff": "Sesi aç",
+  "stories.reader.completedButton": "Hikaye tamamlandı",
+  "stories.reader.completing": "İlerleme güncelleniyor…",
+  "stories.reader.completeStory": "Hikayeyi bitir",
+  "stories.reader.completed": "Hikaye tamamlandı! XP ilerlemenize eklendi.",
+  "stories.reader.completeError": "İlerlemeniz şu anda güncellenemedi.",
+  
+  // Sidebar - Story Library
+  "sidebar.storyLibrary": "HİKÂYE KÜTÜPHANESİ",
+  
+  // Category - Story Library
+  "category.story_library": "Hikâye Kütüphanesi",
 } as const;

@@ -6,6 +6,7 @@
 
 📋 **1. ADIM: ENVANTER & FORMAT STANDARDİZASYONU**
 - Mevcut klasör yapısını ve `manifest.json` formatını doğrula (`scripts/Books/hersey-olabilen-zurafa/manifest.json:1`). Tüm kitaplarda `bookId`, `title`, `totalPages`, `pages[]`, opsiyonel `audio` alanlarının bulunduğundan emin ol.
+- Çocuk içeriğine özel meta alanlarını (örn. `displayName`, `ageBadge`, `isPremium`, `xpReward`, `themeColor`, `supportedLocales`) manifestte standartlaştır; eksik alanları import sırasında varsayılana düşür.
 - Kapak görsellerinin, sayfa görsellerinin ve opsiyonel ses dosyalarının isimlendirmesini normalize et (örn. `page-001.jpg`, `page-001.mp3`). Eksik dosya tespiti için otomatik kontrol scripti hazırla.
 - Doğrulama kontrol noktaları:
   1. Her `pages` girdisi benzersiz `pageNumber` içeriyor.
@@ -37,7 +38,8 @@
   1. Manifestleri tara, eksik/bozuk kayıtları raporla.
   2. Gerekliyse Language kaydı oluştur (örn. “Story Library” programı).
   3. Her kitap için Chapter + (tek) Unit + (tek) Lesson + StoryPage dokümanlarını oluştur.
-  4. İlerleme verisi için `UserProgress` üzerinde “storyCompletedBooks” gibi yeni alan hazırlığının yapılmasını kontrol et.
+  4. `Lesson` dokümanına manifestten gelen `isPremium` ve `xpReward` değerlerini yaz (model alanları `api/models/Lesson.ts:23`).
+  5. İlerleme verisi için `UserProgress` üzerinde “storyCompletedBooks” gibi yeni alan hazırlığının yapılmasını kontrol et.
 - Güvenlik: Mongo URI’yi ortam değişkenine taşı (şu an script içinde açıkta, `scripts/import-iman-ahlak.js:3`).
 - Kontrol noktası: Script tekrar çalıştığında idempotent davranmalı (kitap varsa güncelle/atla).
 
@@ -50,7 +52,9 @@
   - `GET /api/stories/{id}` → manifest + CDN URL’leri
   - (Opsiyonel) `POST /api/admin/stories` → panelden içerik ekleme
 - Public learn endpoint’i (`api/app/api/public/lessons/route.ts:22`) story programını kategoriler arasında doğru sınıflandırabilmeli; gerekirse `Language.category` enum’una “story_library” gibi yeni bir değer ekleyip front tipi güncelle (`front/types/index.tsx:9`).
+- Lokalizasyon: `api/app/api/public/lessons/route.ts:932` zaten `locale` parametresini alıyor; import sırasında her kitabın `Language.locale` alanını (`api/models/Language.ts:17`) hedef diline göre ayarla ve endpoint’te `locale` filtrelemesini kitap kütüphanesine uygula. Farklı dillerdeki kitaplar için ayrı `Language`/Chapter kayıtları oluştur; `supportedLocales` meta alanı ile hangi dilde gösterileceği kontrol edilsin.
 - Rate limiting ve erişim kontrolü: Premium kitaplarsa `User.subscription` durumunu doğrula.
+- XP ilerlemesini tetiklemek için okuyucudan gelen “kitap tamamlandı” olayında `Lesson.xpReward` değerini kullanan endpoint (var olan `UserProgress` servisleri) hazır olsun; premium kitaplarda erişim reddi öncesi anlamlı hata döndür.
 
 ---
 
@@ -60,11 +64,14 @@
   - `front/app/[locale]/(pages)/stories` altında kitap kütüphanesi gridi.
   - `front/app/[locale]/(pages)/stories/[bookId]` içinde tam ekran okuyucu (thumbnail şeridi, klavye ok tuşu, ses butonu).
   - Global state tarafında `lessonsSlice` yeni verileri taşımalı; `LessonContent` tipine `storyPages` alanı ekle (`front/types/index.tsx:100`).
+- Çocuk dostu deneyim için canlı renk paleti, büyük butonlar, animasyonlu sayfa geçişleri (ör. hafif kaydırma) ve sayfa bazlı audio kontrol paneli (oynat/durdur, otomatik ilerleme, ses seviyesini kapatma) ekle; bu kontroller için mevcut buton bileşenlerini (`front/components/custom`) yeniden kullan.
+- Premium kitaplarda kart ve okuyucu girişinde kilit durumu göster; kullanıcı premium değilse modal yönlendirmesi mevcut `Lesson` akışındaki premium guard ile tutarlı olsun (`Lesson` objesinin `isPremium` alanı front’ta tüketiliyor).
 - Aile/çocuk modu için `UserState` veya `Settings` store’larında okuma süresi ve ebeveyn kontrollerini göz önünde bulundur (`front/store/lessonsSlice.ts:59`).
 - Doğrulama kontrol noktaları:
   1. Kitap kartına tıklayınca SWR + Redux çakışması olmadan veri yüklenmeli.
   2. Hikaye sayfaları lazy-load edilerek performans korunmalı.
   3. Sesli kitap varsa audio player playlist’i sayfa numarasına göre senkron olmalı.
+  4. Premium kitap açma adımı kullanıcı rolüne göre doğru uyarı/kilit ekranı gösteriyor.
 
 ---
 
@@ -98,4 +105,3 @@
 - [ ] Mongo şema güncellemeleri ve script’ler lokal/staging üzerinde test edildi.
 - [ ] API ve frontend entegrasyonu için regresyon testleri yeşil.
 - [ ] Dağıtım dokümantasyonu ve geri dönüş planı hazır.
-

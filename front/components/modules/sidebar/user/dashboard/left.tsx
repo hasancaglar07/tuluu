@@ -3,13 +3,21 @@
 import { LocaleLink } from "@/components/custom/locale-link";
 import Logo from "@/components/custom/logo";
 import { m } from "framer-motion";
-import { Book, Plus, Settings, Shield, ShoppingBag } from "lucide-react";
+import {
+  Book,
+  BookOpen,
+  Plus,
+  Settings,
+  Shield,
+  ShoppingBag,
+} from "lucide-react";
 import React from "react";
 import { FormattedMessage } from "react-intl";
 
 const menuItems = [
   {
     label: "sidebar.myCourse",
+    defaultMessage: "My Course",
     icon: <Book className="h-6 w-6 text-indigo-500" />,
     href: "/dashboard",
     isActive: true,
@@ -18,6 +26,7 @@ const menuItems = [
   },
   {
     label: "sidebar.leaderboard",
+    defaultMessage: "Leaderboard",
     icon: <Shield className="h-6 w-6 text-blue-500" />,
     href: "/leaderboard",
     bgColor: "#ffc800",
@@ -25,6 +34,7 @@ const menuItems = [
   },
   {
     label: "sidebar.quests",
+    defaultMessage: "Quests",
     icon: <Plus className="h-6 w-6 text-amber-500" />,
     href: "/quests",
     bgColor: "#ffc800",
@@ -32,13 +42,23 @@ const menuItems = [
   },
   {
     label: "sidebar.shop",
+    defaultMessage: "Shop",
     icon: <ShoppingBag className="h-6 w-6 text-red-500" />,
     href: "/shop",
     bgColor: "#ff4b4b",
     textColor: "#afafaf",
   },
   {
+    label: "sidebar.storyLibrary",
+    defaultMessage: "Story Library",
+    icon: <BookOpen className="h-6 w-6 text-rose-500" />,
+    href: "/stories",
+    bgColor: "#ffc800",
+    textColor: "#afafaf",
+  },
+  {
     label: "sidebar.profile",
+    defaultMessage: "Profile",
     icon: <Settings className="h-6 w-6 text-purple-500" />,
     href: "profile",
     bgColor: "#ce82ff",
@@ -57,7 +77,10 @@ export default function LeftSidebarDashboard() {
       </div>
       <nav className="flex flex-col gap-1 p-8">
         {menuItems.map(
-          ({ label, icon: Icon, href, textColor, isActive }, idx) => (
+          (
+            { label, defaultMessage, icon: Icon, href, textColor, isActive },
+            idx
+          ) => (
             <m.div
               key={idx}
               whileHover={{ scale: 1.03 }}
@@ -80,7 +103,7 @@ export default function LeftSidebarDashboard() {
                   {Icon}
                 </div>
                 <span className="text-base text-gray-500 tracking-wider">
-                  <FormattedMessage id={label} />
+                  <FormattedMessage id={label} defaultMessage={defaultMessage} />
                 </span>
               </LocaleLink>
             </m.div>

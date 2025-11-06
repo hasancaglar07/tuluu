@@ -3,6 +3,8 @@ import type {
   ThemeMetadata,
   MoralLessonDetails,
   MiniGameDetails,
+  StoryPage,
+  StoryMetadata,
 } from ".";
 
 /**
@@ -45,6 +47,8 @@ export interface Lesson {
   exercises: Exercise[];
   moralLesson?: MoralLessonDetails | null;
   miniGame?: MiniGameDetails | null;
+  storyPages?: StoryPage[];
+  storyMetadata?: StoryMetadata | null;
 }
 
 export interface Unit {

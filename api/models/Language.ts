@@ -70,6 +70,7 @@ const LanguageSchema = new Schema(
         "language_learning",
         "mental_spiritual",
         "personal_social",
+        "story_library",
       ],
       default: "language_learning",
     },

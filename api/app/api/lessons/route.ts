@@ -765,6 +765,8 @@ export async function GET(req: NextRequest) {
                       order: lesson.order || 10,
                       moralLesson: chapter.moralLesson || null,
                       miniGame: chapter.miniGame || null,
+                      storyPages: lesson.storyPages || [],
+                      storyMetadata: lesson.storyMetadata || null,
                       exercises: formattedExercises,
                     };
                   })

@@ -15,8 +15,8 @@ export default function page() {
   );
 }
 export const metadata: Metadata = {
-  title: "Home- TULU",
-  description: "An enjoyable way to learn a new language",
+  title: "TULU - Zihinleri Bilgiyle, Kalpleri Değerlerle İnşa Eder",
+  description: "TULU: Sabır, şükür ve sevgiyle büyüten yeni nesil öğrenme evreni. Çocuklarınız için eğlenceli ve değer odaklı eğitim platformu.",
   icons: {
     icon: "/images/logo_icon.png",
     shortcut: "/favicon.ico",

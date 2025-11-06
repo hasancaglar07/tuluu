@@ -44,6 +44,7 @@ const CATEGORY_ORDER: LanguageCategory[] = [
   "math_logic",
   "science_discovery",
   "language_learning",
+  "story_library",
   "mental_spiritual",
   "personal_social",
 ];
@@ -54,6 +55,7 @@ const CATEGORY_ICONS: Record<LanguageCategory, string> = {
   math_logic: "➕",
   science_discovery: "🔭",
   language_learning: "🗣️",
+  story_library: "📚",
   mental_spiritual: "🌿",
   personal_social: "👭",
 };
@@ -279,6 +281,14 @@ export default function LanguagesToLearn({
       >
         <div className="flex items-center justify-between w-full">
           <CategoryBadge label={getCategoryLabel(language.category)} />
+          {language.category === "story_library" && (
+            <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-600">
+              {intl.formatMessage({
+                id: "miniGame.story",
+                defaultMessage: "Story Time",
+              })}
+            </span>
+          )}
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {getDifficultyLabel(themeMetadata.difficultyLevel)}
           </span>
@@ -322,6 +332,17 @@ export default function LanguagesToLearn({
             {themeMetadata.educationalFocus && (
               <span className="text-xs text-muted-foreground">
                 {themeMetadata.educationalFocus}
+              </span>
+            )}
+            {language.category === "story_library" && language.locale && (
+              <span className="text-xs text-amber-600 font-medium">
+                {intl.formatMessage(
+                  {
+                    id: "learn.localeAvailability",
+                    defaultMessage: "Available in {locale}",
+                  },
+                  { locale: language.locale.toUpperCase() }
+                )}
               </span>
             )}
             {themeMetadata.islamicContent && (
@@ -388,6 +409,9 @@ export default function LanguagesToLearn({
   };
 
   const handleLearn = async (languageId: string) => {
+    const targetLanguage = languages?.find((lang) => lang._id === languageId);
+    const isStoryLibrary = targetLanguage?.category === "story_library";
+
     setIsLoading(true);
     const token = await getToken();
 
@@ -410,7 +434,11 @@ export default function LanguagesToLearn({
         await dispatch(fetchSettings({ token }));
       }
 
-      router.push(`/dashboard`);
+      if (isStoryLibrary) {
+        router.push(`/stories?languageId=${languageId}`);
+      } else {
+        router.push(`/dashboard`);
+      }
     } catch (error) {
       console.error("❌ Error starting progress:", error);
     } finally {
