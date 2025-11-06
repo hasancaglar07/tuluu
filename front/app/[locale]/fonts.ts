@@ -1,7 +1,8 @@
-import { Fredoka } from "next/font/google";
+import { Nunito } from "next/font/google";
 
-export const fredoka = Fredoka({
+export const fredoka = Nunito({
   variable: "--font-fredoka",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });

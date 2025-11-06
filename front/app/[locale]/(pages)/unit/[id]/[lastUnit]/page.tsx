@@ -1,21 +1,41 @@
+"use client";
+
 import { checkLastUnitIsCompleted } from "@/actions/userprogress";
 import Container from "@/components/custom/container";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { useIntl } from "react-intl";
+import { useEffect, useState } from "react";
 
-// Nextjs ISR caching strategy
-export const revalidate = false;
-
-export default async function page({
+export default function Page({
   params,
 }: {
   params: Promise<{ id: string; lastUnit: string }>;
 }) {
-  const { id, lastUnit } = await params; // Unwrapping the promise
+  const intl = useIntl();
+  const [id, setId] = useState<string>("");
+  const [lastUnit, setLastUnit] = useState<string>("");
+  const [check, setCheck] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
-  //server action check if last unit is completed
-  const check = await checkLastUnitIsCompleted(id);
+  useEffect(() => {
+    async function loadParams() {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+      setLastUnit(resolvedParams.lastUnit);
+
+      // Check if last unit is completed
+      const isCompleted = await checkLastUnitIsCompleted(resolvedParams.id);
+      setCheck(isCompleted);
+      setLoading(false);
+    }
+    loadParams();
+  }, [params]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <section className="min-h-screen flex flex-col">
@@ -25,17 +45,19 @@ export default async function page({
             <div className="mb-4">
               <Image
                 src="https://cdn-icons-png.flaticon.com/128/6778/6778935.png"
-                alt="Unit illustration"
+                alt={intl.formatMessage({ id: "unit.image.alt" })}
                 className="rounded-lg shadow-lg mx-auto object-scale-down"
                 width={300}
                 height={200}
               />
             </div>
-            <h1 className="text-3xl font-bold">Welcome to the Unit</h1>
+            <h1 className="text-3xl font-bold">
+              {intl.formatMessage({ id: "unit.welcome.title" })}
+            </h1>
             <p className="text-lg text-gray-600">
               {check
-                ? "Congratulation you can move to the next Unit, let's go"
-                : "You did not finish the last Unit so you need to pass this test to jump ahead to the next !"}
+                ? intl.formatMessage({ id: "unit.congratulations" })
+                : intl.formatMessage({ id: "unit.incomplete" })}
             </p>
           </div>
         </Container>
@@ -48,14 +70,14 @@ export default async function page({
               href="/dashboard"
               className="text-secondary-500 uppercase hover:text-secondary-600 transition-colors"
             >
-              maybe later
+              {intl.formatMessage({ id: "unit.maybeLater" })}
             </Link>
             <Button asChild variant="secondary">
               <Link
                 href={check ? `/dashboard` : `/unit/${id}/${lastUnit}/test`}
                 className="text-white"
               >
-                Pass the test
+                {intl.formatMessage({ id: "unit.passTest" })}
               </Link>
             </Button>
           </div>
