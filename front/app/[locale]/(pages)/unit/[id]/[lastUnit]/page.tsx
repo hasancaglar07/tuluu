@@ -86,14 +86,3 @@ export default function Page({
     </section>
   );
 }
-
-// Nextjs dynamic metadata
-export function generateMetadata() {
-  return {
-    title: `Page - Title here`,
-    description: `Page - Description here`,
-    icons: {
-      icon: `path to asset file`,
-    },
-  };
-}
