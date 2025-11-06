@@ -167,10 +167,11 @@ export default function TermsPage() {
                 Kullanım Koşulları
               </LocaleLink>
               <Link
-                href="https://www.patreon.com/messages/8b25e025c56c4d47a903cd9b02049c63?mode=campaign&tab=chats"
+                href="https://tulukitap.com/"
+                target="_blank"
                 className="hover:underline"
               >
-                Bize Ulaşın
+                Tulu Kitap
               </Link>
               <LocaleLink href="/about" className="hover:underline">
                 Hakkımızda

@@ -888,12 +888,12 @@ export default function HelpPage() {
                 asChild
                 className="bg-[#1cb0f6] hover:bg-[#0a9fd9] text-white font-bold"
               >
-                <LocaleLink href="https://www.patreon.com/messages/?mode=campaign&tab=chats">
+                <LocaleLink href="https://tulukitap.com/">
                   Contact Support
                 </LocaleLink>
               </Button>
               <Button asChild variant="outline">
-                <LocaleLink href="https://www.patreon.com/messages/?mode=campaign&tab=chats">
+                <LocaleLink href="https://tulukitap.com/">
                   Visit Community Forum
                 </LocaleLink>
               </Button>

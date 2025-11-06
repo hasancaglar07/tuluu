@@ -154,10 +154,10 @@ export default function PrivacyPolicyPage() {
                 Kullanım Koşulları
               </LocaleLink>
               <LocaleLink
-                href="https://www.patreon.com/messages/8b25e025c56c4d47a903cd9b02049c63?mode=campaign&tab=chats"
+                href="https://tulukitap.com/"
                 className="hover:underline"
               >
-                Bize Ulaşın
+                Tulu Kitap
               </LocaleLink>
               <LocaleLink href="/about" className="hover:underline">
                 Hakkımızda
