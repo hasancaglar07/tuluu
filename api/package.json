@@ -28,7 +28,7 @@
     "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.510.0",
     "mongoose": "^8.14.2",
-    "next": "15.3.2",
+    "next": "^15.3.8",
     "next-csrf": "^0.2.1",
     "next-swagger-doc": "^0.4.1",
     "nodemailer": "^7.0.3",
