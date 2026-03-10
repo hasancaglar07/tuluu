@@ -22,7 +22,7 @@ const CSRF_CONFIG = {
   headerName: "x-csrf-token",
   tokenLength: 32,
   maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
-  sameSite: "lax" as const, // when you have dfferent (subdoman) for your app as front.doman.com api.doman.com
+  sameSite: "none" as const, // Required for cross-origin (different domains/subdomains)
   // secure: process.env.NODE_ENV === "production",
   secure: true,
   httpOnly: false,
