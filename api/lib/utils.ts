@@ -1,5 +1,6 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { hasRequestAdminRole, resolveRequestRole } from "@/lib/admin-access";
 
 export function generateRandomUsername() {
   const randomString = Math.random().toString(36).substring(2, 10); // Random alphanumeric string
@@ -8,18 +9,25 @@ export function generateRandomUsername() {
 }
 
 export async function authGuard() {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const clerk = await clerkClient();
   const user = await clerk.users.getUser(userId);
-  if (user.privateMetadata.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!hasRequestAdminRole({ user, sessionClaims })) {
+    return NextResponse.json(
+      {
+        error: "Forbidden",
+        message: "Admin role required",
+        role: resolveRequestRole({ user, sessionClaims }) ?? "none",
+      },
+      { status: 403 }
+    );
   }
 
-  return { userId, user };
+  return { userId, user, role: resolveRequestRole({ user, sessionClaims }) };
 }
 
 type StreakEntry = {

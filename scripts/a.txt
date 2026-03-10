@@ -1,0 +1,258 @@
+🎯 PROFESYONEL PROMPT - DUOLINGO TARZI EĞİTİM SİSTEMİ
+PROJE TANIMI
+Mevcut "Egzersiz Ekle" popup'ına eğitim içerik tipleri ekleyerek, tek bir arayüzden hem eğitim ekranları hem de egzersizler eklenebilmesini sağla. Duolingo'daki gibi, bir derste önce eğitim ekranları gösterilsin, ardından egzersizler gelsin.
+
+MEVCUT DURUM ANALİZİ
+Şu an çalışan sistem:
+
+"Egzersiz Türü" dropdown'ında: Çeviri, Seç, Sırala, Konuş, Dinle
+Her egzersiz tipi seçildiğinde popup parametreleri değişiyor ✅
+Sadece egzersiz eklenebiliyor, eğitim ekranı eklenemiyor ❌
+İstenilen:
+
+Aynı dropdown'a 4-5 yeni eğitim tipi ekle
+Her eğitim tipi için popup parametreleri farklı olsun
+Örnek: Resim 2'deki gibi 3 resim kartlı eğitim ekranı
+EKLENMESİ GEREKEN EĞİTİM TİPLERİ
+1. Resimli Tanıtım Ekranı (Image Introduction)
+Kullanım: Yeni kelime/kavram tanıtımı için 3 resimli kart gösterimi
+
+Popup Parametreleri:
+
+- Başlık: "Yeni kelimeyi öğren" (string)
+- Alt başlık: "Bunlardan hangisi 'anne'?" (string)
+- Kart 1:
+  - Resim URL (image upload)
+  - Kelime metni (string)
+  - Ses dosyası (audio upload)
+- Kart 2:
+  - Resim URL
+  - Kelime metni  
+  - Ses dosyası
+- Kart 3:
+  - Resim URL
+  - Kelime metni
+  - Ses dosyası
+- Otomatik devam süresi: (number, saniye) opsiyonel
+- "Devam Et" butonu göster: (checkbox)
+
+2. Görsel Açıklama Ekranı (Visual Explanation)
+Kullanım: Tek büyük görsel + açıklama metni
+
+Popup Parametreleri:
+
+- Başlık (string)
+- Ana görsel (image upload)
+- Açıklama metni (textarea, markdown destekli)
+- Ses narasyonu (audio upload, opsiyonel)
+- Notlar/İpuçları (textarea, opsiyonel)
+
+3. Video Eğitim Ekranı (Video Tutorial)
+Kullanım: Video ile kavram anlatımı
+
+Popup Parametreleri:
+
+- Başlık (string)
+- Video URL veya upload (video upload)
+- Video kapak görseli (image upload)
+- Alt yazı metni (textarea, opsiyonel)
+- Otomatik oynat (checkbox)
+
+4. Ses Dinleme Eğitimi (Audio Learning)
+Kullanım: Sadece ses dinletme ve metin gösterme
+
+Popup Parametreleri:
+
+- Başlık (string)
+- Yönerge metni (string): örn. "Dinle ve takip et"
+- Ses dosyası (audio upload)
+- Metin içeriği (textarea): Kullanıcının takip edeceği metin
+- Tekrar sayısı (number): Sesin kaç kez çalacağı
+
+5. İpucu/Not Ekranı (Tip Card)
+Kullanım: Önemli notlar, kültürel ipuçları, telaffuz notları
+
+Popup Parametreleri:
+
+- Tip tipi (dropdown): "Önemli", "Not", "Kültür", "Telaffuz", "Hatırlatıcı"
+- İkon (icon picker veya default)
+- Başlık (string)
+- İçerik metni (textarea)
+- Örnek ses (audio upload, opsiyonel)
+- Arka plan rengi (color picker)
+
+TEKNİK UYGULAMA GEREKSİNİMLERİ
+1. Dropdown Yapısı
+"Egzersiz Türü" Dropdown Options:
+├─ 📚 EĞİTİM İÇERİKLERİ
+│  ├─ "education_image_intro" → Resimli Tanıtım (3 kartlı)
+│  ├─ "education_visual" → Görsel Açıklama
+│  ├─ "education_video" → Video Eğitim
+│  ├─ "education_audio" → Ses Dinleme
+│  └─ "education_tip" → İpucu/Not Kartı
+│
+└─ ✏️ ALIŞTIRMALAR
+   ├─ "translate" → Çeviri
+   ├─ "select" → Seç
+   ├─ "arrange" → Sırala
+   ├─ "match" → Eşleştir
+   ├─ "listen" → Dinle
+   └─ "speak" → Konuş
+
+2. Exercise Model Güncellemesi
+api/models/Exercise.ts dosyasında:
+
+type: {
+  type: String,
+  enum: [
+    // Mevcut egzersizler
+    "translate", "select", "arrange", "match", "listen", "speak",
+    // YENİ: Eğitim tipleri
+    "education_image_intro", 
+    "education_visual",
+    "education_video", 
+    "education_audio",
+    "education_tip"
+  ],
+  required: true
+}
+
+// Yeni alanlar ekle:
+educationContent: {
+  type: Object,
+  default: null,
+  // Her eğitim tipi için özel yapı
+}
+
+3. Validation Schema
+api/lib/validations/exercise.ts içinde:
+
+const educationTypes = [
+  "education_image_intro", 
+  "education_visual",
+  "education_video", 
+  "education_audio",
+  "education_tip"
+];
+
+// educationContent validasyonu ekle
+.superRefine((data, ctx) => {
+  if (educationTypes.includes(data.type)) {
+    if (!data.educationContent) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["educationContent"],
+        message: "Eğitim içeriği zorunludur"
+      });
+    }
+  }
+});
+
+4. Frontend Popup Component
+Mevcut popup component'inde dinamik form alanları:
+
+const ExerciseFormPopup = () => {
+  const [selectedType, setSelectedType] = useState("");
+  
+  const renderFormFields = () => {
+    // Eğitim tipleri için özel form
+    if (selectedType === "education_image_intro") {
+      return <ImageIntroForm />; // 3 kart + ses upload
+    }
+    
+    if (selectedType === "education_visual") {
+      return <VisualExplanationForm />; // Büyük görsel + metin
+    }
+    
+    // ... diğer tipler
+    
+    // Mevcut egzersiz formları
+    if (selectedType === "translate") {
+      return <TranslateExerciseForm />;
+    }
+    // ...
+  };
+  
+  return (
+    <Dialog>
+      <Select value={selectedType} onChange={setSelectedType}>
+        <optgroup label="📚 EĞİTİM İÇERİKLERİ">
+          <option value="education_image_intro">Resimli Tanıtım</option>
+          {/* ... */}
+        </optgroup>
+        <optgroup label="✏️ ALIŞTIRMALAR">
+          <option value="translate">Çeviri</option>
+          {/* ... */}
+        </optgroup>
+      </Select>
+      
+      {renderFormFields()}
+    </Dialog>
+  );
+};
+
+
+ÖRNEK VERI YAPISI
+Eğitim İçerik Örneği:
+
+{
+  "lessonId": "...",
+  "type": "education_image_intro",
+  "order": 1,
+  "educationContent": {
+    "title": "Yeni Kelime",
+    "subtitle": "Bunlardan hangisi 'anne'?",
+    "cards": [
+      {
+        "imageUrl": "https://.../house.png",
+        "text": "дом",
+        "audioUrl": "https://.../dom.mp3"
+      },
+      {
+        "imageUrl": "https://.../doctor.png",
+        "text": "медик",
+        "audioUrl": "https://.../medic.mp3"
+      },
+      {
+        "imageUrl": "https://.../mother.png",
+        "text": "мама",
+        "audioUrl": "https://.../mama.mp3",
+        "isCorrect": true
+      }
+    ],
+    "showContinueButton": true,
+    "autoAdvanceSeconds": null
+  }
+}
+
+ÖĞRENCİ TARAFINDA GÖSTERIM
+Lesson player'da:
+
+function LessonScreen({ exercise }) {
+  // Eğitim içerik tipi ise
+  if (exercise.type.startsWith("education_")) {
+    return <EducationContentRenderer 
+      type={exercise.type} 
+      content={exercise.educationContent} 
+    />;
+  }
+  
+  // Normal egzersiz ise
+  return <ExerciseRenderer exercise={exercise} />;
+}
+
+UYGULAMA ADIMLARı
+✅ Exercise model'e yeni tipler ve educationContent alanı ekle
+✅ Validation schema'yı güncelle
+✅ Admin popup'a dropdown seçenekleri ekle
+✅ Her eğitim tipi için form component'i oluştur
+✅ API route'larını test et
+✅ Öğrenci tarafında renderer component'leri yaz
+✅ Duolingo tarzı tasarım uygula
+ÖNEMLİ NOTLAR
+Tek ekran prensibi: Her içerik tam ekran gösterilmeli
+Sıralama: order alanıyla eğitim→egzersiz sırasını koru
+Medya yönetimi: Resim/ses upload için mevcut asset sisteminizi kullan
+Responsive: Mobil uyumlu tasarım şart
+Animasyonlar: Geçişlerde Duolingo tarzı animasyonlar
+Bu yapı, mevcut sisteminizi bozmadan, sadece genişleterek Duolingo benzeri karma eğitim-egzersiz akışı sağlar.

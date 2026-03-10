@@ -17,11 +17,13 @@ export function useLessonAPI() {
    */
   const completeLessonApi = async ({
     lessonId,
+    xp = 0,
     gems = 0,
     gel = 0,
     xpBoost = null,
   }: {
     lessonId: string;
+    xp?: number;
     gems?: number;
     gel?: number;
     xpBoost?: { durationMinutes: number; multiplier: number } | null;
@@ -32,7 +34,7 @@ export function useLessonAPI() {
         "/api/progress/addlesson",
         {
           lessonId,
-          xp: 0, // XP will be handled separately
+          xp, // include earned XP directly in lesson completion
           gems,
           gel,
           xpBoost,

@@ -7,10 +7,10 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development && next dev --port 3000",
-    "build": "next build",
-    "start": "next start --port 3000",
-    "lint": "next lint --no-cache"
+    "dev": "node ./scripts/run-next.cjs dev --port 3000",
+    "build": "node ./scripts/run-next.cjs build",
+    "start": "node ./scripts/run-next.cjs start --port 3000",
+    "lint": "node ./scripts/run-next.cjs lint --no-cache"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.21.0",
@@ -84,5 +84,8 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.1.16"
   }
 }

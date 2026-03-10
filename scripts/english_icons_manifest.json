@@ -1,0 +1,635 @@
+{
+  "sourceDir": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png",
+  "categories": [
+    {
+      "key": "animals",
+      "titleTR": "Hayvanlar",
+      "items": [
+        {
+          "fileName": "African_Lion_african-lion.png",
+          "label": "lion",
+          "exists": true,
+          "slug": "african-lion",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\African_Lion_african-lion.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/African_Lion_african-lion.png"
+        },
+        {
+          "fileName": "African_Elephant_african-elephant.png",
+          "label": "elephant",
+          "exists": true,
+          "slug": "african-elephant",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\African_Elephant_african-elephant.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/African_Elephant_african-elephant.png"
+        },
+        {
+          "fileName": "Adelie_Penguin_adelie-penguin.png",
+          "label": "penguin",
+          "exists": true,
+          "slug": "adelie-penguin",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Adelie_Penguin_adelie-penguin.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Adelie_Penguin_adelie-penguin.png"
+        },
+        {
+          "fileName": "Dog_dog.png",
+          "label": "dog",
+          "exists": true,
+          "slug": "dog",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Dog_dog.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Dog_dog.png"
+        },
+        {
+          "fileName": "Cat_cat.png",
+          "label": "cat",
+          "exists": true,
+          "slug": "cat",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cat_cat.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cat_cat.png"
+        },
+        {
+          "fileName": "African_Grey_Parrot_african-grey-parrot.png",
+          "label": "parrot",
+          "exists": true,
+          "slug": "african-grey-parrot",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\African_Grey_Parrot_african-grey-parrot.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/African_Grey_Parrot_african-grey-parrot.png"
+        },
+        {
+          "fileName": "Clown_Fish_clown-fish.png",
+          "label": "fish",
+          "exists": true,
+          "slug": "clown-fish",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Clown_Fish_clown-fish.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Clown_Fish_clown-fish.png"
+        },
+        {
+          "fileName": "Bear_bear.png",
+          "label": "bear",
+          "exists": true,
+          "slug": "bear",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bear_bear.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bear_bear.png"
+        },
+        {
+          "fileName": "Giraffe_giraffe.png",
+          "label": "giraffe",
+          "exists": true,
+          "slug": "giraffe",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Giraffe_giraffe.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Giraffe_giraffe.png"
+        },
+        {
+          "fileName": "Zebra_zebra.png",
+          "label": "zebra",
+          "exists": true,
+          "slug": "zebra",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Zebra_zebra.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Zebra_zebra.png"
+        },
+        {
+          "fileName": "Cow_cow.png",
+          "label": "cow",
+          "exists": true,
+          "slug": "cow",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cow_cow.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cow_cow.png"
+        },
+        {
+          "fileName": "Rabbit_rabbit.png",
+          "label": "rabbit",
+          "exists": true,
+          "slug": "rabbit",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Rabbit_rabbit.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Rabbit_rabbit.png"
+        },
+        {
+          "fileName": "Frog_frog.png",
+          "label": "frog",
+          "exists": true,
+          "slug": "frog",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Frog_frog.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Frog_frog.png"
+        },
+        {
+          "fileName": "Monkey_monkey.png",
+          "label": "monkey",
+          "exists": true,
+          "slug": "monkey",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Monkey_monkey.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Monkey_monkey.png"
+        },
+        {
+          "fileName": "Tiger_tiger.png",
+          "label": "tiger",
+          "exists": true,
+          "slug": "tiger",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Tiger_tiger.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Tiger_tiger.png"
+        }
+      ]
+    },
+    {
+      "key": "vehicles",
+      "titleTR": "Araçlar",
+      "items": [
+        {
+          "fileName": "Car_car.png",
+          "label": "car",
+          "exists": true,
+          "slug": "car",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Car_car.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Car_car.png"
+        },
+        {
+          "fileName": "Bus_bus.png",
+          "label": "bus",
+          "exists": true,
+          "slug": "bus",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bus_bus.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bus_bus.png"
+        },
+        {
+          "fileName": "Bullet_Train_bullet-train.png",
+          "label": "train",
+          "exists": true,
+          "slug": "bullet-train",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bullet_Train_bullet-train.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bullet_Train_bullet-train.png"
+        },
+        {
+          "fileName": "Airplane_airplane.png",
+          "label": "airplane",
+          "exists": true,
+          "slug": "airplane",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Airplane_airplane.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Airplane_airplane.png"
+        },
+        {
+          "fileName": "Cargo_Ship_cargo-ship.png",
+          "label": "ship",
+          "exists": true,
+          "slug": "cargo-ship",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cargo_Ship_cargo-ship.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cargo_Ship_cargo-ship.png"
+        },
+        {
+          "fileName": "Boat_boat.png",
+          "label": "boat",
+          "exists": true,
+          "slug": "boat",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Boat_boat.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Boat_boat.png"
+        },
+        {
+          "fileName": "Bicycle_bicycle.png",
+          "label": "bicycle",
+          "exists": true,
+          "slug": "bicycle",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bicycle_bicycle.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bicycle_bicycle.png"
+        },
+        {
+          "fileName": "Blackhawk_Helicopter_blackhawk-helicopter.png",
+          "label": "helicopter",
+          "exists": true,
+          "slug": "blackhawk-helicopter",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Blackhawk_Helicopter_blackhawk-helicopter.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Blackhawk_Helicopter_blackhawk-helicopter.png"
+        },
+        {
+          "fileName": "Cable_Car_cable-car.png",
+          "label": "cable car",
+          "exists": true,
+          "slug": "cable-car",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cable_Car_cable-car.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cable_Car_cable-car.png"
+        },
+        {
+          "fileName": "Ambulance_ambulance.png",
+          "label": "ambulance",
+          "exists": true,
+          "slug": "ambulance",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Ambulance_ambulance.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Ambulance_ambulance.png"
+        },
+        {
+          "fileName": "Cargo_Plane_cargo-plane.png",
+          "label": "cargo plane",
+          "exists": true,
+          "slug": "cargo-plane",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cargo_Plane_cargo-plane.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cargo_Plane_cargo-plane.png"
+        },
+        {
+          "fileName": "Armored_Truck_armored-truck.png",
+          "label": "truck",
+          "exists": true,
+          "slug": "armored-truck",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Armored_Truck_armored-truck.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Armored_Truck_armored-truck.png"
+        },
+        {
+          "fileName": "Articulated_Bus_articulated-bus.png",
+          "label": "articulated bus",
+          "exists": true,
+          "slug": "articulated-bus",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Articulated_Bus_articulated-bus.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Articulated_Bus_articulated-bus.png"
+        },
+        {
+          "fileName": "Airship_airship.png",
+          "label": "airship",
+          "exists": true,
+          "slug": "airship",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Airship_airship.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Airship_airship.png"
+        },
+        {
+          "fileName": "Boat_Trailer_boat-trailer.png",
+          "label": "trailer",
+          "exists": true,
+          "slug": "boat-trailer",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Boat_Trailer_boat-trailer.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Boat_Trailer_boat-trailer.png"
+        }
+      ]
+    },
+    {
+      "key": "foods",
+      "titleTR": "Yiyecekler",
+      "items": [
+        {
+          "fileName": "Apple_apple.png",
+          "label": "apple",
+          "exists": true,
+          "slug": "apple",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Apple_apple.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Apple_apple.png"
+        },
+        {
+          "fileName": "Banana_banana.png",
+          "label": "banana",
+          "exists": true,
+          "slug": "banana",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Banana_banana.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Banana_banana.png"
+        },
+        {
+          "fileName": "Bread_bread-white.png",
+          "label": "bread",
+          "exists": true,
+          "slug": "bread-white",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bread_bread-white.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bread_bread-white.png"
+        },
+        {
+          "fileName": "Cake_cake.png",
+          "label": "cake",
+          "exists": true,
+          "slug": "cake",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cake_cake.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cake_cake.png"
+        },
+        {
+          "fileName": "Chocolate_Chip_Cookie_chocolate-chip-cookie.png",
+          "label": "cookie",
+          "exists": true,
+          "slug": "chocolate-chip-cookie",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Chocolate_Chip_Cookie_chocolate-chip-cookie.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Chocolate_Chip_Cookie_chocolate-chip-cookie.png"
+        },
+        {
+          "fileName": "Cheese_cheese.png",
+          "label": "cheese",
+          "exists": true,
+          "slug": "cheese",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cheese_cheese.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cheese_cheese.png"
+        },
+        {
+          "fileName": "Cheese_Pizza_cheese-pizza.png",
+          "label": "pizza",
+          "exists": true,
+          "slug": "cheese-pizza",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cheese_Pizza_cheese-pizza.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cheese_Pizza_cheese-pizza.png"
+        },
+        {
+          "fileName": "Carton_of_Milk_carton-of-milk.png",
+          "label": "milk",
+          "exists": true,
+          "slug": "carton-of-milk",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Carton_of_Milk_carton-of-milk.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Carton_of_Milk_carton-of-milk.png"
+        },
+        {
+          "fileName": "Apple_Juice_apple-juice.png",
+          "label": "juice",
+          "exists": true,
+          "slug": "apple-juice",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Apple_Juice_apple-juice.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Apple_Juice_apple-juice.png"
+        },
+        {
+          "fileName": "Bottle_of_Water_bottle-of-water.png",
+          "label": "water",
+          "exists": true,
+          "slug": "bottle-of-water",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bottle_of_Water_bottle-of-water.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bottle_of_Water_bottle-of-water.png"
+        },
+        {
+          "fileName": "Chicken_Sandwich_chicken-sandwich.png",
+          "label": "sandwich",
+          "exists": true,
+          "slug": "chicken-sandwich",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Chicken_Sandwich_chicken-sandwich.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Chicken_Sandwich_chicken-sandwich.png"
+        },
+        {
+          "fileName": "Deviled_Eggs_deviled-eggs.png",
+          "label": "eggs",
+          "exists": true,
+          "slug": "deviled-eggs",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Deviled_Eggs_deviled-eggs.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Deviled_Eggs_deviled-eggs.png"
+        },
+        {
+          "fileName": "Cranberry_Juice_cranberry-juice.png",
+          "label": "cranberry juice",
+          "exists": true,
+          "slug": "cranberry-juice",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cranberry_Juice_cranberry-juice.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cranberry_Juice_cranberry-juice.png"
+        },
+        {
+          "fileName": "Cupcake_cupcake.png",
+          "label": "cupcake",
+          "exists": true,
+          "slug": "cupcake",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cupcake_cupcake.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cupcake_cupcake.png"
+        },
+        {
+          "fileName": "Classic_Cheeseburger_classic-cheeseburger.png",
+          "label": "burger",
+          "exists": true,
+          "slug": "classic-cheeseburger",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Classic_Cheeseburger_classic-cheeseburger.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Classic_Cheeseburger_classic-cheeseburger.png"
+        }
+      ]
+    },
+    {
+      "key": "home",
+      "titleTR": "Ev Eşyaları",
+      "items": [
+        {
+          "fileName": "Bed_bed.png",
+          "label": "bed",
+          "exists": true,
+          "slug": "bed",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bed_bed.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bed_bed.png"
+        },
+        {
+          "fileName": "Chair_chair.png",
+          "label": "chair",
+          "exists": true,
+          "slug": "chair",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Chair_chair.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Chair_chair.png"
+        },
+        {
+          "fileName": "Coffee_Table_coffee-table.png",
+          "label": "table",
+          "exists": true,
+          "slug": "coffee-table",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Coffee_Table_coffee-table.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Coffee_Table_coffee-table.png"
+        },
+        {
+          "fileName": "Couch_couch.png",
+          "label": "sofa",
+          "exists": true,
+          "slug": "couch",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Couch_couch.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Couch_couch.png"
+        },
+        {
+          "fileName": "Byzantine_Icon_Lamp_byzantine-icon-lamp.png",
+          "label": "lamp",
+          "exists": true,
+          "slug": "byzantine-icon-lamp",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Byzantine_Icon_Lamp_byzantine-icon-lamp.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Byzantine_Icon_Lamp_byzantine-icon-lamp.png"
+        },
+        {
+          "fileName": "Coffee_Cup_coffee-cup.png",
+          "label": "cup",
+          "exists": true,
+          "slug": "coffee-cup",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Coffee_Cup_coffee-cup.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Coffee_Cup_coffee-cup.png"
+        },
+        {
+          "fileName": "Cordless_Phone_cordless-phone.png",
+          "label": "phone",
+          "exists": true,
+          "slug": "cordless-phone",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cordless_Phone_cordless-phone.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cordless_Phone_cordless-phone.png"
+        },
+        {
+          "fileName": "Computer_Tower_computer-tower.png",
+          "label": "computer",
+          "exists": true,
+          "slug": "computer-tower",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Computer_Tower_computer-tower.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Computer_Tower_computer-tower.png"
+        },
+        {
+          "fileName": "Book_book.png",
+          "label": "book",
+          "exists": true,
+          "slug": "book",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Book_book.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Book_book.png"
+        },
+        {
+          "fileName": "Bottle_of_Lotion_bottle-of-lotion.png",
+          "label": "bottle",
+          "exists": true,
+          "slug": "bottle-of-lotion",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bottle_of_Lotion_bottle-of-lotion.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bottle_of_Lotion_bottle-of-lotion.png"
+        },
+        {
+          "fileName": "Computer_Mouse_desktop-computer-mouse.png",
+          "label": "mouse",
+          "exists": true,
+          "slug": "desktop-computer-mouse",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Computer_Mouse_desktop-computer-mouse.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Computer_Mouse_desktop-computer-mouse.png"
+        },
+        {
+          "fileName": "Bunk_Bed_bunk-bed.png",
+          "label": "bunk bed",
+          "exists": true,
+          "slug": "bunk-bed",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bunk_Bed_bunk-bed.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bunk_Bed_bunk-bed.png"
+        },
+        {
+          "fileName": "Armchair_armchair.png",
+          "label": "armchair",
+          "exists": true,
+          "slug": "armchair",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Armchair_armchair.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Armchair_armchair.png"
+        },
+        {
+          "fileName": "Bar_Table_bar-table.png",
+          "label": "bar table",
+          "exists": true,
+          "slug": "bar-table",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bar_Table_bar-table.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bar_Table_bar-table.png"
+        },
+        {
+          "fileName": "Bottle_Cap_bottle-cap.png",
+          "label": "bottle cap",
+          "exists": true,
+          "slug": "bottle-cap",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bottle_Cap_bottle-cap.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bottle_Cap_bottle-cap.png"
+        }
+      ]
+    },
+    {
+      "key": "clothes",
+      "titleTR": "Giysiler & Aksesuarlar",
+      "items": [
+        {
+          "fileName": "Baseball_Cap_baseball-cap.png",
+          "label": "cap",
+          "exists": true,
+          "slug": "baseball-cap",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Baseball_Cap_baseball-cap.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Baseball_Cap_baseball-cap.png"
+        },
+        {
+          "fileName": "Babushka_Scarf_babushka-scarf.png",
+          "label": "scarf",
+          "exists": true,
+          "slug": "babushka-scarf",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Babushka_Scarf_babushka-scarf.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Babushka_Scarf_babushka-scarf.png"
+        },
+        {
+          "fileName": "Chelsea_Boots_chelsea-boots.png",
+          "label": "boots",
+          "exists": true,
+          "slug": "chelsea-boots",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Chelsea_Boots_chelsea-boots.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Chelsea_Boots_chelsea-boots.png"
+        },
+        {
+          "fileName": "Cat-Eye_Sunglasses_cat-eye-sunglasses.png",
+          "label": "sunglasses",
+          "exists": true,
+          "slug": "cat-eye-sunglasses",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cat-Eye_Sunglasses_cat-eye-sunglasses.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cat-Eye_Sunglasses_cat-eye-sunglasses.png"
+        },
+        {
+          "fileName": "Ankle_Boots_ankle-boots.png",
+          "label": "ankle boots",
+          "exists": true,
+          "slug": "ankle-boots",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Ankle_Boots_ankle-boots.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Ankle_Boots_ankle-boots.png"
+        },
+        {
+          "fileName": "Comic_Book_Print_Jacket_comic-book-print-jacket.png",
+          "label": "jacket",
+          "exists": true,
+          "slug": "comic-book-print-jacket",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Comic_Book_Print_Jacket_comic-book-print-jacket.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Comic_Book_Print_Jacket_comic-book-print-jacket.png"
+        },
+        {
+          "fileName": "Zebra_Print_Fedora_zebra-print-fedora.png",
+          "label": "hat",
+          "exists": true,
+          "slug": "zebra-print-fedora",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Zebra_Print_Fedora_zebra-print-fedora.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Zebra_Print_Fedora_zebra-print-fedora.png"
+        },
+        {
+          "fileName": "African_Dress_african-dress.png",
+          "label": "dress",
+          "exists": true,
+          "slug": "african-dress",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\African_Dress_african-dress.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/African_Dress_african-dress.png"
+        },
+        {
+          "fileName": "Animal_Print_Headband_animal-print-headband.png",
+          "label": "headband",
+          "exists": true,
+          "slug": "animal-print-headband",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Animal_Print_Headband_animal-print-headband.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Animal_Print_Headband_animal-print-headband.png"
+        },
+        {
+          "fileName": "Banana_Earrings_banana-earrings.png",
+          "label": "earrings",
+          "exists": true,
+          "slug": "banana-earrings",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Banana_Earrings_banana-earrings.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Banana_Earrings_banana-earrings.png"
+        },
+        {
+          "fileName": "Adventure_Boots_adventure-boots.png",
+          "label": "boots",
+          "exists": true,
+          "slug": "adventure-boots",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Adventure_Boots_adventure-boots.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Adventure_Boots_adventure-boots.png"
+        },
+        {
+          "fileName": "Cloud_Coat_cloud-coat.png",
+          "label": "coat",
+          "exists": true,
+          "slug": "cloud-coat",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cloud_Coat_cloud-coat.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cloud_Coat_cloud-coat.png"
+        },
+        {
+          "fileName": "Cloud_Print_Sweater_cloud-print-sweater.png",
+          "label": "sweater",
+          "exists": true,
+          "slug": "cloud-print-sweater",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Cloud_Print_Sweater_cloud-print-sweater.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Cloud_Print_Sweater_cloud-print-sweater.png"
+        },
+        {
+          "fileName": "Ball_Gown_ball-gown.png",
+          "label": "gown",
+          "exists": true,
+          "slug": "ball-gown",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Ball_Gown_ball-gown.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Ball_Gown_ball-gown.png"
+        },
+        {
+          "fileName": "Bicycle_helmet_bicycle-helmet.png",
+          "label": "helmet",
+          "exists": true,
+          "slug": "bicycle-helmet",
+          "filePath": "C:\\Users\\ihsan\\Desktop\\YENİ-TULU - Kopya\\scripts\\thiings_icons_png\\Bicycle_helmet_bicycle-helmet.png",
+          "imageUrl": "file://C:/Users/ihsan/Desktop/YENİ-TULU - Kopya/scripts/thiings_icons_png/Bicycle_helmet_bicycle-helmet.png"
+        }
+      ]
+    }
+  ]
+}

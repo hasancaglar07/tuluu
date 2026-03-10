@@ -1,5 +1,5 @@
 import { getLesson } from "@/actions/lesson";
-import LessonDetail from "@/components/modules/admin/lessons/lesson";
+import LessonManager from "@/components/modules/admin/lessons/lesson/manager";
 import React from "react";
 
 // Nextjs ISR caching strategy
@@ -14,7 +14,7 @@ export default async function page({
 
   const lesson = await getLesson(id);
 
-  return <LessonDetail lessonData={lesson} />;
+  return <LessonManager lessonData={lesson} />;
 }
 
 // Nextjs dynamic metadata

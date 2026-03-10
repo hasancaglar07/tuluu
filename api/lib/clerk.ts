@@ -34,7 +34,7 @@ export async function syncUserWithClerk(data: ClerkUser) {
         xp: xp ?? 0,
         gems: gems ?? 0,
         gel: gel ?? 0,
-        hearts: hearts ?? 5,
+        hearts: hearts ?? 1500,
         streak: streak ?? 0,
       });
       console.log(`User ${user} synced with Clerk successfully.`);

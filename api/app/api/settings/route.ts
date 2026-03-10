@@ -808,7 +808,7 @@ function extractShopSettings(paymentSettings: PaymentSettings): ShopSettings {
     heartCostInGems: paymentSettings?.currencies?.hearts?.gemsCost || 500,
     heartRefillTimeHours:
       paymentSettings?.currencies?.hearts?.refillTimeHours || 5,
-    maxHearts: paymentSettings?.currencies?.hearts?.maxAmount || 5,
+    maxHearts: paymentSettings?.currencies?.hearts?.maxAmount || 1500,
     maxHeartsPerPurchase: paymentSettings?.currencies?.hearts?.minPurchase || 5,
     heartsEnabled: paymentSettings?.currencies?.hearts?.enabled ?? true,
     heartsDailyBonus: paymentSettings?.currencies?.hearts?.dailyBonus || 0,

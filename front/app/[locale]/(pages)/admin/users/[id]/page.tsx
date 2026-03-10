@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { useIntl } from "react-intl";
 import {
   ActivityIcon,
   AlertTriangle,
@@ -197,6 +198,8 @@ const Book = ActivityIcon;
 const Flame = ActivityIcon;
 
 export default function UserDetailPage() {
+  const intl = useIntl();
+  
   // Get user ID from URL
   const params = useParams();
   const router = useLocalizedRouter();
@@ -234,8 +237,8 @@ export default function UserDetailPage() {
         setUser(response.data);
       } catch (err) {
         console.error("Error fetching user:", err);
-        setError("Failed to fetch user data");
-        toast.error("Failed to fetch user data");
+        setError(intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" }));
+        toast.error(intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" }));
       } finally {
         setLoading(false);
       }
@@ -307,17 +310,17 @@ export default function UserDetailPage() {
             <Button variant="outline" size="icon" onClick={() => router.back()}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-bold">User Details</h1>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: "admin.userDetail.title" })}</h1>
           </div>
           <Button onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
-            Retry
+            {intl.formatMessage({ id: "admin.userDetail.actions.retry" })}
           </Button>
         </div>
 
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{intl.formatMessage({ id: "admin.userDetail.errors.title" })}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       </div>
@@ -333,24 +336,23 @@ export default function UserDetailPage() {
             <Button variant="outline" size="icon" onClick={() => router.back()}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-bold">User Details</h1>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: "admin.userDetail.title" })}</h1>
           </div>
           <Button onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
+            {intl.formatMessage({ id: "admin.userDetail.actions.refresh" })}
           </Button>
         </div>
 
         <Card>
           <CardContent className="p-6 text-center">
             <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">User Not Found</h2>
+            <h2 className="text-xl font-bold mb-2">{intl.formatMessage({ id: "admin.userDetail.notFound.title" })}</h2>
             <p className="text-gray-500 mb-4">
-              The requested user could not be found or you don&apos;t have
-              permission to view it.
+              {intl.formatMessage({ id: "admin.userDetail.notFound.description" })}
             </p>
             <Button onClick={() => router.push("/admin/users")}>
-              Return to Users List
+              {intl.formatMessage({ id: "admin.userDetail.notFound.return" })}
             </Button>
           </CardContent>
         </Card>
@@ -408,7 +410,7 @@ export default function UserDetailPage() {
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">User Details</h1>
+          <h1 className="text-2xl font-bold">{intl.formatMessage({ id: "admin.userDetail.title" })}</h1>
         </div>
 
         {/* Quick actions */}
@@ -419,7 +421,7 @@ export default function UserDetailPage() {
             onClick={() => setEditDialogOpen(true)}
           >
             <Edit className="h-4 w-4 mr-2" />
-            Edit
+            {intl.formatMessage({ id: "admin.userDetail.actions.edit" })}
           </Button>
           <Button
             variant="outline"
@@ -427,7 +429,7 @@ export default function UserDetailPage() {
             onClick={() => setCreditDialogOpen(true)}
           >
             <Gift className="h-4 w-4 mr-2" />
-            Credit
+            {intl.formatMessage({ id: "admin.userDetail.actions.credit" })}
           </Button>
           <Button
             variant="outline"
@@ -446,29 +448,29 @@ export default function UserDetailPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setBanDialogOpen(true)}>
                 <Ban className="h-4 w-4 mr-2" />
-                Ban/Suspend
+                {intl.formatMessage({ id: "admin.userDetail.actions.banSuspend" })}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSubscriptionDialogOpen(true)}>
                 <CreditCard className="h-4 w-4 mr-2" />
-                Manage Subscription
+                {intl.formatMessage({ id: "admin.userDetail.actions.manageSubscription" })}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setProgressResetDialogOpen(true)}
               >
                 <RotateCcw className="h-4 w-4 mr-2" />
-                Reset Progress
+                {intl.formatMessage({ id: "admin.userDetail.actions.resetProgress" })}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setRoleDialogOpen(true)}>
                 <Shield className="h-4 w-4 mr-2" />
-                Change Role
+                {intl.formatMessage({ id: "admin.userDetail.actions.changeRole" })}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setReportsDialogOpen(true)}>
                 <Flag className="h-4 w-4 mr-2" />
-                View Reports
+                {intl.formatMessage({ id: "admin.userDetail.actions.viewReports" })}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setActivityLogsDialogOpen(true)}>
                 <History className="h-4 w-4 mr-2" />
-                Login History
+                {intl.formatMessage({ id: "admin.userDetail.actions.loginHistory" })}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -511,7 +513,7 @@ export default function UserDetailPage() {
                   <Star className="h-5 w-5 text-yellow-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">XP</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.xp" })}</p>
                   <p className="font-bold">{userXp.toLocaleString()}</p>
                 </div>
               </div>
@@ -522,7 +524,7 @@ export default function UserDetailPage() {
                   <Gem className="h-5 w-5 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Gems</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.gems" })}</p>
                   <p className="font-bold">{userGems.toLocaleString()}</p>
                 </div>
               </div>
@@ -533,7 +535,7 @@ export default function UserDetailPage() {
                   <Droplets className="h-5 w-5 text-cyan-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Gel</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.gel" })}</p>
                   <p className="font-bold">{userGel.toLocaleString()}</p>
                 </div>
               </div>
@@ -544,7 +546,7 @@ export default function UserDetailPage() {
                   <Heart className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Hearts</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.hearts" })}</p>
                   <p className="font-bold">{userHearts} / 5</p>
                 </div>
               </div>
@@ -555,8 +557,8 @@ export default function UserDetailPage() {
                   <Flame className="h-5 w-5 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Streak</p>
-                  <p className="font-bold">{userStreak} days</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.streak" })}</p>
+                  <p className="font-bold">{intl.formatMessage({ id: "admin.userDetail.stats.streakDays" }, { days: userStreak })}</p>
                 </div>
               </div>
 
@@ -566,7 +568,7 @@ export default function UserDetailPage() {
                   <Book className="h-5 w-5 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Lessons</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.stats.lessons" })}</p>
                   <p className="font-bold">
                     {userCompletedLessons} / {userTotalLessons}
                   </p>
@@ -580,60 +582,60 @@ export default function UserDetailPage() {
       {/* Tabs for different sections */}
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid grid-cols-5 w-full max-w-3xl mx-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="overview">{intl.formatMessage({ id: "admin.userDetail.tabs.overview" })}</TabsTrigger>
+          <TabsTrigger value="activity">{intl.formatMessage({ id: "admin.userDetail.tabs.activity" })}</TabsTrigger>
+          <TabsTrigger value="achievements">{intl.formatMessage({ id: "admin.userDetail.tabs.achievements" })}</TabsTrigger>
+          <TabsTrigger value="reports">{intl.formatMessage({ id: "admin.userDetail.tabs.reports" })}</TabsTrigger>
+          <TabsTrigger value="security">{intl.formatMessage({ id: "admin.userDetail.tabs.security" })}</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>User Information</CardTitle>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.overview.userInfo.title" })}</CardTitle>
               <CardDescription>
-                Basic information about the user
+                {intl.formatMessage({ id: "admin.userDetail.overview.userInfo.description" })}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Full Name</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.fullName" })}</p>
                 <p>{userName}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Email</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.email" })}</p>
                 <p>{userEmail}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Join Date</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.joinDate" })}</p>
                 <p>{formatDate(userJoinDate)}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Last Active</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.lastActive" })}</p>
                 <p>{formatDate(userLastActive)}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Language</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.language" })}</p>
                 <p>{userLanguage}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Country</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.country" })}</p>
                 <p>{userCountry}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-500">Timezone</p>
+                <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.timezone" })}</p>
                 <p>{userTimezone}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-500">
-                  Email Verified
+                  {intl.formatMessage({ id: "admin.userDetail.overview.emailVerified" })}
                 </p>
-                <p>{userEmailVerified ? "Yes" : "No"}</p>
+                <p>{userEmailVerified ? intl.formatMessage({ id: "admin.userDetail.overview.yes" }) : intl.formatMessage({ id: "admin.userDetail.overview.no" })}</p>
               </div>
               {userBio && (
                 <div className="space-y-1 md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Bio</p>
+                  <p className="text-sm font-medium text-gray-500">{intl.formatMessage({ id: "admin.userDetail.overview.bio" })}</p>
                   <p className="whitespace-pre-wrap">{userBio}</p>
                 </div>
               )}
@@ -642,13 +644,13 @@ export default function UserDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Progress</CardTitle>
-              <CardDescription>User&apos;s learning progress</CardDescription>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.progress.title" })}</CardTitle>
+              <CardDescription>{intl.formatMessage({ id: "admin.userDetail.progress.description" })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <p className="text-sm font-medium">Lessons Completed</p>
+                  <p className="text-sm font-medium">{intl.formatMessage({ id: "admin.userDetail.progress.lessonsCompleted" })}</p>
                   <p className="text-sm text-gray-500">
                     {userCompletedLessons} / {userTotalLessons}
                   </p>
@@ -665,7 +667,7 @@ export default function UserDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Recent Activity</CardTitle>
+                    <CardTitle className="text-base">{intl.formatMessage({ id: "admin.userDetail.progress.recentActivity" })}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {userRecentActivity.length > 0 ? (
@@ -687,7 +689,7 @@ export default function UserDetailPage() {
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-sm text-gray-500">
-                          No recent activity
+                          {intl.formatMessage({ id: "admin.userDetail.progress.noActivity" })}
                         </p>
                       </div>
                     )}
@@ -706,7 +708,7 @@ export default function UserDetailPage() {
                             )
                         }
                       >
-                        View All Activity
+                        {intl.formatMessage({ id: "admin.userDetail.progress.viewAllActivity" })}
                       </Button>
                     </CardFooter>
                   )}
@@ -714,7 +716,7 @@ export default function UserDetailPage() {
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Achievements</CardTitle>
+                    <CardTitle className="text-base">{intl.formatMessage({ id: "admin.userDetail.progress.achievements" })}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {userAchievements.length > 0 ? (
@@ -741,7 +743,7 @@ export default function UserDetailPage() {
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-sm text-gray-500">
-                          No achievements yet
+                          {intl.formatMessage({ id: "admin.userDetail.progress.noAchievements" })}
                         </p>
                       </div>
                     )}
@@ -760,7 +762,7 @@ export default function UserDetailPage() {
                             )
                         }
                       >
-                        View All Achievements
+                        {intl.formatMessage({ id: "admin.userDetail.progress.viewAllAchievements" })}
                       </Button>
                     </CardFooter>
                   )}
@@ -774,8 +776,8 @@ export default function UserDetailPage() {
         <TabsContent value="activity" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Activity Timeline</CardTitle>
-              <CardDescription>Recent user activity</CardDescription>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.activity.title" })}</CardTitle>
+              <CardDescription>{intl.formatMessage({ id: "admin.userDetail.activity.description" })}</CardDescription>
             </CardHeader>
             <CardContent>
               {userRecentActivity.length > 0 ? (
@@ -823,9 +825,9 @@ export default function UserDetailPage() {
               ) : (
                 <div className="text-center py-8">
                   <ActivityIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No Activity</h3>
+                  <h3 className="text-lg font-medium">{intl.formatMessage({ id: "admin.userDetail.activity.noActivity" })}</h3>
                   <p className="text-sm text-gray-500">
-                    This user has no recorded activity.
+                    {intl.formatMessage({ id: "admin.userDetail.activity.noActivityDescription" })}
                   </p>
                 </div>
               )}
@@ -837,8 +839,8 @@ export default function UserDetailPage() {
         <TabsContent value="achievements" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Achievements</CardTitle>
-              <CardDescription>User&apos;s earned achievements</CardDescription>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.achievements.title" })}</CardTitle>
+              <CardDescription>{intl.formatMessage({ id: "admin.userDetail.achievements.description" })}</CardDescription>
             </CardHeader>
             <CardContent>
               {userAchievements.length > 0 ? (
@@ -856,8 +858,8 @@ export default function UserDetailPage() {
                         <div className="flex items-center mt-2 text-xs text-gray-500">
                           <Calendar className="h-3 w-3 mr-1" />
                           <span>
-                            Earned on {formatDate(achievement.earnedDate)}
-                          </span>
+                           {intl.formatMessage({ id: "admin.userDetail.achievements.earnedOn" }, { date: formatDate(achievement.earnedDate) })}
+                         </span>
                         </div>
                       </CardContent>
                     </Card>
@@ -866,9 +868,9 @@ export default function UserDetailPage() {
               ) : (
                 <div className="text-center py-8">
                   <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">No Achievements</h3>
+                  <h3 className="text-lg font-medium">{intl.formatMessage({ id: "admin.userDetail.achievements.noAchievements" })}</h3>
                   <p className="text-sm text-gray-500">
-                    This user hasn&apos;t earned any achievements yet.
+                    {intl.formatMessage({ id: "admin.userDetail.achievements.noAchievementsDescription" })}
                   </p>
                 </div>
               )}
@@ -880,9 +882,9 @@ export default function UserDetailPage() {
         <TabsContent value="reports" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>User Reports</CardTitle>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.reports.title" })}</CardTitle>
               <CardDescription>
-                Reports submitted by or about this user
+                {intl.formatMessage({ id: "admin.userDetail.reports.description" })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -919,11 +921,11 @@ export default function UserDetailPage() {
                       <CardFooter className="bg-gray-50 p-4 flex justify-end space-x-2">
                         <Button variant="outline" size="sm">
                           <Pencil className="h-4 w-4 mr-2" />
-                          Update Status
+                          {intl.formatMessage({ id: "admin.userDetail.reports.updateStatus" })}
                         </Button>
                         <Button variant="outline" size="sm">
                           <UserCheck className="h-4 w-4 mr-2" />
-                          Assign
+                          {intl.formatMessage({ id: "admin.userDetail.reports.assign" })}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -931,9 +933,9 @@ export default function UserDetailPage() {
                 ) : (
                   <div className="text-center py-8">
                     <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No Reports</h3>
+                    <h3 className="text-lg font-medium">{intl.formatMessage({ id: "admin.userDetail.reports.noReports" })}</h3>
                     <p className="text-sm text-gray-500">
-                      This user has no reports.
+                      {intl.formatMessage({ id: "admin.userDetail.reports.noReportsDescription" })}
                     </p>
                   </div>
                 )}
@@ -946,8 +948,8 @@ export default function UserDetailPage() {
         <TabsContent value="security" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Login History</CardTitle>
-              <CardDescription>Recent login attempts</CardDescription>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.security.loginHistory.title" })}</CardTitle>
+              <CardDescription>{intl.formatMessage({ id: "admin.userDetail.security.loginHistory.description" })}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -973,13 +975,13 @@ export default function UserDetailPage() {
                           <div className="flex items-center space-x-2">
                             <p className="font-medium">
                               {login.success
-                                ? "Successful Login"
-                                : "Failed Login Attempt"}
+                                ? intl.formatMessage({ id: "admin.userDetail.security.successfulLogin" })
+                                : intl.formatMessage({ id: "admin.userDetail.security.failedLogin" })}
                             </p>
                             {login.success ? (
-                              <Badge className="bg-green-500">Success</Badge>
+                              <Badge className="bg-green-500">{intl.formatMessage({ id: "admin.userDetail.security.success" })}</Badge>
                             ) : (
-                              <Badge className="bg-red-500">Failed</Badge>
+                              <Badge className="bg-red-500">{intl.formatMessage({ id: "admin.userDetail.security.failed" })}</Badge>
                             )}
                           </div>
                           <p className="text-sm text-gray-500">
@@ -998,7 +1000,7 @@ export default function UserDetailPage() {
                           <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4 text-gray-400" />
                             <p className="text-sm">
-                              {login.location || "Unknown location"}
+                              {login.location || intl.formatMessage({ id: "admin.userDetail.security.unknownLocation" })}
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -1012,9 +1014,9 @@ export default function UserDetailPage() {
                 ) : (
                   <div className="text-center py-8">
                     <History className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No Login History</h3>
+                    <h3 className="text-lg font-medium">{intl.formatMessage({ id: "admin.userDetail.security.noLoginHistory" })}</h3>
                     <p className="text-sm text-gray-500">
-                      No login history is available for this user.
+                      {intl.formatMessage({ id: "admin.userDetail.security.noLoginHistoryDescription" })}
                     </p>
                   </div>
                 )}
@@ -1027,7 +1029,7 @@ export default function UserDetailPage() {
                   className="w-full"
                   onClick={() => setActivityLogsDialogOpen(true)}
                 >
-                  View All Login Activity
+                  {intl.formatMessage({ id: "admin.userDetail.security.viewAllLoginActivity" })}
                 </Button>
               </CardFooter>
             )}
@@ -1035,29 +1037,29 @@ export default function UserDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Account Security</CardTitle>
-              <CardDescription>Security settings and options</CardDescription>
+              <CardTitle>{intl.formatMessage({ id: "admin.userDetail.security.accountSecurity.title" })}</CardTitle>
+              <CardDescription>{intl.formatMessage({ id: "admin.userDetail.security.accountSecurity.description" })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Email Verification</p>
+                  <p className="font-medium">{intl.formatMessage({ id: "admin.userDetail.security.emailVerification" })}</p>
                   <p className="text-sm text-gray-500">
-                    User&apos;s email verification status
+                    {intl.formatMessage({ id: "admin.userDetail.security.emailVerificationStatus" })}
                   </p>
                 </div>
                 <Badge
                   className={userEmailVerified ? "bg-green-500" : "bg-red-500"}
                 >
-                  {userEmailVerified ? "Verified" : "Not Verified"}
+                  {userEmailVerified ? intl.formatMessage({ id: "admin.userDetail.security.verified" }) : intl.formatMessage({ id: "admin.userDetail.security.notVerified" })}
                 </Badge>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Account Status</p>
+                  <p className="font-medium">{intl.formatMessage({ id: "admin.userDetail.security.accountStatus" })}</p>
                   <p className="text-sm text-gray-500">
-                    Current account status
+                    {intl.formatMessage({ id: "admin.userDetail.security.currentAccountStatus" })}
                   </p>
                 </div>
                 <Badge className={getStatusColor(userStatus)}>
@@ -1067,21 +1069,21 @@ export default function UserDetailPage() {
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Password Reset</p>
+                  <p className="font-medium">{intl.formatMessage({ id: "admin.userDetail.security.passwordReset" })}</p>
                   <p className="text-sm text-gray-500">
-                    Send password reset email
+                    {intl.formatMessage({ id: "admin.userDetail.security.sendPasswordReset" })}
                   </p>
                 </div>
                 <Button variant="outline" size="sm">
                   <Mail className="h-4 w-4 mr-2" />
-                  Send Reset Link
+                  {intl.formatMessage({ id: "admin.userDetail.security.sendResetLink" })}
                 </Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Account Actions</p>
-                  <p className="text-sm text-gray-500">Manage user account</p>
+                  <p className="font-medium">{intl.formatMessage({ id: "admin.userDetail.security.accountActions" })}</p>
+                  <p className="text-sm text-gray-500">{intl.formatMessage({ id: "admin.userDetail.security.manageUserAccount" })}</p>
                 </div>
                 <div className="flex space-x-2">
                   <Button
@@ -1090,7 +1092,7 @@ export default function UserDetailPage() {
                     onClick={() => setBanDialogOpen(true)}
                   >
                     <Ban className="h-4 w-4 mr-2" />
-                    {userStatus === "active" ? "Suspend" : "Activate"}
+                    {userStatus === "active" ? intl.formatMessage({ id: "admin.userDetail.security.suspend" }) : intl.formatMessage({ id: "admin.userDetail.security.activate" })}
                   </Button>
                   <Button
                     variant="destructive"
@@ -1098,22 +1100,22 @@ export default function UserDetailPage() {
                     onClick={async () => {
                       if (
                         confirm(
-                          "Are you sure you want to delete this user? This action cannot be undone."
+                          intl.formatMessage({ id: "admin.userDetail.security.deleteConfirm" })
                         )
                       ) {
                         try {
                           await apiClient.delete(`/api/admin/users/${userId}`);
-                          toast.success("User deleted successfully");
+                          toast.success(intl.formatMessage({ id: "admin.userDetail.security.deleteSuccess" }));
                           router.push("/admin/users");
                         } catch (err) {
                           console.error("Error deleting user:", err);
-                          toast.error("Failed to delete user");
+                          toast.error(intl.formatMessage({ id: "admin.userDetail.security.deleteFailed" }));
                         }
                       }
                     }}
                   >
                     <Trash className="h-4 w-4 mr-2" />
-                    Delete
+                    {intl.formatMessage({ id: "admin.userDetail.security.delete" })}
                   </Button>
                 </div>
               </div>

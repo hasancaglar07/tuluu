@@ -8,7 +8,12 @@
     "import": "node import-iman-ahlak.js",
     "start": "node import-iman-ahlak.js",
     "import:stories": "node import-story-books.js",
-    "upload:assets": "node upload-story-assets.js"
+    "upload:assets": "node upload-story-assets.js",
+    "icons:manifest": "node build-english-icons-manifest.js",
+    "icons:upload": "node upload-icons-to-blob.js",
+    "icons:tts": "node generate-tts-and-upload.js",
+    "icons:index": "node build-icons-index.js",
+    "import:english-icons": "node generate-english-icons-program.js"
   },
   "keywords": [
     "mongodb",
@@ -20,8 +25,9 @@
   "author": "TULU Team",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "^8.0.0",
     "@vercel/blob": "^0.23.0",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "mongoose": "^8.0.0",
+    "puppeteer": "^24.29.1"
   }
 }

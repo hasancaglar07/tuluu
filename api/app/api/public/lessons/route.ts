@@ -1084,6 +1084,7 @@ export async function GET(req: NextRequest) {
 
                       const exercises = await Exercise.find({
                         lessonId: lesson._id,
+                        isActive: true,
                       });
                       const formattedExercises = exercises.map((exercise) => ({
                         _id: exercise._id,
@@ -1101,6 +1102,7 @@ export async function GET(req: NextRequest) {
                         correctAnswerImage: exercise.correctAnswerImage,
                         isActive: exercise.isActive,
                         order: exercise.order,
+                        educationContent: (exercise as any).educationContent ?? null,
                       }));
 
                       return {

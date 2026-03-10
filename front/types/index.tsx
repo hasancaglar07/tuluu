@@ -16,7 +16,11 @@ export type LanguageCategory =
   | "personal_social"
   | "story_library";
 
-export type ThemeAgeGroup = "kids_4-7" | "kids_8-12" | "teens_13-17" | "all";
+export type ThemeAgeGroup =
+  | "kids_2-6"
+  | "kids_7-12"
+  | "teens_13-17"
+  | "all";
 
 export interface ThemeMetadata {
   islamicContent: boolean;
@@ -94,7 +98,6 @@ export type ExerciseType =
   | "translate"
   | "select"
   | "arrange"
-  | "speak"
   | "listen";
 
 // Define lesson content interface
@@ -405,6 +408,10 @@ export type UserEditProfile = {
 export type ExerciseResponse = {
   _id: string;
   type: string; // e.g., 'translate', 'multiple-choice'
+  componentType?: string;
+  moralValue?: MoralValue;
+  valuePoints?: number;
+  questionPreview?: string;
   instruction: string;
   sourceText: string;
   sourceLanguage: string;
@@ -417,6 +424,20 @@ export type ExerciseResponse = {
   badAnswerImage: string;
   correctAnswerImage: string;
   isActive: boolean;
+  educationContent?: unknown;
+  mediaPack?: {
+    idleAnimationUrl?: string;
+    successAnimationUrl?: string;
+    failAnimationUrl?: string;
+    characterName?: string;
+  };
+  hoverHint?: {
+    text?: string;
+    audioUrl?: string;
+  };
+  answerAudioUrl?: string;
+  ttsVoiceId?: string;
+  autoRevealMilliseconds?: number | null;
 };
 
 export type LessonResponseType = {
@@ -439,34 +460,65 @@ export type Subscription = {
   subscriptionStatus: "active" | "inactive";
 };
 export const exerciseTypes = [
+  // Education content types (not classic question/answer)
+  {
+    value: "education_image_intro",
+    labelKey: "admin.lessons.exerciseType.education_image_intro",
+    defaultMessage: "Görsel Giriş (3 Kart)",
+    isEducation: true,
+  },
+  {
+    value: "education_visual",
+    labelKey: "admin.lessons.exerciseType.education_visual",
+    defaultMessage: "Görsel Anlatım",
+    isEducation: true,
+  },
+  {
+    value: "education_video",
+    labelKey: "admin.lessons.exerciseType.education_video",
+    defaultMessage: "Video Anlatım",
+    isEducation: true,
+  },
+  {
+    value: "education_audio",
+    labelKey: "admin.lessons.exerciseType.education_audio",
+    defaultMessage: "Sesli Anlatım",
+    isEducation: true,
+  },
+  {
+    value: "education_tip",
+    labelKey: "admin.lessons.exerciseType.education_tip",
+    defaultMessage: "İpucu Kartı",
+    isEducation: true,
+  },
   {
     value: "translate",
     labelKey: "admin.lessons.exerciseType.translate",
-    defaultMessage: "Translate",
+    defaultMessage: "Çeviri Yap",
     supportsOptions: true,
   },
   {
     value: "select",
     labelKey: "admin.lessons.exerciseType.select",
-    defaultMessage: "Select",
+    defaultMessage: "Doğruyu Seç",
     supportsOptions: true,
   },
   {
     value: "arrange",
     labelKey: "admin.lessons.exerciseType.arrange",
-    defaultMessage: "Arrange",
+    defaultMessage: "Sıraya Diz",
     supportsOptions: true,
   },
   {
-    value: "speak",
-    labelKey: "admin.lessons.exerciseType.speak",
-    defaultMessage: "Speak",
-    supportsAudio: true,
+    value: "match",
+    labelKey: "admin.lessons.exerciseType.match",
+    defaultMessage: "Eşleştir",
+    supportsOptions: true,
   },
   {
     value: "listen",
     labelKey: "admin.lessons.exerciseType.listen",
-    defaultMessage: "Listen",
+    defaultMessage: "Dinle ve Yanıtla",
     supportsAudio: true,
   },
 ];
@@ -812,11 +864,23 @@ export interface UserProgressType {
 export interface Exercise {
   _id: string;
   type: string;
+  componentType?:
+    | "learning_card"
+    | "moral_story"
+    | "multiple_choice"
+    | "listening_challenge"
+    | "matching_board"
+    | "arrange_builder"
+    | "puzzle_board"
+    | "focus_breathing";
+  moralValue?: MoralValue;
+  valuePoints?: number;
+  questionPreview?: string;
   instruction: string;
   sourceText: string;
   sourceLanguage: string;
   targetLanguage: string;
-  correctAnswer: string;
+  correctAnswer: string[];
   options: string[];
   isNewWord: boolean;
   audioUrl?: string;
@@ -826,6 +890,20 @@ export interface Exercise {
   isActive: boolean;
   order: number;
   completed: boolean;
+  educationContent?: any;
+  mediaPack?: {
+    idleAnimationUrl?: string;
+    successAnimationUrl?: string;
+    failAnimationUrl?: string;
+    characterName?: string;
+  };
+  hoverHint?: {
+    text?: string;
+    audioUrl?: string;
+  };
+  answerAudioUrl?: string;
+  ttsVoiceId?: string;
+  autoRevealMilliseconds?: number | null;
 }
 
 export interface Lesson {
@@ -838,6 +916,15 @@ export interface Lesson {
   isCompleted?: boolean;
   imageUrl: string;
   xpReward: number;
+  valuePointsReward?: number;
+  moralValue?: MoralValue;
+  teachingPhase?: "teach" | "practice" | "assess";
+  pedagogyFocus?: string;
+  moralStory?: {
+    title?: string;
+    text?: string;
+    placement?: "pre_lesson" | "mid_lesson" | "post_lesson";
+  } | null;
   order: number;
   exercises: Exercise[];
   status?: "completed" | "locked" | "available";

@@ -18,7 +18,7 @@
  *           description: Title of the exercise
  *         type:
  *           type: string
- *           enum: [multiple_choice, fill_in_the_blank, listening, speaking, matching]
+ *           enum: [multiple_choice, fill_in_the_blank, listening, matching]
  *           description: Type of the exercise
  *         content:
  *           type: object
@@ -48,7 +48,7 @@
  *           type: string
  *         type:
  *           type: string
- *           enum: [multiple_choice, fill_in_the_blank, listening, speaking, matching]
+ *           enum: [multiple_choice, fill_in_the_blank, listening, matching]
  *         content:
  *           type: object
  *         isActive:
@@ -142,7 +142,7 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching languages:", error);
     return NextResponse.json(
-      { error: "Failed to fetch languages" },
+      { error: "Diller getirilemedi" },
       { status: 500 }
     );
   }
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
     if (!validated.success) {
       return Response.json(
         {
-          message: "validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error creating language:", error);
     return NextResponse.json(
-      { error: "Failed to create language" },
+      { error: "Dil oluşturulamadı" },
       { status: 500 }
     );
   }

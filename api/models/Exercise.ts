@@ -7,7 +7,14 @@ import mongoose, {
 } from "mongoose";
 
 const optionSupportedTypes = ["translate", "select", "arrange", "match"];
-const audioSupportedTypes = ["listen", "speak"];
+const audioSupportedTypes = ["listen"];
+const educationTypes = [
+  "education_image_intro",
+  "education_visual",
+  "education_video",
+  "education_audio",
+  "education_tip",
+] as const;
 
 // 1. Define Schema
 const ExerciseSchema = new Schema(
@@ -19,27 +26,83 @@ const ExerciseSchema = new Schema(
 
     type: {
       type: String,
-      enum: ["translate", "select", "arrange", "match", "listen", "speak"],
+      enum: [
+        "translate",
+        "select",
+        "arrange",
+        "match",
+        "listen",
+        // Education content (non-quiz) types
+        ...educationTypes,
+      ],
       required: true,
       trim: true,
+    },
+
+    componentType: {
+      type: String,
+      enum: [
+        "learning_card",
+        "moral_story",
+        "multiple_choice",
+        "listening_challenge",
+        "matching_board",
+        "arrange_builder",
+        "puzzle_board",
+        "focus_breathing",
+      ],
+      default: "multiple_choice",
+    },
+
+    moralValue: {
+      type: String,
+      enum: [
+        "patience",
+        "gratitude",
+        "kindness",
+        "honesty",
+        "sharing",
+        "mercy",
+        "justice",
+        "respect",
+      ],
+      default: "kindness",
+    },
+
+    valuePoints: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 1000,
+    },
+
+    questionPreview: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: "",
     },
 
     instruction: {
       type: String,
-      required: true,
+      required: function (this: { type: string }) {
+        return !this.type?.startsWith("education_");
+      },
       trim: true,
-      minlength: 5,
+      minlength: 0,
       maxlength: 500,
-      lowercase: true,
+      default: "",
     },
 
     sourceText: {
       type: String,
-      required: true,
+      required: function (this: { type: string }) {
+        return !this.type?.startsWith("education_");
+      },
       trim: true,
-      minlength: 1,
+      minlength: 0,
       maxlength: 1000,
-      lowercase: true,
+      default: "",
     },
 
     sourceLanguage: {
@@ -62,8 +125,14 @@ const ExerciseSchema = new Schema(
 
     correctAnswer: {
       type: [String],
-      required: true,
-      validate: (arr: string[]) => arr.length > 0,
+      default: [],
+      validate: function (this: { type: string }, arr: string[]) {
+        if (this.type?.startsWith("education_")) {
+          // Education screens should not require answers
+          return Array.isArray(arr) ? arr.length === 0 || arr.length >= 0 : true;
+        }
+        return Array.isArray(arr) && arr.length > 0;
+      },
     },
 
     options: {
@@ -105,6 +174,42 @@ const ExerciseSchema = new Schema(
         },
         message: "Audio URL is required for this exercise type",
       },
+    },
+
+    // Flexible structure for education content screens
+    educationContent: {
+      type: (Schema.Types as any).Mixed,
+      default: null,
+    },
+
+    mediaPack: {
+      idleAnimationUrl: { type: String, trim: true, maxlength: 500 },
+      successAnimationUrl: { type: String, trim: true, maxlength: 500 },
+      failAnimationUrl: { type: String, trim: true, maxlength: 500 },
+      characterName: { type: String, trim: true, maxlength: 120 },
+    },
+
+    hoverHint: {
+      text: { type: String, trim: true, maxlength: 300 },
+      audioUrl: { type: String, trim: true, maxlength: 500 },
+    },
+
+    answerAudioUrl: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
+
+    ttsVoiceId: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+    },
+
+    autoRevealMilliseconds: {
+      type: Number,
+      min: 0,
+      default: null,
     },
 
     neutralAnswerImage: {
@@ -158,6 +263,25 @@ export interface ExerciseModel extends mongoose.Model<ExerciseType> {
   findActiveLanguages(): Promise<ExerciseDocument[]>;
   disableById(id: string): Promise<ExerciseDocument | null>;
 }
+
+// 5. Statics
+// Note: "findActiveLanguages" is kept to match the existing interface naming.
+// It returns active exercises.
+// If needed later, consider renaming to a clearer name like findActiveExercises.
+// These are runtime statics used by API routes (e.g., DELETE uses disableById).
+// Implementations mirror other models (Language, Lesson, Unit, Chapter).
+// Keeping behavior consistent: soft-delete by setting isActive to false.
+(ExerciseSchema.statics as any).findActiveLanguages = function () {
+  return this.find({ isActive: true });
+};
+
+(ExerciseSchema.statics as any).disableById = function (id: string) {
+  return this.findOneAndUpdate(
+    { _id: id },
+    { isActive: false },
+    { new: true }
+  ).exec();
+};
 
 // 4. Export Model (hot reload safe)
 const Exercise =

@@ -1,30 +1,32 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Edit, FolderPlus, Trash2 } from "lucide-react";
+import type { Chapter, Language, Unit } from "@/types/lessons";
+import { Input } from "@/components/ui/input";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Edit, Trash2, MoreHorizontal, FolderPlus } from "lucide-react";
-import type { Language } from "@/types/lessons";
-import Image from "next/image";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+interface UnitTableRow extends Unit {
+  chapterTitle: string;
+  chapterId: string;
+  chapter: Chapter;
+}
 
 interface UnitsGridViewProps {
   currentLanguage?: Language;
   onAddUnit: () => void;
-  onEditUnit?: (unit: any, chapterId: string) => void;
-  onDeleteUnit?: (unit: any, chapter: any) => void;
+  onEditUnit?: (unit: UnitTableRow, chapterId: string) => void;
+  onDeleteUnit?: (unit: UnitTableRow, chapter: Chapter) => void;
 }
 
 /**
@@ -46,21 +48,67 @@ export function UnitsGridView({
   onEditUnit,
   onDeleteUnit,
 }: UnitsGridViewProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [chapterFilter, setChapterFilter] = useState<string>("all");
+
   // Flatten all units from all chapters
-  const allUnits =
-    currentLanguage?.chapters.flatMap((chapter) =>
-      chapter.units.map((unit) => ({
-        ...unit,
-        chapterTitle: chapter.title,
-        chapterId: chapter._id,
-        chapter: chapter,
-      }))
-    ) || [];
+  const allUnits = useMemo<UnitTableRow[]>(
+    () =>
+      currentLanguage?.chapters.flatMap((chapter) =>
+        chapter.units.map((unit) => ({
+          ...unit,
+          chapterTitle: chapter.title,
+          chapterId: chapter._id,
+          chapter: chapter,
+        }))
+      ) || [],
+    [currentLanguage]
+  );
+
+  const chapterOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(allUnits.map((unit) => [unit.chapterId, unit.chapterTitle])).entries()
+      ).map(([id, title]) => ({ id, title })),
+    [allUnits]
+  );
+
+  const filteredUnits = useMemo(
+    () =>
+      allUnits.filter((unit) => {
+        const term = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+          term.length === 0 ||
+          unit.title.toLowerCase().includes(term) ||
+          unit.description.toLowerCase().includes(term) ||
+          unit.chapterTitle.toLowerCase().includes(term);
+        const matchesStatus =
+          statusFilter === "all" ||
+          (statusFilter === "active" ? unit.isActive : !unit.isActive);
+        const matchesChapter =
+          chapterFilter === "all" || unit.chapterId === chapterFilter;
+
+        return matchesSearch && matchesStatus && matchesChapter;
+      }),
+    [allUnits, chapterFilter, searchTerm, statusFilter]
+  );
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setChapterFilter("all");
+  };
+
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 ||
+    statusFilter !== "all" ||
+    chapterFilter !== "all";
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
           <h2 className="text-xl font-bold">
             <FormattedMessage
               id="admin.lessons.tabs.units"
@@ -77,13 +125,54 @@ export function UnitsGridView({
             />
           </p>
         </div>
-        <Button onClick={onAddUnit}>
+        <Button className="w-full sm:w-auto" onClick={onAddUnit}>
           <FolderPlus className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addUnit"
             defaultMessage="Add Unit"
           />
         </Button>
+      </div>
+
+      <div className="rounded-lg border bg-muted/20 p-3 sm:p-4">
+        <div className="grid gap-2 lg:grid-cols-[1fr,180px,220px,auto]">
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Ünite, açıklama veya bölüm ara..."
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) =>
+              setStatusFilter(e.target.value as "all" | "active" | "inactive")
+            }
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+          >
+            <option value="all">Tüm Durumlar</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+          <select
+            value={chapterFilter}
+            onChange={(e) => setChapterFilter(e.target.value)}
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+          >
+            <option value="all">Tüm Bölümler</option>
+            {chapterOptions.map((chapter) => (
+              <option key={chapter.id} value={chapter.id}>
+                {chapter.title}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="outline"
+            className="w-full lg:w-auto"
+            onClick={clearFilters}
+            disabled={!hasActiveFilters}
+          >
+            Temizle
+          </Button>
+        </div>
       </div>
 
       {allUnits.length === 0 ? (
@@ -111,157 +200,79 @@ export function UnitsGridView({
             />
           </Button>
         </div>
+      ) : filteredUnits.length === 0 ? (
+        <div className="rounded-lg border border-dashed p-10 text-center">
+          <p className="text-sm text-muted-foreground">
+            Aramanıza uyan ünite bulunamadı.
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {allUnits.map((unit) => (
-            <Card key={`${unit.chapterId}-${unit._id}`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      {unit.title}
-                      {unit.isPremium && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-yellow-100 text-yellow-800"
-                        >
-                          <FormattedMessage
-                            id="admin.lessons.premium"
-                            defaultMessage="Premium"
-                          />
-                        </Badge>
-                      )}
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      <FormattedMessage
-                        id="admin.lessons.unitInChapter"
-                        defaultMessage="In chapter: {chapterTitle}"
-                        values={{ chapterTitle: unit.chapterTitle }}
-                      />
-                    </CardDescription>
-                  </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
+        <div className="rounded-lg border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ünite</TableHead>
+                <TableHead>Bölüm</TableHead>
+                <TableHead>Ders</TableHead>
+                <TableHead>Sıra</TableHead>
+                <TableHead>Durum</TableHead>
+                <TableHead>Özellik</TableHead>
+                <TableHead className="text-right">İşlemler</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredUnits.map((unit) => (
+                <TableRow key={`${unit.chapterId}-${unit._id}`}>
+                  <TableCell className="whitespace-normal">
+                    <div className="min-w-[220px]">
+                      <p className="line-clamp-1 font-medium">{unit.title}</p>
+                      <p className="line-clamp-1 text-xs text-muted-foreground">
+                        {unit.description || "-"}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="whitespace-normal">
+                    <span className="line-clamp-1">{unit.chapterTitle}</span>
+                  </TableCell>
+                  <TableCell>{unit.lessons.length}</TableCell>
+                  <TableCell>{unit.order}</TableCell>
+                  <TableCell>
+                    <Badge variant={unit.isActive ? "default" : "secondary"}>
+                      {unit.isActive ? "Aktif" : "Pasif"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {unit.isPremium ? (
+                      <Badge variant="outline">Premium</Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => onEditUnit?.(unit, unit.chapterId)}
+                        title="Düzenle"
                       >
-                        <Edit className="mr-2 h-4 w-4" />
-                        <FormattedMessage
-                          id="admin.lessons.editUnit"
-                          defaultMessage="Edit Unit"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-red-600"
                         onClick={() => onDeleteUnit?.(unit, unit.chapter)}
+                        title="Sil"
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <FormattedMessage
-                          id="admin.lessons.deleteUnit"
-                          defaultMessage="Delete Unit"
-                        />
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {unit.description}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.lessons"
-                          defaultMessage="Lessons:"
-                        />
-                      </span>
-                      <span className="font-medium">{unit.lessons.length}</span>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.order"
-                          defaultMessage="Order:"
-                        />
-                      </span>
-                      <span className="font-medium">{unit.order}</span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.status.label"
-                          defaultMessage="Status:"
-                        />
-                      </span>
-                      <Badge variant={unit.isActive ? "default" : "secondary"}>
-                        {unit.isActive ? (
-                          <FormattedMessage
-                            id="admin.lessons.status.active"
-                            defaultMessage="Active"
-                          />
-                        ) : (
-                          <FormattedMessage
-                            id="admin.lessons.status.inactive"
-                            defaultMessage="Inactive"
-                          />
-                        )}
-                      </Badge>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.expanded"
-                          defaultMessage="Expanded:"
-                        />
-                      </span>
-                      <span className="font-medium">
-                        {unit.isExpanded ? (
-                          <FormattedMessage
-                            id="admin.lessons.yes"
-                            defaultMessage="Yes"
-                          />
-                        ) : (
-                          <FormattedMessage
-                            id="admin.lessons.no"
-                            defaultMessage="No"
-                          />
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {unit.imageUrl && (
-                    <div className="mt-3">
-                      <Image
-                        src={unit.imageUrl || "/placeholder.svg"}
-                        alt={unit.title}
-                        className="w-full h-24 object-cover rounded-md"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                        width={300}
-                        height={150}
-                      />
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
     </>

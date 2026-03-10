@@ -78,7 +78,12 @@ const LanguageSchema = new Schema(
       islamicContent: { type: Boolean, default: false },
       ageGroup: {
         type: String,
-        enum: ["kids_4-7", "kids_8-12", "teens_13-17", "all"],
+        enum: [
+          "kids_2-6",
+          "kids_7-12",
+          "teens_13-17",
+          "all",
+        ],
         default: "all",
       },
       moralValues: {

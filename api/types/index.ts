@@ -94,7 +94,7 @@ export interface Lesson {
 }
 
 export type LessonContent = {
-  type: "text" | "quiz" | "matching" | "listening" | "speaking";
+  type: "text" | "quiz" | "matching" | "listening";
   // data: any; // This would be more specific based on the content type
 };
 
@@ -335,6 +335,23 @@ export interface Lesson {
   isPremium: boolean;
   status: "available" | "locked" | "completed";
   xpReward: number;
+  teachingPhase: "teach" | "practice" | "assess";
+  moralValue:
+    | "patience"
+    | "gratitude"
+    | "kindness"
+    | "honesty"
+    | "sharing"
+    | "mercy"
+    | "justice"
+    | "respect";
+  valuePointsReward: number;
+  pedagogyFocus: string;
+  moralStory?: {
+    title: string;
+    text: string;
+    placement: "pre_lesson" | "mid_lesson" | "post_lesson";
+  };
   imageUrl: string;
   order: number;
 }
@@ -345,7 +362,37 @@ export interface Exercise {
   unitId: string;
   chapterId: string;
   languageId: string;
-  type: "translate" | "select" | "arrange" | "match" | "listen" | "speak";
+  type:
+    | "translate"
+    | "select"
+    | "arrange"
+    | "match"
+    | "listen"
+    | "education_image_intro"
+    | "education_visual"
+    | "education_video"
+    | "education_audio"
+    | "education_tip";
+  componentType:
+    | "learning_card"
+    | "moral_story"
+    | "multiple_choice"
+    | "listening_challenge"
+    | "matching_board"
+    | "arrange_builder"
+    | "puzzle_board"
+    | "focus_breathing";
+  moralValue:
+    | "patience"
+    | "gratitude"
+    | "kindness"
+    | "honesty"
+    | "sharing"
+    | "mercy"
+    | "justice"
+    | "respect";
+  valuePoints: number;
+  questionPreview: string;
   instruction: string;
   sourceText: string;
   sourceLanguage: string;
@@ -358,10 +405,28 @@ export interface Exercise {
   badAnswerImage: string;
   correctAnswerImage: string;
   order: number;
+  educationContent?: unknown;
+  mediaPack?: {
+    idleAnimationUrl?: string;
+    successAnimationUrl?: string;
+    failAnimationUrl?: string;
+    characterName?: string;
+  };
+  hoverHint?: {
+    text?: string;
+    audioUrl?: string;
+  };
+  answerAudioUrl?: string;
+  ttsVoiceId?: string;
+  autoRevealMilliseconds?: number | null;
 }
 export type ExerciseResponse = {
   _id: Types.ObjectId;
   type: string; // e.g., 'translate', 'multiple-choice'
+  componentType: string;
+  moralValue: string;
+  valuePoints: number;
+  questionPreview: string;
   instruction: string;
   sourceText: string;
   sourceLanguage: string;
@@ -375,6 +440,20 @@ export type ExerciseResponse = {
   correctAnswerImage: string;
   isActive: boolean;
   order: number;
+  educationContent?: unknown;
+  mediaPack?: {
+    idleAnimationUrl?: string;
+    successAnimationUrl?: string;
+    failAnimationUrl?: string;
+    characterName?: string;
+  };
+  hoverHint?: {
+    text?: string;
+    audioUrl?: string;
+  };
+  answerAudioUrl?: string;
+  ttsVoiceId?: string;
+  autoRevealMilliseconds?: number | null;
 };
 
 export type LessonResponseType = {

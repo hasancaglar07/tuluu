@@ -43,13 +43,19 @@ export const LanguageSchema = z.object({
       "language_learning",
       "mental_spiritual",
       "personal_social",
+      "story_library",
     ])
     .default("language_learning"),
   themeMetadata: z
     .object({
       islamicContent: z.boolean().default(false),
       ageGroup: z
-        .enum(["kids_4-7", "kids_8-12", "teens_13-17", "all"])
+        .enum([
+          "kids_2-6",
+          "kids_7-12",
+          "teens_13-17",
+          "all",
+        ])
         .default("all"),
       moralValues: z.array(z.string()).default([]),
       educationalFocus: z.string().max(200).optional().default(""),

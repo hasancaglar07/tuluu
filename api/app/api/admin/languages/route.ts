@@ -361,7 +361,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error fetching languages:", error);
     return NextResponse.json(
-      { error: "Failed to fetch languages" },
+      { error: "Diller getirilemedi" },
       { status: 500 }
     );
   }
@@ -380,7 +380,7 @@ export async function POST(req: NextRequest) {
     if (!validated.success) {
       return Response.json(
         {
-          message: "validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 500 }
@@ -417,7 +417,7 @@ export async function POST(req: NextRequest) {
     }
     console.error("Error creating language:", error);
     return NextResponse.json(
-      { error: "Failed to create language" },
+      { error: "Dil oluşturulamadı" },
       { status: 500 }
     );
   }

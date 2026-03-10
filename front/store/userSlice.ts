@@ -26,7 +26,7 @@ const initialState: UserState = {
   xp: 0,
   gems: 0, // Initialize with 250 gems
   gel: 0, // Initialize with 15 gel
-  hearts: 5,
+  hearts: 1500,
   streak: 0,
   loading: false,
   error: null,
@@ -65,7 +65,7 @@ export const userSlice = createSlice({
 
     // Action to update hearts
     updateHearts: (state, action: PayloadAction<number>) => {
-      state.hearts = Math.max(0, Math.min(5, state.hearts + action.payload));
+      state.hearts = Math.max(0, state.hearts + action.payload);
     },
 
     // Action to increment streak

@@ -7,6 +7,7 @@ import Container from "@/components/custom/container";
 import ReportModal from "@/components/custom/report-modal";
 import { cn } from "@/lib/utils";
 import { FormattedMessage } from "react-intl";
+import { detectMediaKind } from "@/lib/media";
 
 interface LessonFooterProps {
   isCorrect: boolean | null;
@@ -41,7 +42,34 @@ export default function LessonFooter({
   lessonId,
   exerciseId,
 }: LessonFooterProps) {
-  console.log("LessonFooter rendered", exerciseId);
+  const renderCorrectAnswer = () => {
+    if (!correctAnswer) return null;
+    const kind = detectMediaKind(correctAnswer);
+    if (kind === "image") {
+      return (
+        <div className="w-20 h-20 rounded-2xl border overflow-hidden bg-white shadow-sm">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={correctAnswer}
+            alt="correct-answer-visual"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      );
+    }
+    if (kind === "audio") {
+      return (
+        <audio className="w-40 h-10 rounded-xl bg-white" controls src={correctAnswer} />
+      );
+    }
+    if (kind === "video") {
+      return (
+        <video className="w-32 h-20 rounded-xl border" controls src={correctAnswer} />
+      );
+    }
+    return <span className="font-semibold">{correctAnswer}</span>;
+  };
+
   return (
     <footer
       className={cn(
@@ -77,11 +105,13 @@ export default function LessonFooter({
                   <X strokeWidth={5} className="w-10 h-10" />
                 </m.div>
               </m.div>
-              <div className="flex flex-row justify-between gap-2 text-red-500 font-bold">
-                <h6 className="flex gap-2">
-                  <FormattedMessage id="lesson.correctAnswer" />
-                  <span className="font-semibold">{correctAnswer}</span>
-                </h6>
+              <div className="flex flex-row justify-between gap-2 text-red-500 font-bold flex-wrap">
+                <div className="flex flex-col gap-2">
+                  <h6 className="flex gap-2 items-center">
+                    <FormattedMessage id="lesson.correctAnswer" />
+                  </h6>
+                  {renderCorrectAnswer()}
+                </div>
                 <Link href="#" className="flex gap-2 flex-col">
                   {exerciseId && lessonId && (
                     <ReportModal

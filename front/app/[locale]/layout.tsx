@@ -1,3 +1,4 @@
+import "@/lib/polyfills/server-storage";
 import "./globals.css";
 import { fredoka } from "./fonts";
 import Providers from "@/providers";

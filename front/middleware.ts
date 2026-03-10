@@ -33,6 +33,10 @@ const isAuthRoute = createRouteMatcher([
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {
+  // Bypass locale rewrite and auth for API routes
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
   const { userId } = await auth();
   if (isAuthRoute(request) && !userId)
     return NextResponse.redirect(new URL("/sign-in", request.url));
@@ -90,7 +94,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 export const config = {
   matcher: [
     // Skip all internal paths (_next)
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|api|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Optional: only run on root (/) URL
     // '/'
   ],

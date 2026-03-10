@@ -301,6 +301,40 @@ UserProgressSchema.statics.addCompletedLesson = async function (
       xpBoost: lessonData.xpBoost ?? null,
     },
   });
+
+  // Also record rewards in rewardHistory so totals reflect lesson completion
+  try {
+    if (lessonData.xp && lessonData.xp > 0) {
+      (progress as any).rewardHistory.push({
+        lessonId: lessonData.lessonId,
+        type: "xp",
+        amount: lessonData.xp,
+        reason: "Lesson completion",
+        date: new Date(),
+      });
+    }
+    if (lessonData.gems && lessonData.gems > 0) {
+      (progress as any).rewardHistory.push({
+        lessonId: lessonData.lessonId,
+        type: "gems",
+        amount: lessonData.gems,
+        reason: "Lesson completion",
+        date: new Date(),
+      });
+    }
+    if (lessonData.gel && lessonData.gel > 0) {
+      (progress as any).rewardHistory.push({
+        lessonId: lessonData.lessonId,
+        type: "gel",
+        amount: lessonData.gel,
+        reason: "Lesson completion",
+        date: new Date(),
+      });
+    }
+  } catch (e) {
+    // keep non-fatal if reward history push fails
+    console.error("Failed to append rewardHistory for lesson completion", e);
+  }
   if (!progress.lastStreakDate) {
     progress.currentStreak = 1;
     progress.lastStreakDate = new Date();

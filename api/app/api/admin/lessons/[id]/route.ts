@@ -189,13 +189,13 @@ export async function GET(
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const { id } = await params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
-        { error: "Invalid lesson ID format" },
+        { error: "Geçersiz ders ID formatı" },
         { status: 400 }
       );
     }
@@ -203,12 +203,12 @@ export async function GET(
 
     if (!lesson) {
       return NextResponse.json(
-        { message: "Lesson not found" },
+        { message: "Ders bulunamadı" },
         { status: 500 }
       );
     }
 
-    const exercises = await Exercise.find({ lessonId: id });
+    const exercises = await Exercise.find({ lessonId: id, isActive: true });
 
     const response = {
       _id: lesson._id, // or use a custom format
@@ -220,9 +220,18 @@ export async function GET(
       totalXp: lesson.xpReward,
       isPremium: lesson.isPremium,
       description: lesson.description,
+      teachingPhase: (lesson as any).teachingPhase || "teach",
+      moralValue: (lesson as any).moralValue || "kindness",
+      valuePointsReward: (lesson as any).valuePointsReward || 0,
+      pedagogyFocus: (lesson as any).pedagogyFocus || "",
+      moralStory: (lesson as any).moralStory || null,
       exercises: exercises.map((ex: ExerciseResponse) => ({
         _id: ex._id,
         type: ex.type,
+        componentType: (ex as any).componentType || "multiple_choice",
+        moralValue: (ex as any).moralValue || "kindness",
+        valuePoints: (ex as any).valuePoints || 0,
+        questionPreview: (ex as any).questionPreview || "",
         instruction: ex.instruction,
         sourceText: ex.sourceText,
         sourceLanguage: ex.sourceLanguage,
@@ -236,6 +245,13 @@ export async function GET(
         correctAnswerImage: ex.correctAnswerImage,
         isActive: ex.isActive,
         order: ex.order,
+        educationContent: (ex as any).educationContent ?? null,
+        mediaPack: (ex as any).mediaPack ?? null,
+        hoverHint: (ex as any).hoverHint ?? null,
+        answerAudioUrl: (ex as any).answerAudioUrl ?? "",
+        ttsVoiceId: (ex as any).ttsVoiceId ?? "",
+        autoRevealMilliseconds:
+          (ex as any).autoRevealMilliseconds ?? null,
       })),
     };
 
@@ -243,7 +259,7 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching lesson:", error);
     return NextResponse.json(
-      { error: "Failed to fetch lesson" },
+      { error: "Ders getirilemedi" },
       { status: 500 }
     );
   }
@@ -266,7 +282,7 @@ export async function PUT(
     if (!validated.success) {
       return NextResponse.json(
         {
-          message: "Validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -277,7 +293,7 @@ export async function PUT(
 
     const lesson = await Lesson.findById({ _id: id });
     if (!lesson) {
-      return NextResponse.json({ error: "Lesson not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ders bulunamadı" }, { status: 500 });
     }
 
     const checkOrder = await Lesson.findOne({
@@ -289,7 +305,7 @@ export async function PUT(
     if (checkOrder) {
       return NextResponse.json(
         {
-          message: `Order ${data?.order} is already taken by a Lesson for this unit`,
+          message: `${data?.order} sırası bu ünitedeki başka bir ders tarafından kullanılıyor`,
         },
         { status: 400 }
       );
@@ -301,14 +317,14 @@ export async function PUT(
     });
 
     if (!updated) {
-      return NextResponse.json({ error: "lesson not saved" }, { status: 500 });
+      return NextResponse.json({ error: "Ders kaydedilemedi" }, { status: 500 });
     }
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error updating chapter:", error);
     return NextResponse.json(
-      { error: "Failed to update chapter" },
+      { error: "Bölüm güncellenemedi" },
       { status: 500 }
     );
   }
@@ -330,17 +346,17 @@ export async function DELETE(
     const lesson = await Lesson.disableById(id);
 
     if (!lesson) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 500 });
     }
 
     return NextResponse.json(
-      { message: "Unit disabled successfully", lesson },
+      { message: "Ünite başarıyla devre dışı bırakıldı", lesson },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error disabling chapter:", error);
     return NextResponse.json(
-      { error: "Failed to disable chapter" },
+      { error: "Bölüm devre dışı bırakılamadı" },
       { status: 500 }
     );
   }

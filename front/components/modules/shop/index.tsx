@@ -97,7 +97,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
     currencies: {
       hearts: {
         gemsCost: 500,
-        maxAmount: 5,
+        maxAmount: 1500,
         refillTimeHours: 5,
         enabled: true,
       },
@@ -147,7 +147,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
             currencies: {
               hearts: {
                 gemsCost: data.data.settings.heartCostInGems || 500,
-                maxAmount: data.data.settings.maxHearts || 5,
+                maxAmount: data.data.settings.maxHearts || 1500,
                 refillTimeHours: data.data.settings.heartRefillTimeHours || 5,
                 enabled: data.data.settings.heartsEnabled !== false,
               },
@@ -300,7 +300,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
    */
   const handleHeartPurchase = async (quantity: number, totalCost: number) => {
     setIsPurchasing(true);
-    const maxHearts = shopSettings.currencies.hearts.maxAmount || 5;
+    const maxHearts = shopSettings.currencies.hearts.maxAmount || 1500;
 
     // Check if user already has max hearts or would exceed max hearts
     if (user.hearts >= maxHearts) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -8,7 +8,18 @@ import type { AxiosError } from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe } from "lucide-react";
+import {
+  BookOpenCheck,
+  Globe,
+  Layers,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import Loading from "@/components/custom/loading";
 import { apiClient } from "@/lib/api-client";
@@ -41,7 +52,7 @@ import { i18n } from "@/i18n-config";
 
 const createDefaultThemeMetadata = (): ThemeMetadata => ({
   islamicContent: false,
-  ageGroup: "all",
+  ageGroup: "kids_7-12",
   moralValues: [] as string[],
   educationalFocus: "",
   difficultyLevel: "beginner",
@@ -64,6 +75,10 @@ const createInitialExercise = (language?: Language): NewExerciseForm => ({
   _id: "",
   lessonId: "",
   type: "translate",
+  componentType: "multiple_choice",
+  moralValue: "kindness",
+  valuePoints: 0,
+  questionPreview: "",
   instruction: "",
   sourceText: "",
   sourceLanguage: language?.baseLanguage ?? "",
@@ -75,6 +90,7 @@ const createInitialExercise = (language?: Language): NewExerciseForm => ({
   neutralAnswerImage: "",
   badAnswerImage: "",
   correctAnswerImage: "",
+  educationContent: null,
 });
 
 /**
@@ -169,6 +185,15 @@ export default function LessonsManagementPage() {
     isTest: false,
     isActive: false,
     xpReward: 10,
+    valuePointsReward: 0,
+    moralValue: "kindness" as const,
+    teachingPhase: "teach" as const,
+    pedagogyFocus: "",
+    moralStory: {
+      title: "",
+      text: "",
+      placement: "post_lesson" as const,
+    },
     imageUrl: "",
     order: 1,
   });
@@ -208,7 +233,12 @@ export default function LessonsManagementPage() {
       if (response.data?.languages) {
         const languagesArray = response.data.languages;
         setData({ languages: languagesArray });
-        setSelectedLanguage(languagesArray[0]?._id || "");
+        setSelectedLanguage((previous) => {
+          if (previous && languagesArray.some((lang: Language) => lang._id === previous)) {
+            return previous;
+          }
+          return languagesArray[0]?._id || "";
+        });
       } else {
         toast.error(
           intl.formatMessage({
@@ -229,6 +259,51 @@ export default function LessonsManagementPage() {
       setIsLoading(false);
     }
   }, [getToken, intl]);
+
+  const overviewStats = useMemo(() => {
+    const programs = data.languages.length;
+
+    let chapters = 0;
+    let units = 0;
+    let lessons = 0;
+    let exercises = 0;
+
+    data.languages.forEach((language) => {
+      chapters += language.chapters.length;
+      language.chapters.forEach((chapter) => {
+        units += chapter.units.length;
+        chapter.units.forEach((unit) => {
+          lessons += unit.lessons.length;
+          unit.lessons.forEach((lesson) => {
+            exercises += lesson.exercises?.length ?? 0;
+          });
+        });
+      });
+    });
+
+    return { programs, chapters, units, lessons, exercises };
+  }, [data.languages]);
+
+  const selectedProgramStats = useMemo(() => {
+    if (!currentLanguage) {
+      return { chapters: 0, units: 0, lessons: 0, tests: 0 };
+    }
+
+    const chapters = currentLanguage.chapters.length;
+    let units = 0;
+    let lessons = 0;
+    let tests = 0;
+
+    currentLanguage.chapters.forEach((chapter) => {
+      units += chapter.units.length;
+      chapter.units.forEach((unit) => {
+        lessons += unit.lessons.length;
+        tests += unit.lessons.filter((lesson) => lesson.isTest).length;
+      });
+    });
+
+    return { chapters, units, lessons, tests };
+  }, [currentLanguage]);
 
   /**
    * Handles API errors and displays appropriate toast messages
@@ -283,33 +358,171 @@ export default function LessonsManagementPage() {
   return (
     <>
       <Loading isLoading={isLoading} />
-      <div className="space-y-6">
+      <div className="mx-auto w-full max-w-[1500px] space-y-6">
         {/* Page Header */}
-        <div className="flex justify-between items-center">
-          <div>
+        <div className="rounded-xl border bg-card p-4 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">
               <FormattedMessage
                 id="admin.lessons.title"
-                defaultMessage="Program Management"
+                defaultMessage="Program Yönetimi"
               />
             </h1>
-            <p className="text-muted-foreground">
+            <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
               <FormattedMessage
                 id="admin.lessons.subtitle"
-                defaultMessage="Design value-centered journeys: Programs → Chapters → Units → Learning Moments"
+                defaultMessage="Basit ve yönetilebilir akış: Program → Bölüm → Ünite → Ders"
               />
             </p>
           </div>
 
-          <div className="flex gap-2">
-            <Button onClick={() => setIsLanguageDialogOpen(true)}>
+            <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => setIsLanguageDialogOpen(true)}
+            >
               <Globe className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addLanguage"
-                defaultMessage="Add Program"
+                defaultMessage="Program Ekle"
               />
             </Button>
+            </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
+          <Card className="overflow-hidden">
+            <CardHeader className="space-y-1 pb-2">
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.stats.programs"
+                  defaultMessage="Programlar"
+                />
+              </CardDescription>
+              <CardTitle className="text-2xl">{overviewStats.programs}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="overflow-hidden">
+            <CardHeader className="space-y-1 pb-2">
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.stats.chapters"
+                  defaultMessage="Bölümler"
+                />
+              </CardDescription>
+              <CardTitle className="text-2xl">{overviewStats.chapters}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="overflow-hidden">
+            <CardHeader className="space-y-1 pb-2">
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.stats.units"
+                  defaultMessage="Üniteler"
+                />
+              </CardDescription>
+              <CardTitle className="text-2xl">{overviewStats.units}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="overflow-hidden">
+            <CardHeader className="space-y-1 pb-2">
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.stats.lessons"
+                  defaultMessage="Dersler"
+                />
+              </CardDescription>
+              <CardTitle className="text-2xl">{overviewStats.lessons}</CardTitle>
+            </CardHeader>
+          </Card>
+          <Card className="col-span-2 overflow-hidden xl:col-span-1">
+            <CardHeader className="space-y-1 pb-2">
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.stats.exercises"
+                  defaultMessage="Egzersizler"
+                />
+              </CardDescription>
+              <CardTitle className="text-2xl">{overviewStats.exercises}</CardTitle>
+            </CardHeader>
+          </Card>
+        </div>
+
+        <div className="grid gap-4">
+          <Card className="overflow-hidden">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5" />
+                <FormattedMessage
+                  id="admin.lessons.selectedProgramSnapshot"
+                  defaultMessage="Seçili Program Özeti"
+                />
+              </CardTitle>
+              <CardDescription>
+                {currentLanguage ? (
+                  <span>{currentLanguage.name}</span>
+                ) : (
+                  <FormattedMessage
+                    id="admin.lessons.selectProgramHint"
+                    defaultMessage="Özet görmek için bir program seç."
+                  />
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  <FormattedMessage
+                    id="admin.lessons.stats.chapters"
+                    defaultMessage="Bölümler"
+                  />
+                </span>
+                <span className="font-semibold">{selectedProgramStats.chapters}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  <FormattedMessage
+                    id="admin.lessons.stats.units"
+                    defaultMessage="Üniteler"
+                  />
+                </span>
+                <span className="font-semibold">{selectedProgramStats.units}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  <FormattedMessage
+                    id="admin.lessons.stats.lessons"
+                    defaultMessage="Dersler"
+                  />
+                </span>
+                <span className="font-semibold">{selectedProgramStats.lessons}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  <FormattedMessage
+                    id="admin.lessons.stats.tests"
+                    defaultMessage="Test Dersleri"
+                  />
+                </span>
+                <span className="font-semibold">{selectedProgramStats.tests}</span>
+              </div>
+              <div className="pt-2">
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  onClick={() => setActiveTab("tree")}
+                >
+                  <BookOpenCheck className="mr-2 h-4 w-4" />
+                  <FormattedMessage
+                    id="admin.lessons.gotoTree"
+                    defaultMessage="Yetenek Ağacında Yönet"
+                  />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Tabs Interface */}
@@ -319,41 +532,44 @@ export default function LessonsManagementPage() {
           onValueChange={setActiveTab}
           className="space-y-4"
         >
-          <TabsList>
-            <TabsTrigger value="tree">
+          <TabsList className="flex h-auto w-full flex-nowrap gap-1 overflow-x-auto p-1">
+            <TabsTrigger className="whitespace-nowrap" value="tree">
               <FormattedMessage
                 id="admin.lessons.tabs.skillTree"
-                defaultMessage="Skill Tree"
+                defaultMessage="Ağaç Görünümü"
               />
             </TabsTrigger>
-            <TabsTrigger value="languages">
+            <TabsTrigger className="whitespace-nowrap" value="languages">
               <FormattedMessage
                 id="admin.lessons.tabs.languages"
-                defaultMessage="Languages"
+                defaultMessage="Programlar"
               />
             </TabsTrigger>
-            <TabsTrigger value="chapters">
+            <TabsTrigger className="whitespace-nowrap" value="chapters">
               <FormattedMessage
                 id="admin.lessons.tabs.chapters"
-                defaultMessage="Chapters"
+                defaultMessage="Bölümler"
               />
             </TabsTrigger>
-            <TabsTrigger value="units">
+            <TabsTrigger className="whitespace-nowrap" value="units">
               <FormattedMessage
                 id="admin.lessons.tabs.units"
-                defaultMessage="Units"
+                defaultMessage="Üniteler"
               />
             </TabsTrigger>
-            <TabsTrigger value="lessons">
+            <TabsTrigger className="whitespace-nowrap" value="lessons">
               <FormattedMessage
                 id="admin.lessons.tabs.lessons"
-                defaultMessage="Lessons"
+                defaultMessage="Dersler"
               />
             </TabsTrigger>
           </TabsList>
 
           {/* Skill Tree Tab - Hierarchical view */}
-          <TabsContent value="tree" className="space-y-4">
+          <TabsContent
+            value="tree"
+            className="space-y-4 rounded-xl border bg-card p-3 sm:p-4"
+          >
             {data.languages.length === 0 ? (
               <div className="text-center p-12 border rounded-md">
                 <div className="inline-flex h-20 w-20 rounded-full bg-slate-100 items-center justify-center mb-4">
@@ -362,20 +578,20 @@ export default function LessonsManagementPage() {
                 <h3 className="text-lg font-medium">
                   <FormattedMessage
                     id="admin.lessons.noLanguages.title"
-                    defaultMessage="No languages yet"
+                    defaultMessage="Henüz program yok"
                   />
                 </h3>
                 <p className="text-sm text-slate-500 mt-1 mb-4">
                   <FormattedMessage
                     id="admin.lessons.noLanguages.subtitle"
-                    defaultMessage="Get started by adding your first language."
+                    defaultMessage="İlk programı ekleyerek başlayın."
                   />
                 </p>
                 <Button onClick={() => setIsLanguageDialogOpen(true)}>
                   <Globe className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.addLanguage"
-                    defaultMessage="Add Language"
+                    defaultMessage="Program Ekle"
                   />
                 </Button>
               </div>
@@ -472,7 +688,10 @@ export default function LessonsManagementPage() {
           </TabsContent>
 
           {/* Languages Tab - Grid view of all languages */}
-          <TabsContent value="languages" className="space-y-4">
+          <TabsContent
+            value="languages"
+            className="space-y-4 rounded-xl border bg-card p-3 sm:p-4"
+          >
             <LanguagesGridView
               languages={data.languages}
               onAddLanguage={() => setIsLanguageDialogOpen(true)}
@@ -488,15 +707,29 @@ export default function LessonsManagementPage() {
           </TabsContent>
 
           {/* Chapters Tab - Grid view of chapters */}
-          <TabsContent value="chapters" className="space-y-4">
+          <TabsContent
+            value="chapters"
+            className="space-y-4 rounded-xl border bg-card p-3 sm:p-4"
+          >
             <ChaptersGridView
               currentLanguage={currentLanguage}
               onAddChapter={() => setIsChapterDialogOpen(true)}
+              onEditChapter={(chapter) => {
+                setEditingChapter(chapter);
+                setIsEditChapterDialogOpen(true);
+              }}
+              onDeleteChapter={(chapter) => {
+                setChapterToDelete(chapter);
+                setIsDeleteChapterDialogOpen(true);
+              }}
             />
           </TabsContent>
 
           {/* Units Tab - Grid view of units */}
-          <TabsContent value="units" className="space-y-4">
+          <TabsContent
+            value="units"
+            className="space-y-4 rounded-xl border bg-card p-3 sm:p-4"
+          >
             <UnitsGridView
               currentLanguage={currentLanguage}
               onAddUnit={() => setIsUnitDialogOpen(true)}
@@ -513,7 +746,10 @@ export default function LessonsManagementPage() {
           </TabsContent>
 
           {/* Lessons Tab - Grid view of lessons */}
-          <TabsContent value="lessons" className="space-y-4">
+          <TabsContent
+            value="lessons"
+            className="space-y-4 rounded-xl border bg-card p-3 sm:p-4"
+          >
             <LessonsGridView
               currentLanguage={currentLanguage}
               onAddLesson={() => setIsLessonDialogOpen(true)}
@@ -879,6 +1115,11 @@ export default function LessonsManagementPage() {
                   isActive: newLesson.isActive ?? true,
                   isTest: newLesson.isTest ?? false,
                   xpReward: newLesson.xpReward ?? 0,
+                  valuePointsReward: newLesson.valuePointsReward ?? 0,
+                  moralValue: newLesson.moralValue,
+                  teachingPhase: newLesson.teachingPhase,
+                  pedagogyFocus: newLesson.pedagogyFocus ?? "",
+                  moralStory: newLesson.moralStory,
                   imageUrl: newLesson.imageUrl || "",
                   order: newLesson.order ?? 0,
                 },
@@ -957,6 +1198,15 @@ export default function LessonsManagementPage() {
                 isTest: false,
                 isActive: true,
                 xpReward: 10,
+                valuePointsReward: 0,
+                moralValue: "kindness",
+                teachingPhase: "teach",
+                pedagogyFocus: "",
+                moralStory: {
+                  title: "",
+                  text: "",
+                  placement: "post_lesson",
+                },
                 imageUrl: "",
                 order: 1,
               });
@@ -976,8 +1226,8 @@ export default function LessonsManagementPage() {
           setNewExercise={setNewExercise}
           currentLanguage={currentLanguage}
           onSubmit={async () => {
-            const [chapterId, unitId, lessonId] =
-              newExercise.lessonId.split("-");
+            const [chapterId, unitId, lessonId] = newExercise.lessonId.split("-");
+            const isEducation = newExercise.type.startsWith("education_");
             setIsLoading(true);
             try {
               const token = await getToken();
@@ -989,19 +1239,32 @@ export default function LessonsManagementPage() {
                   chapterId: chapterId,
                   languageId: selectedLanguage,
                   type: newExercise.type,
-                  instruction: newExercise.instruction.trim(),
-                  sourceText: newExercise.sourceText.trim(),
-                  sourceLanguage: newExercise.sourceLanguage.toLowerCase(),
-                  targetLanguage: newExercise.targetLanguage.toLowerCase(),
-                  correctAnswer: newExercise.correctAnswer.map((a) => a.trim()),
-                  options: newExercise.options
-                    .map((opt) => opt.trim())
-                    .filter(Boolean),
-                  isNewWord: newExercise.isNewWord,
-                  audioUrl: newExercise.audioUrl.trim(),
-                  neutralAnswerImage: newExercise.neutralAnswerImage.trim(),
-                  badAnswerImage: newExercise.badAnswerImage.trim(),
-                  correctAnswerImage: newExercise.correctAnswerImage.trim(),
+                  componentType: newExercise.componentType,
+                  moralValue: newExercise.moralValue,
+                  valuePoints: Number(newExercise.valuePoints || 0),
+                  questionPreview: (newExercise.questionPreview || "").trim(),
+                  instruction: isEducation ? "" : newExercise.instruction.trim(),
+                  sourceText: isEducation ? "" : newExercise.sourceText.trim(),
+                  sourceLanguage: (newExercise.sourceLanguage || "").toLowerCase(),
+                  targetLanguage: (newExercise.targetLanguage || "").toLowerCase(),
+                  correctAnswer: isEducation
+                    ? []
+                    : newExercise.correctAnswer.map((a) => a.trim()),
+                  options: isEducation
+                    ? []
+                    : newExercise.options.map((opt) => opt.trim()).filter(Boolean),
+                  isNewWord: isEducation ? false : newExercise.isNewWord,
+                  audioUrl: isEducation ? "" : newExercise.audioUrl.trim(),
+                  neutralAnswerImage: isEducation
+                    ? newExercise.neutralAnswerImage?.trim() || ""
+                    : newExercise.neutralAnswerImage.trim(),
+                  badAnswerImage: isEducation
+                    ? newExercise.badAnswerImage?.trim() || ""
+                    : newExercise.badAnswerImage.trim(),
+                  correctAnswerImage: isEducation
+                    ? newExercise.correctAnswerImage?.trim() || ""
+                    : newExercise.correctAnswerImage.trim(),
+                  educationContent: isEducation ? newExercise.educationContent : undefined,
                 },
                 {
                   headers: {
@@ -1028,6 +1291,7 @@ export default function LessonsManagementPage() {
                         unitIndex
                       ].lessons.findIndex((lesson) => lesson._id === lessonId);
                       if (lessonIndex !== -1) {
+                        const created = (response.data && response.data.data) || response.data;
                         setData({
                           ...data,
                           languages: data.languages.map((lang, lIndex) =>
@@ -1053,7 +1317,7 @@ export default function LessonsManagementPage() {
                                                                 exercises: [
                                                                   ...(lesson.exercises ||
                                                                     []),
-                                                                  response.data,
+                                                                  created,
                                                                 ],
                                                               }
                                                             : lesson
@@ -1258,6 +1522,15 @@ export default function LessonsManagementPage() {
                   order: editingLesson?.order ?? 0,
                   isTest: editingLesson?.isTest ?? false,
                   xpReward: editingLesson?.xpReward ?? 0,
+                  valuePointsReward: editingLesson?.valuePointsReward ?? 0,
+                  moralValue: editingLesson?.moralValue ?? "kindness",
+                  teachingPhase: editingLesson?.teachingPhase ?? "teach",
+                  pedagogyFocus: editingLesson?.pedagogyFocus ?? "",
+                  moralStory: editingLesson?.moralStory ?? {
+                    title: "",
+                    text: "",
+                    placement: "post_lesson",
+                  },
                 },
                 {
                   headers: {

@@ -5,6 +5,7 @@ import Language, { LanguageDocument } from "@/models/Language";
 import Chapter, { ChapterDocument } from "@/models/Chapter";
 import Unit, { UnitDocument } from "@/models/Unit";
 import Lesson, { LessonDocument } from "@/models/Lesson";
+import Exercise from "@/models/Exercise";
 import { authGuard } from "@/lib/utils";
 import { LessonSchema } from "@/lib/validations/lesson";
 import { MongoServerError } from "mongodb";
@@ -136,15 +137,33 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     if (action === "aggregate") {
+      const normalizeThemeMetadata = (metadata?: {
+        islamicContent?: boolean;
+        ageGroup?: string;
+        moralValues?: string[];
+        educationalFocus?: string | null;
+        difficultyLevel?: string;
+      }) => ({
+        islamicContent: metadata?.islamicContent ?? false,
+        ageGroup: metadata?.ageGroup ?? "all",
+        moralValues: metadata?.moralValues ?? [],
+        educationalFocus: metadata?.educationalFocus ?? "",
+        difficultyLevel: metadata?.difficultyLevel ?? "beginner",
+      });
+
       // Fetch only active programs so disabled entries do not return after deletion
-      const languages = await Language.find({ isActive: true });
+      const languages = await Language.find({ isActive: true }).sort({
+        createdAt: 1,
+      });
 
       // Create the result structure
       const result = {
         languages: await Promise.all(
           languages.map(async (language: LanguageDocument) => {
             // Fetch chapters for this language
-            const chapters = await Chapter.find({ languageId: language.id });
+            const chapters = await Chapter.find({ languageId: language.id }).sort(
+              { order: 1 }
+            );
 
             return {
               _id: language.id,
@@ -152,15 +171,28 @@ export async function GET(req: NextRequest) {
               nativeName: language.nativeName,
               flag: language.flag,
               baseLanguage: language.baseLanguage,
+              imageUrl: language.imageUrl || "",
               locale: language.locale,
               isActive: language.isActive,
+              category: language.category ?? "language_learning",
+              themeMetadata: normalizeThemeMetadata(
+                language.themeMetadata as
+                  | {
+                      islamicContent?: boolean;
+                      ageGroup?: string;
+                      moralValues?: string[];
+                      educationalFocus?: string | null;
+                      difficultyLevel?: string;
+                    }
+                  | undefined
+              ),
               chapters: await Promise.all(
                 chapters.map(async (chapter: ChapterDocument) => {
                   // Fetch units for this chapter
                   const units = await Unit.find({
                     languageId: language.id,
                     chapterId: chapter.id,
-                  });
+                  }).sort({ order: 1 });
 
                   return {
                     _id: chapter.id,
@@ -169,8 +201,11 @@ export async function GET(req: NextRequest) {
                     isPremium: chapter.isPremium,
                     isExpanded: true, // Default to expanded in the UI
                     imageUrl: chapter.imageUrl || "",
-                    isActive: chapter.isActive || true,
-                    order: chapter.order || 0,
+                    isActive: chapter.isActive ?? true,
+                    order: chapter.order ?? 0,
+                    contentType: chapter.contentType ?? "lesson",
+                    moralLesson: chapter.moralLesson ?? null,
+                    miniGame: chapter.miniGame ?? null,
                     units: await Promise.all(
                       units.map(async (unit: UnitDocument) => {
                         // Fetch lessons for this unit
@@ -178,7 +213,76 @@ export async function GET(req: NextRequest) {
                           languageId: language.id,
                           chapterId: chapter.id,
                           unitId: unit.id,
-                        });
+                        }).sort({ order: 1 });
+
+                        const exercises = await Exercise.find({
+                          languageId: language.id,
+                          chapterId: chapter.id,
+                          unitId: unit.id,
+                          isActive: true,
+                        }).sort({ order: 1 });
+
+                        type AggregatedExercise = {
+                          _id: string;
+                          lessonId: string;
+                          type: string;
+                          instruction: string;
+                          sourceText: string;
+                          sourceLanguage: string;
+                          targetLanguage: string;
+                          correctAnswer: string[];
+                          options: string[];
+                          isNewWord: boolean;
+                          audioUrl: string;
+                          neutralAnswerImage: string;
+                          badAnswerImage: string;
+                          correctAnswerImage: string;
+                          order: number;
+                          educationContent: unknown;
+                          mediaPack: unknown;
+                          hoverHint: unknown;
+                          answerAudioUrl: string;
+                          ttsVoiceId: string;
+                          autoRevealMilliseconds: number | null;
+                        };
+
+                        const exercisesByLessonId = exercises.reduce<
+                          Record<string, AggregatedExercise[]>
+                        >((acc, exercise) => {
+                          const lessonKey = String(exercise.lessonId);
+                          if (!acc[lessonKey]) {
+                            acc[lessonKey] = [];
+                          }
+                          acc[lessonKey].push({
+                            _id: exercise.id,
+                            lessonId: exercise.lessonId,
+                            type: exercise.type,
+                            componentType: (exercise as any).componentType || "multiple_choice",
+                            moralValue: (exercise as any).moralValue || "kindness",
+                            valuePoints: (exercise as any).valuePoints || 0,
+                            questionPreview: (exercise as any).questionPreview || "",
+                            instruction: exercise.instruction,
+                            sourceText: exercise.sourceText,
+                            sourceLanguage: exercise.sourceLanguage,
+                            targetLanguage: exercise.targetLanguage,
+                            correctAnswer: exercise.correctAnswer ?? [],
+                            options: exercise.options ?? [],
+                            isNewWord: exercise.isNewWord,
+                            audioUrl: exercise.audioUrl,
+                            neutralAnswerImage: exercise.neutralAnswerImage,
+                            badAnswerImage: exercise.badAnswerImage,
+                            correctAnswerImage: exercise.correctAnswerImage,
+                            order: exercise.order,
+                            educationContent: exercise.educationContent ?? null,
+                            mediaPack: exercise.mediaPack ?? null,
+                            hoverHint: exercise.hoverHint ?? null,
+                            answerAudioUrl: exercise.answerAudioUrl ?? "",
+                            ttsVoiceId: exercise.ttsVoiceId ?? "",
+                            autoRevealMilliseconds:
+                              exercise.autoRevealMilliseconds ?? null,
+                          });
+                          return acc;
+                        }, {});
 
                         return {
                           _id: unit.id,
@@ -189,7 +293,7 @@ export async function GET(req: NextRequest) {
                           imageUrl: unit.imageUrl || "",
                           order: unit.order,
                           color: unit.color,
-                          isActive: chapter.isActive || true,
+                          isActive: unit.isActive ?? true,
                           lessons: lessons.map((lesson: LessonDocument) => ({
                             _id: lesson.id,
                             title: lesson.title,
@@ -199,10 +303,20 @@ export async function GET(req: NextRequest) {
                             isTest: lesson.isTest,
                             order: lesson.order,
                             xpReward: lesson.xpReward,
+                            teachingPhase: (lesson as any).teachingPhase || "teach",
+                            moralValue: (lesson as any).moralValue || "kindness",
+                            valuePointsReward: (lesson as any).valuePointsReward || 0,
+                            pedagogyFocus: (lesson as any).pedagogyFocus || "",
+                            moralStory: (lesson as any).moralStory || null,
                             imageUrl: lesson.imageUrl || "",
                             languageId: lesson.languageId,
                             chapterId: lesson.chapterId,
                             unitId: lesson.unitId,
+                            moralLesson: (lesson as any).moralLesson || null,
+                            miniGame: (lesson as any).miniGame || null,
+                            storyPages: lesson.storyPages || [],
+                            storyMetadata: lesson.storyMetadata || null,
+                            exercises: exercisesByLessonId[lesson.id] ?? [],
                           })),
                         };
                       })
@@ -217,16 +331,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(result, { status: 200 });
     }
     const query: {
-      unitId?: number;
-      chapterId?: number;
+      unitId?: string;
+      chapterId?: string;
       languageId?: string;
     } = {};
 
     if (unitId) {
-      query.unitId = Number.parseInt(unitId);
+      query.unitId = unitId;
     }
     if (chapterId) {
-      query.chapterId = Number.parseInt(chapterId);
+      query.chapterId = chapterId;
     }
     if (languageId) {
       query.languageId = languageId;
@@ -238,7 +352,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error fetching lessons:", error);
     return NextResponse.json(
-      { error: "Failed to fetch lessons" + error },
+      { error: "Dersler getirilemedi: " + error },
       { status: 500 }
     );
   }
@@ -255,7 +369,7 @@ export async function POST(req: NextRequest) {
     if (!validated.success) {
       return NextResponse.json(
         {
-          message: "validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -273,18 +387,18 @@ export async function POST(req: NextRequest) {
     ]);
 
     if (!chapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 500 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 500 });
     }
 
     if (!language) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 500 }
       );
     }
 
     if (!unit) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 500 });
     }
 
     //check if the order already exist for lesson with same unit
@@ -296,7 +410,7 @@ export async function POST(req: NextRequest) {
     if (checkOrder) {
       return NextResponse.json(
         {
-          message: `Order ${data?.order} is already taken by a Lesson for this unit`,
+          message: `${data?.order} sırası bu ünitedeki başka bir ders tarafından kullanılıyor`,
         },
         { status: 400 }
       );
@@ -331,14 +445,14 @@ export async function POST(req: NextRequest) {
     if (error instanceof MongoServerError && error.code === 11000) {
       return NextResponse.json(
         {
-          message: "A lesson order with the same unit already exists. Use a different order.",
+          message: "Aynı ünitede bu sıraya sahip bir ders zaten var. Farklı bir sıra kullanın.",
         },
         { status: 400 }
       );
     }
     console.error("Error creating lesson:", error);
     return NextResponse.json(
-      { error: "Failed to create lesson" },
+      { error: "Ders oluşturulamadı" },
       { status: 500 }
     );
   }

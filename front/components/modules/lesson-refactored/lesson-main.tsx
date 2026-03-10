@@ -1,10 +1,11 @@
 "use client";
 
 import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { m, AnimatePresence } from "framer-motion";
 import { Volume2, Check, X, ArrowRight } from "lucide-react";
-import Image from "next/image";
+import { detectMediaKind } from "@/lib/media";
 
 interface Exercise {
   _id: string;
@@ -14,6 +15,18 @@ interface Exercise {
   isNewWord?: boolean;
   options?: string[];
   correctAnswer: string[];
+  mediaPack?: {
+    idleAnimationUrl?: string;
+    successAnimationUrl?: string;
+    failAnimationUrl?: string;
+    characterName?: string;
+  };
+  hoverHint?: {
+    text?: string;
+    audioUrl?: string;
+  };
+  answerAudioUrl?: string;
+  autoRevealMilliseconds?: number | null;
 }
 
 interface LessonContent {
@@ -66,6 +79,57 @@ export function LessonMain({
   onReturnToDashboard,
   streakTracker,
 }: LessonMainProps) {
+  const [showHoverHint, setShowHoverHint] = useState(false);
+  const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    setShowHoverHint(false);
+    hoverAudioRef.current?.pause();
+    hoverAudioRef.current = null;
+  }, [currentExercise?._id]);
+
+  useEffect(() => {
+    if (!currentExercise?.autoRevealMilliseconds) return;
+    const timer = setTimeout(() => {
+      setShowHoverHint(true);
+      playHoverAudio();
+    }, currentExercise.autoRevealMilliseconds);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentExercise?._id, currentExercise?.autoRevealMilliseconds]);
+
+  const playHoverAudio = () => {
+    if (!currentExercise?.hoverHint?.audioUrl) return;
+    try {
+      hoverAudioRef.current?.pause();
+      const audio = new Audio(currentExercise.hoverHint.audioUrl);
+      hoverAudioRef.current = audio;
+      audio.play();
+    } catch (error) {
+      console.error("Failed to play hover hint audio", error);
+    }
+  };
+
+  const spriteSources = useMemo(() => {
+    const mediaPack = currentExercise?.mediaPack || {};
+    return {
+      neutral: mediaPack.idleAnimationUrl || characterStates.neutral,
+      happy:
+        mediaPack.successAnimationUrl ||
+        mediaPack.idleAnimationUrl ||
+        characterStates.happy,
+      sad:
+        mediaPack.failAnimationUrl ||
+        mediaPack.idleAnimationUrl ||
+        characterStates.sad,
+    };
+  }, [currentExercise?.mediaPack]);
+
+  const sourceKind = useMemo(
+    () => detectMediaKind(currentExercise?.sourceText),
+    [currentExercise?.sourceText]
+  );
+
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-4 max-w-3xl mx-auto w-full h-full">
       <AnimatePresence mode="wait">
@@ -93,7 +157,8 @@ export function LessonMain({
             {/* Character and speech bubble */}
             {!showStreakTracker && (
               <>
-                <div className="relative mb-8 flex items-center justify-center w-full">
+                <div className="relative mb-8 w-full">
+                  <div className="flex items-center justify-center w-full rounded-[32px] border border-[#e0e7ff] bg-gradient-to-br from-[#f6f8ff] to-[#eef2ff] p-6 shadow-lg">
                   <m.div
                     animate={
                       characterState === "happy"
@@ -105,14 +170,15 @@ export function LessonMain({
                     transition={{ duration: 0.5 }}
                     className="relative"
                   >
-                    <Image
-                      width={100}
-                      height={200}
-                      src={
-                        characterStates[characterState] || "/placeholder.svg"
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={spriteSources[characterState] || "/placeholder.svg"}
+                      alt={
+                        currentExercise?.mediaPack?.characterName ||
+                        "TULU character"
                       }
-                      alt="TULU character"
-                      className="h-36 w-full"
+                      className="h-36 w-full object-contain rounded-2xl border bg-white shadow-sm"
+                      loading="lazy"
                     />
                   </m.div>
 
@@ -120,14 +186,24 @@ export function LessonMain({
                     <m.div
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="ml-4 bg-white border border-gray-200 rounded-2xl p-3 px-5 relative"
+                      className="ml-4 bg-white border border-gray-200 rounded-2xl p-4 pl-6 pr-8 relative shadow-md"
                     >
                       <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2 w-4 h-4 bg-white border-l border-b border-gray-200 rotate-45"></div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={onPlayAudio}
-                          className="text-purple-500"
-                        >
+                      <div
+                        className="flex items-center gap-3 relative"
+                        onMouseEnter={() => {
+                          if (currentExercise?.hoverHint?.text) {
+                            setShowHoverHint(true);
+                            playHoverAudio();
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (currentExercise?.hoverHint?.text) {
+                            setShowHoverHint(false);
+                          }
+                        }}
+                      >
+                        <button onClick={onPlayAudio} className="text-purple-500">
                           <m.div
                             animate={
                               isSpeaking ? { scale: [1, 1.3, 1] } : { scale: 1 }
@@ -140,13 +216,42 @@ export function LessonMain({
                             <Volume2 className="h-5 w-5" />
                           </m.div>
                         </button>
-                        <span className="text-lg">
-                          {currentExercise.sourceText}
-                        </span>
+                        {sourceKind === "image" ? (
+                          <div className="w-32 h-32 rounded-2xl border overflow-hidden bg-white shadow-sm flex items-center justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={currentExercise.sourceText}
+                              alt="exercise-visual"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : sourceKind === "video" ? (
+                          <video
+                            className="w-40 h-28 rounded-2xl border shadow-sm bg-black/70"
+                            controls
+                            src={currentExercise.sourceText}
+                          />
+                        ) : sourceKind === "audio" ? (
+                          <audio
+                            className="w-48 h-10 rounded-xl border bg-white"
+                            controls
+                            src={currentExercise.sourceText}
+                          />
+                        ) : (
+                          <span className="text-lg font-semibold text-slate-800">
+                            {currentExercise.sourceText}
+                          </span>
+                        )}
+                        {currentExercise?.hoverHint?.text && showHoverHint && (
+                          <div className="absolute top-full left-0 mt-3 w-60 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900 shadow-lg">
+                            {currentExercise.hoverHint.text}
+                          </div>
+                        )}
                       </div>
                     </m.div>
                   )}
                 </div>
+              </div>
 
                 {/* Answer area */}
                 <div className="w-full mb-8">

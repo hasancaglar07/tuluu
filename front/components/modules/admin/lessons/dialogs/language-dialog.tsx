@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Dialog,
@@ -39,6 +39,7 @@ import type {
   MoralValue,
 } from "@/types";
 import { i18n } from "@/i18n-config";
+import { UploadField } from "@/components/ui/upload-field";
 
 const CATEGORY_OPTIONS: LanguageCategory[] = [
   "faith_morality",
@@ -48,13 +49,12 @@ const CATEGORY_OPTIONS: LanguageCategory[] = [
   "language_learning",
   "mental_spiritual",
   "personal_social",
+  "story_library",
 ];
 
 const AGE_GROUP_OPTIONS: ThemeAgeGroup[] = [
-  "kids_4-7",
-  "kids_8-12",
-  "teens_13-17",
-  "all",
+  "kids_2-6",
+  "kids_7-12",
 ];
 
 const DIFFICULTY_OPTIONS: ThemeMetadata["difficultyLevel"][] = [
@@ -76,7 +76,7 @@ const MORAL_VALUE_OPTIONS: MoralValue[] = [
 
 const defaultThemeMetadata = (): ThemeMetadata => ({
   islamicContent: false,
-  ageGroup: "all",
+  ageGroup: "kids_7-12",
   moralValues: [] as string[],
   educationalFocus: "",
   difficultyLevel: "beginner",
@@ -245,7 +245,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "faith_morality",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "honesty", "mercy"],
         educationalFocus: "Dualar, peygamber hikayeleri ve güzel davranış oyunları",
         difficultyLevel: "beginner",
@@ -262,7 +262,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "quran_arabic",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["respect", "gratitude", "patience"],
         educationalFocus: "Tecvid çalışmaları, sûre ezberi ve Arapça kelime oyunları",
         difficultyLevel: "intermediate",
@@ -279,7 +279,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "math_logic",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "respect"],
         educationalFocus: "Problem çözme, sayı oyunları ve akıl yürütme görevleri",
         difficultyLevel: "beginner",
@@ -296,7 +296,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "science_discovery",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["gratitude", "respect"],
         educationalFocus: "Gezegenler, doğa, mucitler ve deneysel keşif etkinlikleri",
         difficultyLevel: "beginner",
@@ -313,7 +313,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "language_learning",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["kindness", "sharing"],
         educationalFocus: "Kelime hazinesi, telaffuz ve empati odaklı diyaloglar",
         difficultyLevel: "beginner",
@@ -330,7 +330,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "mental_spiritual",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "mercy"],
         educationalFocus: "Nefes egzersizleri, zikir temelli rahatlama ve farkındalık",
         difficultyLevel: "beginner",
@@ -347,7 +347,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "personal_social",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["kindness", "sharing", "justice"],
         educationalFocus: "Empati, yardımlaşma ve topluluk oyunları",
         difficultyLevel: "beginner",
@@ -366,7 +366,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "faith_morality",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "honesty", "mercy"],
         educationalFocus: "Prophet stories, virtues and value-based mini games",
         difficultyLevel: "beginner",
@@ -383,7 +383,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "quran_arabic",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["respect", "gratitude", "patience"],
         educationalFocus: "Tajwid drills, surah memorisation and Arabic word quests",
         difficultyLevel: "intermediate",
@@ -400,7 +400,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "math_logic",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "respect"],
         educationalFocus: "Problem solving quests, number games and puzzles",
         difficultyLevel: "beginner",
@@ -417,7 +417,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "science_discovery",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["gratitude", "respect"],
         educationalFocus: "Nature walks, space journeys and Muslim inventors",
         difficultyLevel: "beginner",
@@ -434,7 +434,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "language_learning",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["kindness", "sharing"],
         educationalFocus: "Vocabulary stories, dialogues and empathy-driven play",
         difficultyLevel: "beginner",
@@ -451,7 +451,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "mental_spiritual",
       themeMetadata: {
         islamicContent: true,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["patience", "mercy"],
         educationalFocus: "Breathing exercises, dhikr-based calm and mindfulness",
         difficultyLevel: "beginner",
@@ -468,7 +468,7 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       category: "personal_social",
       themeMetadata: {
         islamicContent: false,
-        ageGroup: "kids_8-12",
+        ageGroup: "kids_7-12",
         moralValues: ["kindness", "sharing", "justice"],
         educationalFocus: "Empathy quests, teamwork challenges and service projects",
         difficultyLevel: "beginner",
@@ -517,6 +517,7 @@ export function LanguageDialog({
 }: LanguageDialogProps) {
   const intl = useIntl();
   const [activeTab, setActiveTab] = useState<"basic" | "theme">("basic");
+  const [advancedMode, setAdvancedMode] = useState(false);
   const { locales: localeOptions, defaultLocale } = i18n;
   const selectedLocale =
     (newLanguage as Language | NewLanguageForm).locale ?? defaultLocale;
@@ -576,6 +577,23 @@ export function LanguageDialog({
     );
   }, [localeOptions]);
 
+  const updateLanguage = useCallback(
+    (updater: (state: Language | NewLanguageForm) => Language | NewLanguageForm) => {
+      if (!setNewLanguage) {
+        return;
+      }
+      const updatedState = updater(newLanguage);
+      if (isEdit) {
+        (setNewLanguage as (language: Language) => void)(updatedState as Language);
+      } else {
+        (setNewLanguage as (language: NewLanguageForm) => void)(
+          updatedState as NewLanguageForm
+        );
+      }
+    },
+    [isEdit, newLanguage, setNewLanguage]
+  );
+
   useEffect(() => {
     if (!(newLanguage as Language | NewLanguageForm).locale && setNewLanguage) {
       if (isEdit) {
@@ -621,23 +639,7 @@ export function LanguageDialog({
         };
       });
     }
-  }, [templatesForLocale, newLanguage, isEdit, selectedLocale]);
-
-  const updateLanguage = (
-    updater: (state: Language | NewLanguageForm) => Language | NewLanguageForm
-  ) => {
-    if (!setNewLanguage) {
-      return;
-    }
-    const updatedState = updater(newLanguage);
-    if (isEdit) {
-      (setNewLanguage as (language: Language) => void)(updatedState as Language);
-    } else {
-      (setNewLanguage as (language: NewLanguageForm) => void)(
-        updatedState as NewLanguageForm
-      );
-    }
-  };
+  }, [templatesForLocale, newLanguage, isEdit, selectedLocale, updateLanguage]);
 
   const rawThemeMetadata =
     (newLanguage as Language | NewLanguageForm).themeMetadata ??
@@ -712,9 +714,15 @@ export function LanguageDialog({
   const selectedCategory =
     (newLanguage as Language | NewLanguageForm).category ?? "language_learning";
 
+  useEffect(() => {
+    if (!advancedMode && activeTab === "theme") {
+      setActiveTab("basic");
+    }
+  }, [activeTab, advancedMode]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[620px]">
+      <DialogContent className="sm:max-w-[760px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? (
@@ -744,25 +752,39 @@ export function LanguageDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[60vh] pr-4">
+        <div className="flex items-center justify-between rounded-lg border bg-muted/20 px-3 py-2 text-sm">
+          <span>{advancedMode ? "Gelişmiş Mod" : "Hızlı Mod"}</span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setAdvancedMode((prev) => !prev)}
+          >
+            {advancedMode ? "Hızlı Moda Dön" : "Tema/Ayarları Aç"}
+          </Button>
+        </div>
+
+        <ScrollArea className="max-h-[68vh] pr-4">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "basic" | "theme")}
             className="mt-2"
           >
-            <TabsList className="grid grid-cols-2">
+            <TabsList className={`grid ${advancedMode ? "grid-cols-2" : "grid-cols-1"}`}>
               <TabsTrigger value="basic">
                 <FormattedMessage
                   id="admin.lessons.dialog.tabs.basic"
                   defaultMessage="Basic Info"
                 />
               </TabsTrigger>
-              <TabsTrigger value="theme">
-                <FormattedMessage
-                  id="admin.lessons.dialog.tabs.theme"
-                  defaultMessage="Learning Theme"
-                />
-              </TabsTrigger>
+              {advancedMode && (
+                <TabsTrigger value="theme">
+                  <FormattedMessage
+                    id="admin.lessons.dialog.tabs.theme"
+                    defaultMessage="Learning Theme"
+                  />
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="basic">
@@ -941,28 +963,20 @@ export function LanguageDialog({
                       }
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="language-image-url">
-                      <FormattedMessage
-                        id="admin.lessons.imageUrl"
-                        defaultMessage="image Url"
-                      />
-                    </Label>
-                    <Input
-                      id="language-image-url"
-                      value={newLanguage.imageUrl ?? ""}
-                      onChange={(e) =>
-                        updateLanguage((state) =>
-                          "chapters" in state
-                            ? { ...state, imageUrl: e.target.value }
-                            : {
-                                ...(state as NewLanguageForm),
-                                imageUrl: e.target.value,
-                              }
-                        )
-                      }
-                    />
-                  </div>
+                  <UploadField
+                    id="language-image-url"
+                    label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "image Url" })}
+                    value={newLanguage.imageUrl ?? ""}
+                    onChange={(url) =>
+                      updateLanguage((state) =>
+                        "chapters" in state
+                          ? { ...state, imageUrl: url }
+                          : { ...(state as NewLanguageForm), imageUrl: url }
+                      )
+                    }
+                    accept="image/*"
+                    placeholder={"https://.../image.png"}
+                  />
                 </div>
 
                 <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
@@ -1056,6 +1070,7 @@ export function LanguageDialog({
               </div>
             </TabsContent>
 
+            {advancedMode && (
             <TabsContent value="theme">
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
@@ -1240,17 +1255,19 @@ export function LanguageDialog({
                 </div>
               </div>
             </TabsContent>
+            )}
           </Tabs>
         </ScrollArea>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+        <DialogFooter className="gap-2 sm:justify-end">
+          <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
               defaultMessage="Cancel"
             />
           </Button>
           <Button
+            className="w-full sm:w-auto"
             onClick={onSubmit}
             disabled={(!isEdit && !newLanguage._id) || isLoading}
           >

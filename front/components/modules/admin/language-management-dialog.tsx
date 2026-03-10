@@ -63,7 +63,7 @@ const MOCK_LANGUAGES = [
     category: "language_learning",
     themeMetadata: {
       islamicContent: false,
-      ageGroup: "all",
+      ageGroup: "kids_7-12",
       moralValues: [],
       educationalFocus: "",
       difficultyLevel: "beginner",
@@ -78,7 +78,7 @@ const MOCK_LANGUAGES = [
     category: "faith_morality",
     themeMetadata: {
       islamicContent: true,
-      ageGroup: "kids_8-12",
+      ageGroup: "kids_7-12",
       moralValues: ["kindness", "sharing"],
       educationalFocus: "Daily gratitude lessons",
       difficultyLevel: "beginner",
@@ -93,7 +93,7 @@ const MOCK_LANGUAGES = [
     category: "science_discovery",
     themeMetadata: {
       islamicContent: false,
-      ageGroup: "teens_13-17",
+      ageGroup: "kids_7-12",
       moralValues: ["respect"],
       educationalFocus: "STEM vocabulary",
       difficultyLevel: "intermediate",
@@ -108,7 +108,7 @@ const MOCK_LANGUAGES = [
     category: "math_logic",
     themeMetadata: {
       islamicContent: false,
-      ageGroup: "kids_8-12",
+      ageGroup: "kids_7-12",
       moralValues: [],
       educationalFocus: "Numbers and logic",
       difficultyLevel: "intermediate",
@@ -123,7 +123,7 @@ const MOCK_LANGUAGES = [
     category: "personal_social",
     themeMetadata: {
       islamicContent: true,
-      ageGroup: "kids_4-7",
+      ageGroup: "kids_2-6",
       moralValues: ["gratitude"],
       educationalFocus: "Daily routines",
       difficultyLevel: "beginner",
@@ -138,7 +138,7 @@ const MOCK_LANGUAGES = [
     category: "language_learning",
     themeMetadata: {
       islamicContent: false,
-      ageGroup: "all",
+      ageGroup: "kids_7-12",
       moralValues: [],
       educationalFocus: "Conversational phrases",
       difficultyLevel: "advanced",
@@ -238,7 +238,7 @@ const formSchema = z.object({
     "mental_spiritual",
     "personal_social",
   ]),
-  ageGroup: z.enum(["kids_4-7", "kids_8-12", "teens_13-17", "all"]),
+  ageGroup: z.enum(["kids_2-6", "kids_7-12"]),
   difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
   islamicContent: z.boolean().default(false),
   moralValues: z.array(z.string()).default([]),
@@ -282,7 +282,7 @@ export function LanguageManagementDialog({
       code: "",
       name: "",
       category: "language_learning",
-      ageGroup: "all",
+      ageGroup: "kids_7-12",
       difficultyLevel: "beginner",
       islamicContent: false,
       moralValues: [],
@@ -858,16 +858,12 @@ export function LanguageManagementDialog({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="kids_4-7">
-                                  Kids 4-7
+                                <SelectItem value="kids_2-6">
+                                  Kids 2-6
                                 </SelectItem>
-                                <SelectItem value="kids_8-12">
-                                  Kids 8-12
+                                <SelectItem value="kids_7-12">
+                                  Kids 7-12
                                 </SelectItem>
-                                <SelectItem value="teens_13-17">
-                                  Teens 13-17
-                                </SelectItem>
-                                <SelectItem value="all">All ages</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormDescription>

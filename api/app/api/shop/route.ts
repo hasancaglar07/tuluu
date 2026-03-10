@@ -313,7 +313,7 @@ export async function GET(request: NextRequest) {
       paymentSettings?.currencies?.hearts?.exchangeRate || 1;
     const heartRefillTimeHours =
       paymentSettings?.currencies?.hearts?.refillTimeHours || 5;
-    const maxHearts = paymentSettings?.currencies?.hearts?.maxAmount || 5;
+    const maxHearts = paymentSettings?.currencies?.hearts?.maxAmount || 1500;
     const maxHeartsPerPurchase =
       paymentSettings?.currencies?.hearts?.minPurchase || 5;
     const defaultCurrency =

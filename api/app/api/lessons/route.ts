@@ -193,7 +193,7 @@ export interface UserProgressType {
  *           description: Unique exercise identifier
  *         type:
  *           type: string
- *           enum: [multiple_choice, fill_blank, translation, listening, speaking]
+ *           enum: [multiple_choice, fill_blank, translation, listening]
  *           description: Type of exercise
  *         instruction:
  *           type: string
@@ -731,9 +731,10 @@ export async function GET(req: NextRequest) {
                           item.lessonId === lesson._id.toString()
                       ) || false;
 
-                    const exercises = await Exercise.find({
-                      lessonId: lesson._id,
-                    });
+                const exercises = await Exercise.find({
+                  lessonId: lesson._id,
+                  isActive: true,
+                });
                     const formattedExercises = exercises.map((exercise) => ({
                       _id: exercise._id,
                       type: exercise.type,
@@ -750,6 +751,13 @@ export async function GET(req: NextRequest) {
                       correctAnswerImage: exercise.correctAnswerImage,
                       isActive: exercise.isActive,
                       order: exercise.order,
+                      educationContent: (exercise as any).educationContent ?? null,
+                      mediaPack: (exercise as any).mediaPack ?? null,
+                      hoverHint: (exercise as any).hoverHint ?? null,
+                      answerAudioUrl: (exercise as any).answerAudioUrl ?? "",
+                      ttsVoiceId: (exercise as any).ttsVoiceId ?? "",
+                      autoRevealMilliseconds:
+                        (exercise as any).autoRevealMilliseconds ?? null,
                     }));
 
                     return {

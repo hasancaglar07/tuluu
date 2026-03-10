@@ -68,12 +68,12 @@ export function ChapterCard({
   onToggleUnit,
 }: ChapterCardProps) {
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <div className="flex items-center justify-between">
+    <Card className="overflow-hidden">
+      <CardHeader className="space-y-3 p-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           {/* Chapter Title and Expand/Collapse Button */}
           <div
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex min-w-0 cursor-pointer items-start gap-2"
             onClick={onToggle}
           >
             {chapter.isExpanded ? (
@@ -81,8 +81,8 @@ export function ChapterCard({
             ) : (
               <ChevronRight className="h-4 w-4" />
             )}
-            <CardTitle className="text-lg flex items-center gap-2">
-              {chapter.title}
+            <CardTitle className="flex flex-wrap items-center gap-2 text-base leading-tight sm:text-lg">
+              <span className="break-words">{chapter.title}</span>
               {chapter.isPremium && (
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
                   <FormattedMessage
@@ -95,8 +95,13 @@ export function ChapterCard({
           </div>
 
           {/* Chapter Actions */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onAddUnit}>
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              variant="outline"
+              size="sm"
+              onClick={onAddUnit}
+            >
               <FolderPlus className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addUnit"
@@ -129,13 +134,13 @@ export function ChapterCard({
             </DropdownMenu>
           </div>
         </div>
-        <CardDescription>{chapter.description}</CardDescription>
+        <CardDescription className="line-clamp-2">{chapter.description}</CardDescription>
       </CardHeader>
 
       {/* Expanded Chapter Content - Units */}
       {chapter.isExpanded && (
-        <CardContent>
-          <div className="space-y-4 pl-6">
+        <CardContent className="pt-0">
+          <div className="space-y-3 pl-2 sm:pl-4">
             {chapter.units.length === 0 ? (
               <div className="text-center p-6 border rounded-md">
                 <p className="text-sm text-slate-500 mb-2">

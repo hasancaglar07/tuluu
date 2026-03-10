@@ -105,7 +105,7 @@ export async function GET(
 
     if (!exercise) {
       return NextResponse.json(
-        { error: "Exercise not found" },
+        { error: "Egzersiz bulunamadı" },
         { status: 404 }
       );
     }
@@ -114,7 +114,7 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching exercise:", error);
     return NextResponse.json(
-      { error: "Failed to fetch exercise" },
+      { error: "Egzersiz getirilemedi" },
       { status: 500 }
     );
   }
@@ -136,7 +136,7 @@ export async function PUT(
     if (!validatedFields.success) {
       return NextResponse.json(
         {
-          error: "Invalid data",
+          error: "Geçersiz veri",
           errors: validatedFields.error.flatten().fieldErrors,
         },
         { status: 500 }
@@ -156,7 +156,7 @@ export async function PUT(
 
     if (!updated) {
       return NextResponse.json(
-        { error: "Exercise not found" },
+        { error: "Egzersiz bulunamadı" },
         { status: 404 }
       );
     }
@@ -171,7 +171,7 @@ export async function PUT(
   } catch (error) {
     console.error("Error updating exercise:", error);
     return NextResponse.json(
-      { error: "Failed to update exercise" },
+      { error: "Egzersiz güncellenemedi" },
       { status: 500 }
     );
   }
@@ -188,24 +188,24 @@ export async function DELETE(
 
     await connectDB();
 
-    // Instead of deleting, disable the exercise
-    const exercise = await Exercise.disableById(id);
+    // Permanently delete the exercise (hard delete)
+    const exercise = await Exercise.findByIdAndDelete(id);
 
     if (!exercise) {
       return NextResponse.json(
-        { error: "Exercise not found" },
+        { error: "Egzersiz bulunamadı" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { message: "Exercise disabled successfully", exercise },
+      { message: "Egzersiz başarıyla silindi", exercise },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error disabling exercise:", error);
     return NextResponse.json(
-      { error: "Failed to disable exercise" },
+      { error: "Egzersiz devre dışı bırakılamadı" },
       { status: 500 }
     );
   }

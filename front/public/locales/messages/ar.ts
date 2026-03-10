@@ -169,7 +169,6 @@ export default {
   "admin.lessons.exerciseType.translate": "ترجمة",
   "admin.lessons.exerciseType.select": "اختر",
   "admin.lessons.exerciseType.arrange": "رتب",
-  "admin.lessons.exerciseType.speak": "تحدث",
   "admin.lessons.exerciseType.listen": "استمع",
   "admin.lessons.instruction": "التعليمات",
   "admin.lessons.sourceLanguage": "اللغة المصدر",

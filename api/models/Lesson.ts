@@ -56,6 +56,56 @@ const LessonSchema = new Schema(
       default: 10,
       min: 1,
     },
+    teachingPhase: {
+      type: String,
+      enum: ["teach", "practice", "assess"],
+      default: "teach",
+    },
+    moralValue: {
+      type: String,
+      enum: [
+        "patience",
+        "gratitude",
+        "kindness",
+        "honesty",
+        "sharing",
+        "mercy",
+        "justice",
+        "respect",
+      ],
+      default: "kindness",
+    },
+    valuePointsReward: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 1000,
+    },
+    pedagogyFocus: {
+      type: String,
+      trim: true,
+      maxlength: 400,
+      default: "",
+    },
+    moralStory: {
+      title: {
+        type: String,
+        trim: true,
+        maxlength: 150,
+        default: "",
+      },
+      text: {
+        type: String,
+        trim: true,
+        maxlength: 2000,
+        default: "",
+      },
+      placement: {
+        type: String,
+        enum: ["pre_lesson", "mid_lesson", "post_lesson"],
+        default: "post_lesson",
+      },
+    },
     imageUrl: {
       type: String,
       trim: true,

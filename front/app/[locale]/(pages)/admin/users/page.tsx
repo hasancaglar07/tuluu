@@ -18,7 +18,8 @@ import {
   Droplets,
 } from "lucide-react";
 import { format } from "date-fns";
-import { toast } from "sonner"; // Import Sonner for notifications
+import { toast } from "sonner";
+import { useIntl } from "react-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +73,8 @@ import { useAuth } from "@clerk/nextjs";
 import { apiClient } from "@/lib/api-client";
 
 export default function UsersPage() {
+  const intl = useIntl();
+  
   // State for search and filters
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -134,7 +137,7 @@ export default function UsersPage() {
       setTotalUsers(response.data.pagination.total);
     } catch (error) {
       console.error("Error fetching users:", error);
-      toast.error("Failed to fetch users. Please try again.");
+      toast.error(intl.formatMessage({ id: "admin.users.toast.fetchFailed" }));
     } finally {
       setIsLoading(false);
     }
@@ -158,14 +161,17 @@ export default function UsersPage() {
   const handleAddUser = () => {
     // Refresh the user list
     fetchUsers();
-    toast.success("User added successfully.");
+    toast.success(intl.formatMessage({ id: "admin.users.toast.userAdded" }));
   };
 
   // Updated to use axios with API_BASE_URL for deletion
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (
       confirm(
-        `Are you sure you want to delete ${userName}'s account? This action cannot be undone.`
+        intl.formatMessage(
+          { id: "admin.users.confirm.delete" },
+          { name: userName }
+        )
       )
     ) {
       try {
@@ -177,11 +183,16 @@ export default function UsersPage() {
             Authorization: `Bearer ${token}`,
           },
         });
-        toast.success(`User ${userName} has been deleted.`);
+        toast.success(
+          intl.formatMessage(
+            { id: "admin.users.toast.userDeleted" },
+            { name: userName }
+          )
+        );
         fetchUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
-        toast.error("Failed to delete user. Please try again.");
+        toast.error(intl.formatMessage({ id: "admin.users.toast.deleteFailed" }));
       }
     }
   };
@@ -443,9 +454,11 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {intl.formatMessage({ id: "admin.users.title" })}
+        </h1>
         <p className="text-muted-foreground">
-          Manage users, roles, and permissions for your application.
+          {intl.formatMessage({ id: "admin.users.subtitle" })}
         </p>
       </div>
 
@@ -453,7 +466,9 @@ export default function UsersPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {intl.formatMessage({ id: "admin.users.stats.totalUsers" })}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -467,13 +482,15 @@ export default function UsersPage() {
                       getNestedValue(u, "privateMetadata.status", "") ===
                       "active"
                   ).length}{" "}
-              active users
+             {intl.formatMessage({ id: "admin.users.stats.activeUsers" })}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Premium Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {intl.formatMessage({ id: "admin.users.stats.premiumUsers" })}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -500,14 +517,14 @@ export default function UsersPage() {
                       users.length) *
                     100
                   ).toFixed(1)}
-              % of total users
+             % {intl.formatMessage({ id: "admin.users.stats.percentOfTotal" }).replace('%{percent}', '')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              New Users (30d)
+              {intl.formatMessage({ id: "admin.users.stats.newUsers30d" })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -528,7 +545,7 @@ export default function UsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Avg. Retention
+              {intl.formatMessage({ id: "admin.users.stats.avgRetention" })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -545,7 +562,7 @@ export default function UsersPage() {
             <div className="relative flex-1 md:max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users..."
+                placeholder={intl.formatMessage({ id: "admin.users.searchPlaceholder" })}
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -553,7 +570,7 @@ export default function UsersPage() {
             </div>
             <Button variant="outline" size="sm" className="h-9">
               <Filter className="mr-2 h-4 w-4" />
-              Filter
+              {intl.formatMessage({ id: "admin.users.filter" })}
             </Button>
           </div>
 
@@ -984,7 +1001,7 @@ export default function UsersPage() {
                             }
                           >
                             <Trash className="mr-2 h-4 w-4" />
-                            Delete Account
+                            {intl.formatMessage({ id: "admin.users.actions.deleteAccount" })}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -1000,8 +1017,14 @@ export default function UsersPage() {
       {/* Enhanced pagination with page info */}
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
         <div className="text-sm text-muted-foreground">
-          Showing {users.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} to{" "}
-          {Math.min(currentPage * pageSize, totalUsers)} of {totalUsers} users
+          {intl.formatMessage(
+            { id: "admin.users.pagination.showing" },
+            {
+              start: users.length > 0 ? (currentPage - 1) * pageSize + 1 : 0,
+              end: Math.min(currentPage * pageSize, totalUsers),
+              total: totalUsers
+            }
+          )}
         </div>
         <Pagination>
           <PaginationContent>

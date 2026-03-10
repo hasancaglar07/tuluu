@@ -52,26 +52,6 @@ KURALLAR (HERHANGİ BİRİNİ İHLAL ETMEK YANITINIZI GEÇERSİZ KILAR):
 
 
 
-📚 **LESSON MODÜLÜ KAPSAMI**
-
-- `duolingo-mobile/src/screens/LessonScreen.tsx`: Placeholder metnini kaldır; Expo Router üzerinden gelen `id` parametresiyle dersi yükle, `useCourseStore.fetchLesson` ve `courseService.getLessonPercentage` çağrılarını yeniden kullan. Ders başlığı, ilerleme yüzdesi, kalpler ve görev listesi (challenges) net olarak gösterilmeli.
-- `duolingo-mobile/src/components/LessonButton.tsx`: Kilit, tamamlanma ve aktif durumlarını `lesson.completed` değerini temel alarak yeniden hesapla. Kilitli durumlarda gri/kilit ikonu göster, tamamlananlarda onay simgesi, aktif derste progres halkasını ve `START` etiketi koru.
-- `duolingo-mobile/src/store/useCourseStore.ts`: Ders ve yüzde state’lerini yöneten setter’ları kullan; yeni yardımcı gerekiyorsa önce mevcut `CourseService` metotlarını genişletme imkanını değerlendir.
-
-🚀 **LEARN EKRANI MANTIK DÜZELTMELERİ**
-
-- `duolingo-mobile/src/screens/LearnScreen.tsx`: Kurs verilerini tek bir `fetchCourseData` akışında topla. `courseService.getUserProgress`, `getUnits`, `getCourseProgress`, `getLessonPercentage` sonuçlarını tutarlı şekilde işle; aktif ders yoksa state’leri sıfırla.
-- Refresh senaryosunda `loading`/`refreshing` flag’lerini doğru yönet, hata durumunda kullanıcıya mesaj + “Tekrar Dene” butonu göster.
-
-🧩 **GÖREVLERİ BAĞLAMA & DOĞRULAMA**
-
-- Öğrenme akışı: Learn ekranındaki `LessonButton` `/lesson?id={lessonId}` rotasına gider; LessonScreen bu ID ile store’dan dersi çeker ve görevleri listeler.
-- Doğrulama kontrol noktaları: (1) Aktif ders yüzde > 0 ise progres halkası görünür, (2) Kilitli dersler tıklamada navigasyon yapmaz, (3) LessonScreen hata aldığında kullanıcıya bildirilir, (4) Challenge listesi API sırasına göre render edilir.
-
-
-
-SON HATIRLATMA: Yeni dosyalar oluşturmayı önerirseniz, mevcut dosyaların neden genişletilemeyeceğini açıklayın. Yeniden yazma önerirseniz, yeniden düzenlemenin neden işe yaramayacağını gerekçelendirin.
-
 🔍 2. ADIM: MEVCUT SİSTEMİ ANALİZ ET
 
 Mevcut kod tabanını analiz edin ve istenen özellik uygulaması için ilgili dosyaları belirleyin.

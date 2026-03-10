@@ -130,14 +130,14 @@ export async function GET(
     const chapter = await Chapter.findOne(query);
 
     if (!chapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 404 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 404 });
     }
 
     return NextResponse.json(chapter, { status: 200 });
   } catch (error) {
     console.error("Error fetching chapter:", error);
     return NextResponse.json(
-      { error: "Failed to fetch chapter" },
+      { error: "Bölüm getirilemedi" },
       { status: 500 }
     );
   }
@@ -160,7 +160,7 @@ export async function PUT(
     if (!validated.success) {
       return NextResponse.json(
         {
-          message: "Validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -171,7 +171,7 @@ export async function PUT(
 
     const chapter = await Chapter.findById({ _id: id });
     if (!chapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 500 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 500 });
     }
 
     // 🛠️ Update language
@@ -184,14 +184,14 @@ export async function PUT(
     );
 
     if (!updated) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 500 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 500 });
     }
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error updating chapter:", error);
     return NextResponse.json(
-      { error: "Failed to update chapter" },
+      { error: "Bölüm güncellenemedi" },
       { status: 500 }
     );
   }
@@ -213,17 +213,17 @@ export async function DELETE(
     const chapter = await Chapter.disableById(id);
 
     if (!chapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 500 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 500 });
     }
 
     return NextResponse.json(
-      { message: "Chapter disabled successfully", chapter },
+      { message: "Bölüm başarıyla devre dışı bırakıldı", chapter },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error disabling chapter:", error);
     return NextResponse.json(
-      { error: "Failed to disable chapter" },
+      { error: "Bölüm devre dışı bırakılamadı" },
       { status: 500 }
     );
   }

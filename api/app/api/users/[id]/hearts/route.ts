@@ -614,30 +614,26 @@ export async function PUT(
       );
     }
 
-    let newGemAmount: number;
+    let newHeartsAmount: number;
 
     if (action === "inc") {
       // Increment hearts
-      newGemAmount = Math.max(0, Math.min(5, user.hearts + amount));
+      newHeartsAmount = user.hearts + amount;
 
-      // Optional: Add maximum gem limit
-      const MAX_GEMS = 999999;
-      if (newGemAmount > MAX_GEMS) {
+      // Optional hard limit to prevent accidental overflow
+      const MAX_HEARTS = 999999;
+      if (newHeartsAmount > MAX_HEARTS) {
         return NextResponse.json(
           {
             success: false,
-            error: `Cannot exceed maximum gem limit of ${MAX_GEMS}`,
+            error: `Cannot exceed maximum hearts limit of ${MAX_HEARTS}`,
           },
           { status: 400 }
         );
       }
     } else {
       // Decrement hearts
-
-      newGemAmount = Math.max(0, Math.min(5, user.hearts - amount));
-
-      // Prevent negative hearts
-      if (newGemAmount < 0) {
+      if (user.hearts < amount) {
         return NextResponse.json(
           {
             success: false,
@@ -646,12 +642,14 @@ export async function PUT(
           { status: 400 }
         );
       }
+
+      newHeartsAmount = user.hearts - amount;
     }
 
     // Update user's hearts
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { hearts: newGemAmount },
+      { hearts: newHeartsAmount },
       { new: true, runValidators: true }
     );
 

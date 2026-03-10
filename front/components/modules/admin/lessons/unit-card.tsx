@@ -65,12 +65,12 @@ export function UnitCard({
   const router = useLocalizedRouter();
 
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <div className="flex items-center justify-between">
+    <Card className="overflow-hidden">
+      <CardHeader className="space-y-3 p-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           {/* Unit Title and Expand/Collapse Button */}
           <div
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex min-w-0 cursor-pointer items-start gap-2"
             onClick={onToggle}
           >
             {unit.isExpanded ? (
@@ -78,8 +78,8 @@ export function UnitCard({
             ) : (
               <ChevronRight className="h-4 w-4" />
             )}
-            <CardTitle className="text-md flex items-center gap-2">
-              {unit.title}
+            <CardTitle className="text-md flex flex-wrap items-center gap-2 leading-tight">
+              <span className="break-words">{unit.title}</span>
               {unit.isPremium && (
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
                   <FormattedMessage
@@ -92,8 +92,13 @@ export function UnitCard({
           </div>
 
           {/* Unit Actions */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onAddLesson}>
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
+            <Button
+              className="w-full sm:w-auto"
+              variant="outline"
+              size="sm"
+              onClick={onAddLesson}
+            >
               <FilePlus className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addLesson"
@@ -126,13 +131,13 @@ export function UnitCard({
             </DropdownMenu>
           </div>
         </div>
-        <CardDescription>{unit.description}</CardDescription>
+        <CardDescription className="line-clamp-2">{unit.description}</CardDescription>
       </CardHeader>
 
       {/* Expanded Unit Content - Lessons */}
       {unit.isExpanded && (
-        <CardContent>
-          <div className="space-y-2 pl-6">
+        <CardContent className="pt-0">
+          <div className="space-y-3 pl-2 sm:pl-4">
             {unit.lessons.length === 0 ? (
               <div className="text-center p-4 border rounded-md">
                 <p className="text-sm text-slate-500 mb-2">
@@ -153,12 +158,13 @@ export function UnitCard({
               unit.lessons.map((lesson) => (
                 <div
                   key={lesson._id}
-                  className="flex items-center justify-between p-3 border rounded-md hover:bg-slate-50"
+                  className="rounded-md border p-3 hover:bg-slate-50"
                 >
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-slate-400" />
-                    <div>
-                      <p className="font-medium flex items-center gap-2">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="flex min-w-0 items-start gap-2">
+                      <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                      <div className="min-w-0">
+                        <p className="flex flex-wrap items-center gap-2 font-medium">
                         {lesson.title}
                         {lesson.isPremium && (
                           <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full">
@@ -175,17 +181,18 @@ export function UnitCard({
                             values={{ xp: lesson.xpReward }}
                           />
                         </span>
-                      </p>
-                      <p className="text-sm text-slate-500">
+                        </p>
+                        <p className="line-clamp-2 text-sm text-slate-500">
                         {lesson.description}
-                      </p>
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="w-full sm:w-auto"
                       onClick={() => onAddExercise(lesson._id)}
                     >
                       <ListChecks className="mr-2 h-4 w-4" />
@@ -198,6 +205,7 @@ export function UnitCard({
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="w-full sm:w-auto"
                       onClick={() =>
                         router.push(`/admin/lessons/${lesson._id}`)
                       }
@@ -235,6 +243,7 @@ export function UnitCard({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               ))

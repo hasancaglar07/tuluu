@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from "react";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
@@ -16,6 +17,7 @@ import {
   MousePointerClick,
   AlignJustify,
   Loader2,
+  Upload,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -55,6 +57,7 @@ import { useAuth } from "@clerk/nextjs";
 import { AxiosError } from "axios";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
+import { upload as uploadBlob } from "@vercel/blob/client";
 
 // Languages for exercises
 const exerciseLanguages = [
@@ -124,7 +127,7 @@ export default function LessonDetail({
 
   // Add these new states and functions to the component
   // Add after the existing state declarations:
-  const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
+const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState<ExerciseResponse>({
     _id: "",
     type: "translate",
@@ -140,8 +143,21 @@ export default function LessonDetail({
     badAnswerImage: "",
     correctAnswerImage: "",
     isActive: true,
+    mediaPack: {
+      idleAnimationUrl: "",
+      successAnimationUrl: "",
+      failAnimationUrl: "",
+      characterName: "",
+    },
+    hoverHint: {
+      text: "",
+      audioUrl: "",
+    },
+    answerAudioUrl: "",
+    ttsVoiceId: "",
+    autoRevealMilliseconds: null,
   });
-  const [newExercise, setNewExercise] = useState({
+const [newExercise, setNewExercise] = useState({
     _id: "",
     type: "translate",
     instruction: "",
@@ -156,10 +172,101 @@ export default function LessonDetail({
     badAnswerImage: "",
     correctAnswerImage: "",
     isActive: true,
+    educationContent: null as any,
+    mediaPack: {
+      idleAnimationUrl: "",
+      successAnimationUrl: "",
+      failAnimationUrl: "",
+      characterName: "",
+    },
+    hoverHint: {
+      text: "",
+      audioUrl: "",
+    },
+    answerAudioUrl: "",
+    ttsVoiceId: "",
+    autoRevealMilliseconds: null,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const { getToken } = useAuth();
+  const prepareMediaPack = (pack?: any) => {
+    if (!pack) return undefined;
+    const hasValue = Object.values(pack).some((val) => !!val);
+    return hasValue ? pack : undefined;
+  };
+
+const prepareHoverHint = (hint?: any) => {
+  if (!hint) return undefined;
+  if (!hint.text && !hint.audioUrl) return undefined;
+  return hint;
+};
+
+const handleMediaUpload = async (
+  field: "correctAnswer" | "options",
+  index: number,
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const url = await uploadFile(file);
+  event.target.value = "";
+  if (field === "correctAnswer") {
+    setNewExercise((prev) => ({
+      ...prev,
+      correctAnswer: updateCorrectAnswer(index, url, prev),
+    }));
+  } else {
+    setNewExercise((prev) => ({
+      ...prev,
+      options: updateOption(index, url, prev),
+    }));
+  }
+};
+
+const fieldLabels: Record<string, string> = {
+  instruction: "Yönerge",
+  sourceText: "Kaynak metin",
+  correctAnswer: "Doğru cevaplar",
+  options: "Seçenekler",
+  audioUrl: "Ses URL'si",
+  educationContent: "Eğitim içeriği",
+};
+
+const translateErrorMessage = (msg?: string) => {
+  if (!msg) return "Beklenmeyen bir hata oluştu.";
+  const normalized = msg.toLowerCase();
+  if (normalized.includes("at least one option")) {
+    return "Bu egzersiz tipi için en az bir seçenek eklemelisiniz.";
+  }
+  if (normalized.includes("audio url is required")) {
+    return "Bu egzersiz tipi için ses URL'si zorunludur.";
+  }
+  if (normalized.includes("education content")) {
+    return "Eğitim içeriği zorunludur.";
+  }
+  if (normalized.includes("instruction")) {
+    return "Lütfen yönerge alanını doldurun.";
+  }
+  if (normalized.includes("source text")) {
+    return "Lütfen kaynak metni girin.";
+  }
+  if (normalized.includes("correct answer")) {
+    return "En az bir doğru cevap girilmelidir.";
+  }
+  return msg;
+};
+
+const fileInputRefs = useRef<{ correctAnswer?: HTMLInputElement | null; options?: HTMLInputElement | null }>({});
+const [isLoading, setIsLoading] = useState(false);
+const { getToken } = useAuth();
+
+  // small upload helper
+  async function uploadFile(file: File) {
+    const res = await uploadBlob(`admin/${Date.now()}-${file.name}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/blob/upload-url",
+    });
+    return res.url;
+  }
 
   // Handle save changes
   const handleSaveChanges = () => {
@@ -176,25 +283,34 @@ export default function LessonDetail({
 
   // Add these functions after the handleDeleteLesson function:
   const handleAddExercise = async () => {
+    const isEducation = newExercise.type.startsWith("education_");
     const requiresOptions = optionSupportedTypes.includes(newExercise.type);
     const trimmedOptions = newExercise.options
       .map((opt) => (opt ?? "").trim())
       .filter(Boolean);
-    if (requiresOptions && trimmedOptions.length === 0) {
-      toast.error("Please add at least one option for this exercise type.");
+    if (!isEducation && requiresOptions && trimmedOptions.length === 0) {
+      toast.error("Bu egzersiz tipi için en az bir seçenek eklemelisiniz.");
       return;
     }
 
     const requiresAudio = audioSupportedTypes.includes(newExercise.type);
-    const trimmedAudio = newExercise.audioUrl.trim();
-    if (requiresAudio && !trimmedAudio) {
-      toast.error("Audio URL is required for this exercise type.");
+    const trimmedAudio = (newExercise.audioUrl || "").trim();
+    if (!isEducation && requiresAudio && !trimmedAudio) {
+      toast.error("Bu egzersiz tipi için ses URL'si zorunludur.");
+      return;
+    }
+
+    if (isEducation && !newExercise.educationContent) {
+      toast.error("Eğitim içeriği gereklidir.");
       return;
     }
 
     setIsLoading(true);
     const token = await getToken(); // or however you're managing auth
     try {
+      const sanitizedMediaPack = prepareMediaPack(newExercise.mediaPack);
+      const sanitizedHoverHint = prepareHoverHint(newExercise.hoverHint);
+      const trimmedAnswerAudio = (newExercise.answerAudioUrl || "").trim();
       const response = await apiClient.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/exercises`,
         {
@@ -203,14 +319,24 @@ export default function LessonDetail({
           chapterId: lesson.chapterId,
           languageId: lesson.languageId,
           type: newExercise.type,
-          instruction: newExercise.instruction.trim(),
-          sourceText: newExercise.sourceText.trim(),
+          instruction: isEducation ? "" : newExercise.instruction.trim(),
+          sourceText: isEducation ? "" : newExercise.sourceText.trim(),
           sourceLanguage: newExercise.sourceLanguage.toLowerCase(),
           targetLanguage: newExercise.targetLanguage.toLowerCase(),
-          correctAnswer: newExercise.correctAnswer.map((a) => a.trim()),
-          options: requiresOptions ? trimmedOptions : [],
-          isNewWord: newExercise.isNewWord,
-          audioUrl: trimmedAudio,
+          correctAnswer: isEducation
+            ? []
+            : newExercise.correctAnswer.map((a) => a.trim()),
+          options: !isEducation && requiresOptions ? trimmedOptions : [],
+          isNewWord: !isEducation && newExercise.isNewWord,
+          audioUrl: !isEducation ? trimmedAudio : "",
+          educationContent: isEducation ? newExercise.educationContent : undefined,
+          mediaPack: isEducation ? undefined : sanitizedMediaPack,
+          hoverHint: isEducation ? undefined : sanitizedHoverHint,
+          answerAudioUrl: isEducation ? undefined : trimmedAnswerAudio || undefined,
+          ttsVoiceId: isEducation ? undefined : (newExercise.ttsVoiceId || undefined),
+          autoRevealMilliseconds: isEducation
+            ? undefined
+            : newExercise.autoRevealMilliseconds ?? undefined,
         },
         {
           headers: {
@@ -238,9 +364,23 @@ export default function LessonDetail({
           badAnswerImage: "",
           correctAnswerImage: "",
           isActive: true,
+          educationContent: null,
+          mediaPack: {
+            idleAnimationUrl: "",
+            successAnimationUrl: "",
+            failAnimationUrl: "",
+            characterName: "",
+          },
+          hoverHint: {
+            text: "",
+            audioUrl: "",
+          },
+          answerAudioUrl: "",
+          ttsVoiceId: "",
+          autoRevealMilliseconds: null,
         });
         setIsExerciseDialogOpen(false);
-        toast.success("New exercise created");
+        toast.success("Egzersiz başarıyla oluşturuldu");
       }
     } catch (err) {
       const error = err as AxiosError<{
@@ -254,11 +394,14 @@ export default function LessonDetail({
       if (apiErrors && typeof apiErrors === "object") {
         Object.entries(apiErrors).forEach(([field, messages]) => {
           if (Array.isArray(messages)) {
-            messages.forEach((msg) => toast.error(`${field}: ${msg}`));
+            const prettyField = fieldLabels[field] ?? field;
+            messages.forEach((msg) =>
+              toast.error(`${prettyField}: ${translateErrorMessage(msg)}`)
+            );
           }
         });
       } else {
-        toast.error(message || "An unknown error occurred.");
+        toast.error(translateErrorMessage(message));
       }
     } finally {
       setIsLoading(false);
@@ -267,25 +410,29 @@ export default function LessonDetail({
 
   const handleEditExercise = async () => {
     const type = editingExercise?.type ?? "translate";
+    const isEducation = type.startsWith("education_");
     const requiresOptions = optionSupportedTypes.includes(type);
     const trimmedOptions = (editingExercise?.options ?? [])
       .map((opt) => (opt ?? "").trim())
       .filter(Boolean);
-    if (requiresOptions && trimmedOptions.length === 0) {
-      toast.error("Please add at least one option for this exercise type.");
+    if (!isEducation && requiresOptions && trimmedOptions.length === 0) {
+      toast.error("Bu egzersiz tipi için en az bir seçenek eklemelisiniz.");
       return;
     }
 
     const requiresAudio = audioSupportedTypes.includes(type);
     const trimmedAudio = (editingExercise?.audioUrl ?? "").trim();
-    if (requiresAudio && !trimmedAudio) {
-      toast.error("Audio URL is required for this exercise type.");
+    if (!isEducation && requiresAudio && !trimmedAudio) {
+      toast.error("Bu egzersiz tipi için ses URL'si zorunludur.");
       return;
     }
 
     setIsLoading(true);
     const token = await getToken(); // or however you're managing auth
     try {
+      const sanitizedMediaPack = prepareMediaPack(editingExercise?.mediaPack);
+      const sanitizedHoverHint = prepareHoverHint(editingExercise?.hoverHint);
+      const trimmedAnswerAudio = (editingExercise?.answerAudioUrl || "").trim();
       const response = await apiClient.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/exercises/${editingExercise?._id}`,
         {
@@ -294,18 +441,28 @@ export default function LessonDetail({
           chapterId: lesson.chapterId,
           languageId: lesson.languageId,
           type: editingExercise?.type,
-          instruction: editingExercise?.instruction.trim(),
-          sourceText: editingExercise?.sourceText.trim(),
+          instruction: isEducation ? "" : editingExercise?.instruction.trim(),
+          sourceText: isEducation ? "" : editingExercise?.sourceText.trim(),
           sourceLanguage: editingExercise?.sourceLanguage,
           targetLanguage: editingExercise?.targetLanguage,
-          correctAnswer: editingExercise?.correctAnswer.map((a) => a.trim()),
-          options: requiresOptions ? trimmedOptions : [],
-          isNewWord: editingExercise?.isNewWord,
-          audioUrl: trimmedAudio,
+          correctAnswer: isEducation
+            ? []
+            : editingExercise?.correctAnswer.map((a) => a.trim()),
+          options: !isEducation && requiresOptions ? trimmedOptions : [],
+          isNewWord: isEducation ? false : editingExercise?.isNewWord,
+          audioUrl: isEducation ? "" : trimmedAudio,
           neutralAnswerImage: editingExercise?.neutralAnswerImage.trim(),
           badAnswerImage: editingExercise?.badAnswerImage.trim(),
           correctAnswerImage: editingExercise?.correctAnswerImage.trim(),
           isActive: editingExercise?.isActive,
+          educationContent: isEducation ? (editingExercise as any).educationContent : undefined,
+          mediaPack: isEducation ? undefined : sanitizedMediaPack,
+          hoverHint: isEducation ? undefined : sanitizedHoverHint,
+          answerAudioUrl: isEducation ? undefined : trimmedAnswerAudio || undefined,
+          ttsVoiceId: isEducation ? undefined : (editingExercise?.ttsVoiceId || undefined),
+          autoRevealMilliseconds: isEducation
+            ? undefined
+            : editingExercise?.autoRevealMilliseconds ?? undefined,
         },
         {
           headers: {
@@ -335,10 +492,23 @@ export default function LessonDetail({
           badAnswerImage: "",
           correctAnswerImage: "",
           isActive: true,
+          mediaPack: {
+            idleAnimationUrl: "",
+            successAnimationUrl: "",
+            failAnimationUrl: "",
+            characterName: "",
+          },
+          hoverHint: {
+            text: "",
+            audioUrl: "",
+          },
+          answerAudioUrl: "",
+          ttsVoiceId: "",
+          autoRevealMilliseconds: null,
         });
 
         setIsEditDialogOpen(false);
-        toast.success("Exercise updated");
+        toast.success("Egzersiz güncellendi");
       }
     } catch (err) {
       const error = err as AxiosError<{
@@ -352,11 +522,14 @@ export default function LessonDetail({
       if (apiErrors && typeof apiErrors === "object") {
         Object.entries(apiErrors).forEach(([field, messages]) => {
           if (Array.isArray(messages)) {
-            messages.forEach((msg) => toast.error(`${field}: ${msg}`));
+            const prettyField = fieldLabels[field] ?? field;
+            messages.forEach((msg) =>
+              toast.error(`${prettyField}: ${translateErrorMessage(msg)}`)
+            );
           }
         });
       } else {
-        toast.error(message || "An unknown error occurred.");
+        toast.error(translateErrorMessage(message));
       }
     } finally {
       setIsLoading(false);
@@ -364,6 +537,15 @@ export default function LessonDetail({
   };
 
   const handleDeleteExercise = async (exerciseId: string) => {
+    // Confirm before hard delete
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "Bu egzersizi kalıcı olarak silmek istediğinize emin misiniz?"
+      )
+    ) {
+      return;
+    }
     setIsLoading(true);
 
     const token = await getToken();
@@ -456,6 +638,7 @@ export default function LessonDetail({
     return updatedOptions;
   };
 
+  ;
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -609,7 +792,7 @@ export default function LessonDetail({
                   />
                 </div>
 
-                <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
                   <Switch
                     id="premium"
                     checked={editedLesson.isPremium}
@@ -796,7 +979,7 @@ export default function LessonDetail({
                               config: parsed,
                             },
                           });
-                        } catch (err) {
+                        } catch (_err) {
                           setMiniGameConfigError("Invalid JSON configuration");
                         }
                       }}
@@ -960,10 +1143,36 @@ export default function LessonDetail({
                     </Button>
                   </div>
                 </div>
-                <CardDescription>{exercise.instruction}</CardDescription>
+                <CardDescription>
+                  {(exercise.type || "").startsWith("education_")
+                    ? (exercise as any).educationContent?.title || "Education Content"
+                    : exercise.instruction}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  {(exercise.type || "").startsWith("education_") ? (
+                    <>
+                      {exercise.type === "education_visual" && (
+                        <div className="grid grid-cols-1 gap-3">
+                          {(exercise as any).educationContent?.imageUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={(exercise as any).educationContent.imageUrl}
+                              alt={(exercise as any).educationContent?.title || "visual"}
+                              className="w-full rounded-lg border"
+                            />
+                          )}
+                          {(exercise as any).educationContent?.description && (
+                            <p className="text-sm text-muted-foreground">
+                              {(exercise as any).educationContent.description}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                  <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground">
@@ -1035,6 +1244,7 @@ export default function LessonDetail({
                       </div>
                     </div>
                   )}
+                  </>)}
                 </div>
               </CardContent>
             </Card>
@@ -1159,6 +1369,7 @@ export default function LessonDetail({
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            {!(editingExercise?.type || "").startsWith("education_") && (
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="exercise-type">Exercise Type</Label>
@@ -1199,6 +1410,7 @@ export default function LessonDetail({
                 />
               </div>
             </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -1248,6 +1460,555 @@ export default function LessonDetail({
               </div>
             </div>
 
+            {(editingExercise?.type || "").startsWith("education_") && (
+              <div className="space-y-4">
+                {editingExercise?.type === "education_visual" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Title</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.title || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              title: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Main Image</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.imageUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                imageUrl: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="https://..."
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={async () => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "image/*";
+                            input.onchange = async () => {
+                              const file = input.files?.[0];
+                              if (!file) return;
+                              const url = await uploadFile(file);
+                              setEditingExercise((prev) => ({
+                                ...(prev as ExerciseResponse),
+                                educationContent: {
+                                  ...((prev as any).educationContent || {}),
+                                  imageUrl: url,
+                                },
+                              }));
+                            };
+                            input.click();
+                          }}
+                        >
+                          Upload
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={(editingExercise as any).educationContent?.description || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              description: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Narration (optional)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.narrationAudioUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                narrationAudioUrl: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="https://...audio.mp3"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={async () => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "audio/*";
+                            input.onchange = async () => {
+                              const file = input.files?.[0];
+                              if (!file) return;
+                              const url = await uploadFile(file);
+                              setEditingExercise((prev) => ({
+                                ...(prev as ExerciseResponse),
+                                educationContent: {
+                                  ...((prev as any).educationContent || {}),
+                                  narrationAudioUrl: url,
+                                },
+                              }));
+                            };
+                            input.click();
+                          }}
+                        >
+                          Upload
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {editingExercise?.type === "education_image_intro" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Title</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.title || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              title: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Subtitle</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.subtitle || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              subtitle: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      {[0,1,2].map((i) => {
+                        const cards = ((editingExercise as any).educationContent?.cards || []);
+                        const card = cards[i] || { imageUrl: "", text: "", audioUrl: "" };
+                        return (
+                          <div className="space-y-2 border rounded-md p-3" key={i}>
+                            <div className="grid gap-1">
+                              <Label>Card {i+1} Image</Label>
+                              <div className="flex gap-2">
+                                <Input
+                                  value={card.imageUrl}
+                                  onChange={(e) => {
+                                    const next = [...cards];
+                                    next[i] = { ...card, imageUrl: e.target.value };
+                                    setEditingExercise((prev) => ({
+                                      ...(prev as ExerciseResponse),
+                                      educationContent: { ...((prev as any).educationContent || {}), cards: next },
+                                    }));
+                                  }}
+                                />
+                                <Button variant="outline" type="button" onClick={async () => {
+                                  const input = document.createElement('input');
+                                  input.type = 'file';
+                                  input.accept = 'image/*';
+                                  input.onchange = async () => {
+                                    const f = input.files?.[0];
+                                    if (!f) return;
+                                    const url = await uploadFile(f);
+                                    const next = [...cards];
+                                    next[i] = { ...card, imageUrl: url };
+                                    setEditingExercise((prev) => ({
+                                      ...(prev as ExerciseResponse),
+                                      educationContent: { ...((prev as any).educationContent || {}), cards: next },
+                                    }));
+                                  };
+                                  input.click();
+                                }}>Upload</Button>
+                              </div>
+                            </div>
+                            <div className="grid gap-1">
+                              <Label>Word</Label>
+                              <Input
+                                value={card.text}
+                                onChange={(e) => {
+                                  const next = [...cards];
+                                  next[i] = { ...card, text: e.target.value };
+                                  setEditingExercise((prev) => ({
+                                    ...(prev as ExerciseResponse),
+                                    educationContent: { ...((prev as any).educationContent || {}), cards: next },
+                                  }));
+                                }}
+                              />
+                            </div>
+                            <div className="grid gap-1">
+                              <Label>Audio</Label>
+                              <div className="flex gap-2">
+                                <Input
+                                  value={card.audioUrl || ""}
+                                  onChange={(e) => {
+                                    const next = [...cards];
+                                    next[i] = { ...card, audioUrl: e.target.value };
+                                    setEditingExercise((prev) => ({
+                                      ...(prev as ExerciseResponse),
+                                      educationContent: { ...((prev as any).educationContent || {}), cards: next },
+                                    }));
+                                  }}
+                                />
+                                <Button variant="outline" type="button" onClick={async () => {
+                                  const input = document.createElement('input');
+                                  input.type = 'file';
+                                  input.accept = 'audio/*';
+                                  input.onchange = async () => {
+                                    const f = input.files?.[0];
+                                    if (!f) return;
+                                    const url = await uploadFile(f);
+                                    const next = [...cards];
+                                    next[i] = { ...card, audioUrl: url };
+                                    setEditingExercise((prev) => ({
+                                      ...(prev as ExerciseResponse),
+                                      educationContent: { ...((prev as any).educationContent || {}), cards: next },
+                                    }));
+                                  };
+                                  input.click();
+                                }}>Upload</Button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {editingExercise?.type === "education_audio" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Title</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.title || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              title: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Instruction</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.instructionText || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              instructionText: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Audio</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.audioUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                audioUrl: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                        <Button variant="outline" type="button" onClick={async () => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'audio/*';
+                          input.onchange = async () => {
+                            const f = input.files?.[0];
+                            if (!f) return;
+                            const url = await uploadFile(f);
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                audioUrl: url,
+                              },
+                            }));
+                          };
+                          input.click();
+                        }}>Upload</Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Content Text</Label>
+                      <Textarea
+                        value={(editingExercise as any).educationContent?.contentText || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              contentText: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                {editingExercise?.type === "education_video" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Title</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.title || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              title: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Video</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.videoUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                videoUrl: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                        <Button variant="outline" type="button" onClick={async () => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'video/*';
+                          input.onchange = async () => {
+                            const f = input.files?.[0];
+                            if (!f) return;
+                            const url = await uploadFile(f);
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                videoUrl: url,
+                              },
+                            }));
+                          };
+                          input.click();
+                        }}>Upload</Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Cover Image</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.coverImageUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                coverImageUrl: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                        <Button variant="outline" type="button" onClick={async () => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/*';
+                          input.onchange = async () => {
+                            const f = input.files?.[0];
+                            if (!f) return;
+                            const url = await uploadFile(f);
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                coverImageUrl: url,
+                              },
+                            }));
+                          };
+                          input.click();
+                        }}>Upload</Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Captions (optional)</Label>
+                      <Textarea
+                        value={(editingExercise as any).educationContent?.captions || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              captions: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                {editingExercise?.type === "education_tip" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Tip Type</Label>
+                      <Select
+                        value={(editingExercise as any).educationContent?.tipType || "note"}
+                        onValueChange={(v) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              tipType: v,
+                            },
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tip type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="important">Important</SelectItem>
+                          <SelectItem value="note">Note</SelectItem>
+                          <SelectItem value="culture">Culture</SelectItem>
+                          <SelectItem value="pronunciation">Pronunciation</SelectItem>
+                          <SelectItem value="reminder">Reminder</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Title</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.title || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              title: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Content</Label>
+                      <Textarea
+                        value={(editingExercise as any).educationContent?.content || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              content: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Sample Audio (optional)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={(editingExercise as any).educationContent?.sampleAudioUrl || ""}
+                          onChange={(e) =>
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                sampleAudioUrl: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                        <Button variant="outline" type="button" onClick={async () => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'audio/*';
+                          input.onchange = async () => {
+                            const f = input.files?.[0];
+                            if (!f) return;
+                            const url = await uploadFile(f);
+                            setEditingExercise((prev) => ({
+                              ...(prev as ExerciseResponse),
+                              educationContent: {
+                                ...((prev as any).educationContent || {}),
+                                sampleAudioUrl: url,
+                              },
+                            }));
+                          };
+                          input.click();
+                        }}>Upload</Button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Background Color</Label>
+                      <Input
+                        value={(editingExercise as any).educationContent?.backgroundColor || ""}
+                        onChange={(e) =>
+                          setEditingExercise((prev) => ({
+                            ...(prev as ExerciseResponse),
+                            educationContent: {
+                              ...((prev as any).educationContent || {}),
+                              backgroundColor: e.target.value,
+                            },
+                          }))
+                        }
+                        placeholder="#fff or any css color"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             <div className="grid gap-2">
               <Label htmlFor="exercise-source-text">Source Text</Label>
               <Input
@@ -1261,34 +2022,90 @@ export default function LessonDetail({
             </div>
 
             <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label>Correct Answers</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setNewExercise(addCorrectAnswer(newExercise))}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+                <div className="flex items-center justify-between gap-2">
+                  <Label>Doğru Cevaplar</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        fileInputRefs.current?.correctAnswer?.click();
+                      }}
+                    >
+                      <Upload className="h-4 w-4 mr-1" /> Yükle
+                    </Button>
+                    <input
+                      ref={(el) => {
+                        fileInputRefs.current = {
+                          ...fileInputRefs.current,
+                          correctAnswer: el,
+                        };
+                      }}
+                      type="file"
+                      accept="image/*,audio/*,video/*"
+                      className="hidden"
+                      onChange={(e) => handleMediaUpload("correctAnswer", index, e)}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNewExercise(addCorrectAnswer(newExercise))}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               {newExercise.correctAnswer.map((answer, index: number) => (
                 <div key={index} className="flex gap-2">
-                  <Input
-                    className="lowercase"
-                    value={answer}
-                    onChange={(e) =>
-                      setNewExercise({
-                        ...newExercise,
-                        correctAnswer: updateCorrectAnswer(
-                          index,
-                          e.target.value,
-                          newExercise
-                        ),
-                      })
-                    }
-                    placeholder={`Answer ${index + 1}`}
-                  />
+                  <div className="flex-1">
+                    {answer?.startsWith("http") ? (
+                      <div className="flex items-center gap-2">
+                        {answer ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={answer} alt={`answer-${index}`} className="w-14 h-14 rounded object-cover border" />
+                        ) : null}
+                        <Input
+                          value={answer}
+                          onChange={(e) =>
+                            setNewExercise({
+                              ...newExercise,
+                              correctAnswer: updateCorrectAnswer(
+                                index,
+                                e.target.value,
+                                newExercise
+                              ),
+                            })
+                          }
+                          placeholder={`Answer ${index + 1}`}
+                        />
+                      </div>
+                    ) : (
+                      <Input
+                        value={answer}
+                        onChange={(e) =>
+                          setNewExercise({
+                            ...newExercise,
+                            correctAnswer: updateCorrectAnswer(
+                              index,
+                              e.target.value,
+                              newExercise
+                            ),
+                          })
+                        }
+                        placeholder={`Answer ${index + 1}`}
+                      />
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRefs.current?.correctAnswer?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-1" /> Kütüphane
+                  </Button>
                   {newExercise.correctAnswer.length > 1 && (
                     <Button
                       type="button"
@@ -1320,21 +2137,45 @@ export default function LessonDetail({
                 </div>
                 {newExercise.options.map((option, index) => (
                   <div key={index} className="flex gap-2">
-                    <Input
-                      className="lowercase"
-                      value={option}
-                      onChange={(e) =>
-                        setNewExercise({
-                          ...newExercise,
-                          options: updateOption(
-                            index,
-                            e.target.value,
-                            newExercise
-                          ),
-                        })
-                      }
-                      placeholder={`Option ${index + 1}`}
-                    />
+                    <div className="flex-1">
+                      {option?.startsWith("http") ? (
+                        <div className="flex items-center gap-2">
+                          {option ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={option} alt={`option-${index}`} className="w-14 h-14 rounded object-cover border" />
+                          ) : null}
+                          <Input
+                            value={option}
+                            onChange={(e) =>
+                              setNewExercise({
+                                ...newExercise,
+                                options: updateOption(
+                                  index,
+                                  e.target.value,
+                                  newExercise
+                                ),
+                              })
+                            }
+                            placeholder={`Option ${index + 1}`}
+                          />
+                        </div>
+                      ) : (
+                        <Input
+                          value={option}
+                          onChange={(e) =>
+                            setNewExercise({
+                              ...newExercise,
+                              options: updateOption(
+                                index,
+                                e.target.value,
+                                newExercise
+                              ),
+                            })
+                          }
+                          placeholder={`Option ${index + 1}`}
+                        />
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1351,6 +2192,159 @@ export default function LessonDetail({
                   }
                   placeholder="e.g. http://example.com/audio.mp3"
                 />
+              </div>
+            )}
+
+            {!newExercise.type.startsWith("education_") && (
+              <div className="grid gap-4 border rounded-md p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Idle Animation URL</Label>
+                    <Input
+                      value={newExercise.mediaPack?.idleAnimationUrl || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          mediaPack: {
+                            ...(newExercise.mediaPack || {}),
+                            idleAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../idle.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Success Animation URL</Label>
+                    <Input
+                      value={newExercise.mediaPack?.successAnimationUrl || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          mediaPack: {
+                            ...(newExercise.mediaPack || {}),
+                            successAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../success.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Fail Animation URL</Label>
+                    <Input
+                      value={newExercise.mediaPack?.failAnimationUrl || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          mediaPack: {
+                            ...(newExercise.mediaPack || {}),
+                            failAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../fail.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Character Name</Label>
+                    <Input
+                      value={newExercise.mediaPack?.characterName || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          mediaPack: {
+                            ...(newExercise.mediaPack || {}),
+                            characterName: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Tulu Bear"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Hover Hint Text</Label>
+                    <Textarea
+                      value={newExercise.hoverHint?.text || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          hoverHint: {
+                            ...(newExercise.hoverHint || {}),
+                            text: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Kelimenin çevirisini görmek için üzerine gel."
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hover Hint Audio URL</Label>
+                    <Input
+                      value={newExercise.hoverHint?.audioUrl || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          hoverHint: {
+                            ...(newExercise.hoverHint || {}),
+                            audioUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../hover.mp3"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md-grid-cols-3 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Answer Audio URL</Label>
+                    <Input
+                      value={newExercise.answerAudioUrl || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          answerAudioUrl: e.target.value,
+                        })
+                      }
+                      placeholder="https://.../answer.mp3"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>TTS Voice ID</Label>
+                    <Input
+                      value={newExercise.ttsVoiceId || ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          ttsVoiceId: e.target.value,
+                        })
+                      }
+                      placeholder="elevenlabs-voice"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Auto Reveal (ms)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={newExercise.autoRevealMilliseconds ?? ""}
+                      onChange={(e) =>
+                        setNewExercise({
+                          ...newExercise,
+                          autoRevealMilliseconds:
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                        })
+                      }
+                      placeholder="3000"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1374,19 +2368,7 @@ export default function LessonDetail({
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleAddExercise}
-              disabled={
-                !newExercise.instruction ||
-                !newExercise.sourceText ||
-                !newExercise.correctAnswer[0] ||
-                (optionSupportedTypes.includes(newExercise.type) &&
-                  newExercise.options.every((opt) => !(opt ?? "").trim())) ||
-                (audioSupportedTypes.includes(newExercise.type) &&
-                  !newExercise.audioUrl.trim()) ||
-                isLoading
-              }
-            >
+            <Button onClick={handleAddExercise} disabled={isLoading}>
               {isLoading && <Loader2 className="animate-spin" />}
               Add Exercise
             </Button>
@@ -1433,20 +2415,22 @@ export default function LessonDetail({
                 </Select>
               </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="edit-exercise-instruction">Instruction</Label>
-                <Input
-                  id="edit-exercise-instruction"
-                  value={editingExercise?.instruction || ""}
-                  onChange={(e) =>
-                    setEditingExercise({
-                      ...editingExercise,
-                      instruction: e.target.value,
-                    })
-                  }
-                  placeholder="e.g. Translate this sentence"
-                />
-              </div>
+              {!(editingExercise?.type || "").startsWith("education_") && (
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-exercise-instruction">Instruction</Label>
+                  <Input
+                    id="edit-exercise-instruction"
+                    value={editingExercise?.instruction || ""}
+                    onChange={(e) =>
+                      setEditingExercise({
+                        ...editingExercise,
+                        instruction: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. Translate this sentence"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -1503,6 +2487,7 @@ export default function LessonDetail({
               </div>
             </div>
 
+            {!(editingExercise?.type || "").startsWith("education_") && (
             <div className="grid gap-2">
               <Label htmlFor="edit-exercise-source-text">Source Text</Label>
               <Input
@@ -1517,7 +2502,9 @@ export default function LessonDetail({
                 placeholder="e.g. Hello"
               />
             </div>
+            )}
 
+            {!(editingExercise?.type || "").startsWith("education_") && (
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
                 <Label>Correct Answers</Label>
@@ -1567,8 +2554,9 @@ export default function LessonDetail({
                 )
               )}
             </div>
+            )}
 
-            {optionSupportedTypes.includes(editingExercise?.type ?? "") && (
+            {!(editingExercise?.type || "").startsWith("education_") && optionSupportedTypes.includes(editingExercise?.type ?? "") && (
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
                   <Label>Options (for select and translate)</Label>
@@ -1606,7 +2594,7 @@ export default function LessonDetail({
               </div>
             )}
 
-            {audioSupportedTypes.includes(editingExercise?.type ?? "") && (
+            {!(editingExercise?.type || "").startsWith("education_") && audioSupportedTypes.includes(editingExercise?.type ?? "") && (
               <div className="grid gap-2">
                 <Label htmlFor="edit-exercise-audio">
                   Audio URL (optional)
@@ -1690,6 +2678,159 @@ export default function LessonDetail({
                 placeholder="e.g. http://example.com/audio.mp3"
               />
             </div>
+            {!(editingExercise?.type || "").startsWith("education_") && (
+              <div className="grid gap-4 border rounded-md p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Idle Animation URL</Label>
+                    <Input
+                      value={editingExercise?.mediaPack?.idleAnimationUrl || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          mediaPack: {
+                            ...(editingExercise?.mediaPack || {}),
+                            idleAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../idle.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Success Animation URL</Label>
+                    <Input
+                      value={editingExercise?.mediaPack?.successAnimationUrl || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          mediaPack: {
+                            ...(editingExercise?.mediaPack || {}),
+                            successAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../success.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Fail Animation URL</Label>
+                    <Input
+                      value={editingExercise?.mediaPack?.failAnimationUrl || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          mediaPack: {
+                            ...(editingExercise?.mediaPack || {}),
+                            failAnimationUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../fail.gif"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Character Name</Label>
+                    <Input
+                      value={editingExercise?.mediaPack?.characterName || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          mediaPack: {
+                            ...(editingExercise?.mediaPack || {}),
+                            characterName: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Tulu Bear"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Hover Hint Text</Label>
+                    <Textarea
+                      value={editingExercise?.hoverHint?.text || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          hoverHint: {
+                            ...(editingExercise?.hoverHint || {}),
+                            text: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Kelimenin çevirisini görmek için üzerine gel."
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hover Hint Audio URL</Label>
+                    <Input
+                      value={editingExercise?.hoverHint?.audioUrl || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          hoverHint: {
+                            ...(editingExercise?.hoverHint || {}),
+                            audioUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="https://.../hover.mp3"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Answer Audio URL</Label>
+                    <Input
+                      value={editingExercise?.answerAudioUrl || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          answerAudioUrl: e.target.value,
+                        })
+                      }
+                      placeholder="https://.../answer.mp3"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>TTS Voice ID</Label>
+                    <Input
+                      value={editingExercise?.ttsVoiceId || ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          ttsVoiceId: e.target.value,
+                        })
+                      }
+                      placeholder="elevenlabs-voice"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Auto Reveal (ms)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={editingExercise?.autoRevealMilliseconds ?? ""}
+                      onChange={(e) =>
+                        setEditingExercise({
+                          ...(editingExercise as ExerciseResponse),
+                          autoRevealMilliseconds:
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                        })
+                      }
+                      placeholder="3000"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center space-x-2">
               <Switch
                 id="edit-exercise-active"
@@ -1706,6 +2847,7 @@ export default function LessonDetail({
                 Inactive exercise won&apos;t be visible to users.
               </p>
             </div>
+            {!(editingExercise?.type || "").startsWith("education_") && (
             <div className="flex items-center space-x-2">
               <Switch
                 id="edit-exercise-new-word"
@@ -1716,6 +2858,7 @@ export default function LessonDetail({
               />
               <Label htmlFor="edit-exercise-new-word">Mark as New Word</Label>
             </div>
+            )}
           </div>
 
           <DialogFooter>
@@ -1748,16 +2891,20 @@ export default function LessonDetail({
               size="default"
               onClick={handleEditExercise}
               disabled={
-                !editingExercise?.instruction ||
-                !editingExercise?.sourceText ||
-                !editingExercise?.correctAnswer?.[0] ||
-                (optionSupportedTypes.includes(editingExercise?.type ?? "") &&
-                  (editingExercise?.options ?? []).every(
-                    (opt) => !(opt ?? "").trim()
-                  )) ||
-                (audioSupportedTypes.includes(editingExercise?.type ?? "") &&
-                  !(editingExercise?.audioUrl ?? "").trim()) ||
-                isLoading
+                (editingExercise?.type || "").startsWith("education_")
+                  ? isLoading
+                  : (
+                      !editingExercise?.instruction ||
+                      !editingExercise?.sourceText ||
+                      !editingExercise?.correctAnswer?.[0] ||
+                      (optionSupportedTypes.includes(editingExercise?.type ?? "") &&
+                        (editingExercise?.options ?? []).every(
+                          (opt) => !(opt ?? "").trim()
+                        )) ||
+                      (audioSupportedTypes.includes(editingExercise?.type ?? "") &&
+                        !(editingExercise?.audioUrl ?? "").trim()) ||
+                      isLoading
+                    )
               }
             >
               {isLoading && <Loader2 className="animate-spin" />}

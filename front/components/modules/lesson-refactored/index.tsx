@@ -130,13 +130,15 @@ export default function LessonRefactored({
       return;
     }
 
+    const overrideVoice = currentExercise?.ttsVoiceId;
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/generate-tts`,
         {
           text: currentExercise.sourceText,
           language_id: currentExercise.sourceLanguage,
-          voice_id: VOICE_MAP[lang as SupportedLang],
+          voice_id: overrideVoice || VOICE_MAP[lang as SupportedLang],
         },
         {
           responseType: "blob",
@@ -185,7 +187,8 @@ export default function LessonRefactored({
       }
 
       playSoundFromURL(
-        "https://res.cloudinary.com/dlm0ieiyt/video/upload/v1748328096/correct_answer_zngi2u.ogg"
+        currentExercise?.answerAudioUrl ??
+          "https://res.cloudinary.com/dlm0ieiyt/video/upload/v1748328096/correct_answer_zngi2u.ogg"
       );
 
       const totalXP = lessonContent.xpReward;

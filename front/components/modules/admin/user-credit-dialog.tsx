@@ -18,6 +18,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Gem, Heart, Droplets } from "lucide-react";
 import { AppUser } from "@/types";
+import { useAuth } from "@clerk/nextjs";
+import { apiClient } from "@/lib/api-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface UserCreditDialogProps {
   open: boolean;
@@ -33,21 +37,50 @@ export default function UserCreditDialog({
   const [activeTab, setActiveTab] = useState("xp");
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
+  const { getToken } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    try {
+      const token = await getToken();
+      const parsedAmount = Number.parseInt(amount);
+      if (Number.isNaN(parsedAmount)) {
+        toast.error("Please enter a valid amount");
+        setIsLoading(false);
+        return;
+      }
 
-    // In a real app, you would send this data to your API
-    console.log("Credit adjustment:", {
-      userId: user.id,
-      type: activeTab,
-      amount: Number.parseInt(amount),
-      reason,
-    });
+      await apiClient.post(
+        `/api/admin/users/${user.id}/credit`,
+        {
+          type: activeTab,
+          amount: parsedAmount,
+          reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    // Show success message and close dialog
-    alert(`${activeTab.toUpperCase()} adjusted successfully!`);
-    onOpenChange(false);
+      toast.success(`${activeTab.toUpperCase()} adjusted successfully`);
+      onOpenChange(false);
+      // Refresh current view to reflect updated values
+      try {
+        router.refresh();
+      } catch {
+        // no-op if router not available
+      }
+    } catch (error) {
+      console.error("Failed to adjust credits:", error);
+      toast.error("Failed to adjust credits. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -161,7 +194,9 @@ export default function UserCreditDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">Apply Changes</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Applying..." : "Apply Changes"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

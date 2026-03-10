@@ -54,7 +54,8 @@ export function DinosaurGame() {
 
   // Initialize high score from localStorage
   useEffect(() => {
-    const savedHighScore = localStorage.getItem("dino-high-score");
+    if (typeof window === "undefined") return;
+    const savedHighScore = window.localStorage.getItem("dino-high-score");
     if (savedHighScore) {
       setHighScore(Number.parseInt(savedHighScore));
     }
@@ -241,7 +242,9 @@ export function DinosaurGame() {
         setGameState("gameOver");
         const newHighScore = Math.max(score, highScore);
         setHighScore(newHighScore);
-        localStorage.setItem("dino-high-score", newHighScore.toString());
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("dino-high-score", newHighScore.toString());
+        }
         return;
       }
     }

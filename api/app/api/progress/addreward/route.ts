@@ -656,7 +656,20 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
+    // Validate request body
     const validated = UserProgressAddRewardSchema.safeParse(body);
+    if (!validated.success) {
+      const errors: Record<string, string[]> = {};
+      for (const issue of validated.error.issues) {
+        const path = issue.path.join(".") || "root";
+        if (!errors[path]) errors[path] = [];
+        errors[path].push(issue.message);
+      }
+      return NextResponse.json(
+        { message: "Validation error", errors },
+        { status: 400 }
+      );
+    }
 
     const { type, amount, reason, lessonId } = validated.data;
 
@@ -685,6 +698,20 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     console.error("UserProgress API error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Unknown error";
+
+    // Provide clearer client errors for common cases
+    if (
+      typeof message === "string" &&
+      (message.includes("Invalid or missing lessonId") ||
+        message.includes("Lesson not found"))
+    ) {
+      return NextResponse.json(
+        { message },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ error: "Server error", message }, { status: 500 });
   }
 }

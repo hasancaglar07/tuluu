@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
 import Activity from "@/models/Activity";
+import { hasAdminRole } from "@/lib/admin-access";
 
 
 
@@ -78,29 +79,28 @@ export async function POST(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const check = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await check).privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const check = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(check)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
     await connectDB();
 
     // Get the user from Clerk
-    const user = (await clerkClient()).users.getUser(id);
+    const user = await (await clerkClient()).users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findOne({ clerkId: id });
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -111,20 +111,19 @@ export async function POST(
 
     // Validate required fields
     if (!plan) {
-      return NextResponse.json({ error: "Plan is required" }, { status: 400 });
+      return NextResponse.json({ error: "Plan gereklidir" }, { status: 400 });
     }
 
     // Validate plan
     if (!["free", "premium"].includes(plan)) {
       return NextResponse.json(
-        { error: "Invalid plan. Must be one of: free, premium" },
+        { error: "Geçersiz plan. Şunlardan biri olmalı: free, premium" },
         { status: 400 }
       );
     }
 
     // Get the current subscription from privateMetadata
-    const oldSubscription =
-      ((await user).privateMetadata.subscription as string) || "free";
+    const oldSubscription = (user.privateMetadata.subscription as string) || "free";
 
     // Calculate subscription end date if duration is provided
     let subscriptionEndDate;
@@ -138,7 +137,7 @@ export async function POST(
     // Update the user in Clerk
     (await clerkClient()).users.updateUser(id, {
       privateMetadata: {
-        ...(await user).privateMetadata,
+        ...user.privateMetadata,
         subscription: plan,
         subscriptionStatus: plan === "free" ? "inactive" : "active",
         subscriptionEndDate: subscriptionEndDate?.toISOString(),
@@ -169,7 +168,7 @@ export async function POST(
   } catch (error) {
     console.error("Error updating user subscription:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

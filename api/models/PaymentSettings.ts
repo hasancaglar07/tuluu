@@ -255,6 +255,7 @@ PaymentSettingsSchema.statics.createDefaultSettings = function () {
         exchangeRate: 1,
         gemsCost: 10,
         refillTimeHours: 5,
+        maxAmount: 1500,
         minPurchase: 1,
       },
     },

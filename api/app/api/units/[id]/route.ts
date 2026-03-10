@@ -183,7 +183,7 @@ import { NextResponse } from "next/server";
  *       properties:
  *         type:
  *           type: string
- *           enum: [multiple_choice, translation, fill_blank, matching, audio, speaking]
+ *           enum: [multiple_choice, translation, fill_blank, matching, audio]
  *           description: Type of question
  *           example: "multiple_choice"
  *         question:

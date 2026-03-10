@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
 import Activity from "@/models/Activity";
+import { hasAdminRole } from "@/lib/admin-access";
 
 
 /**
@@ -84,13 +85,12 @@ export async function POST(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const role = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await role).privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const role = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(role)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
@@ -99,7 +99,7 @@ export async function POST(
     // Get the user from our database
     const dbUser = await User.findByClerkId(id);
     if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the request body
@@ -109,7 +109,7 @@ export async function POST(
     // Validate required fields
     if (!type || amount === undefined || !reason) {
       return NextResponse.json(
-        { error: "Type, amount, and reason are required" },
+        { error: "Tür, miktar ve sebep gereklidir" },
         { status: 400 }
       );
     }
@@ -117,7 +117,7 @@ export async function POST(
     // Validate type
     if (!["xp", "gems", "hearts", "gel"].includes(type)) {
       return NextResponse.json(
-        { error: "Invalid type. Must be one of: xp, gems, hearts, gel" },
+        { error: "Geçersiz tür. Şunlardan biri olmalı: xp, gems, hearts, gel" },
         { status: 400 }
       );
     }
@@ -126,14 +126,20 @@ export async function POST(
       return ["xp", "gems", "gel"].includes(key);
     }
     // Get the current value
-    let oldValue, newValue;
+    let oldValue: number = 0;
+    let newValue: number = 0;
     if (isStatKey(type)) {
-      oldValue = dbUser[type] || 0;
+      oldValue = (dbUser[type] as number) || 0;
       // Calculate the new value (ensure it doesn't go below 0)
       newValue = Math.max(0, oldValue + amount);
 
       // Update the user in the database
-      dbUser[type] = newValue;
+      dbUser[type] = newValue as any;
+      await dbUser.save();
+    } else if (type === "hearts") {
+      oldValue = dbUser.hearts || 0;
+      newValue = Math.max(0, oldValue + amount);
+      dbUser.hearts = newValue;
       await dbUser.save();
     }
 
@@ -163,7 +169,7 @@ export async function POST(
   } catch (error) {
     console.error("Error adjusting user credits:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

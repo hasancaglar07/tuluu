@@ -52,7 +52,9 @@ export default {
   "category.personal_social": "Personal & Social",
   "category.undefined": "Other",
 
+  "ageGroup.kids_2-6": "Kids 2-6",
   "ageGroup.kids_4-7": "Kids 4-7",
+  "ageGroup.kids_7-12": "Kids 7-12",
   "ageGroup.kids_8-12": "Kids 8-12",
   "ageGroup.teens_13-17": "Teens 13-17",
   "ageGroup.all": "All ages",
@@ -142,6 +144,7 @@ export default {
   "admin.lessons.yes": "Yes",
   "admin.lessons.no": "No",
   "admin.lessons.selectLanguage": "Select Language:",
+  "admin.lessons.topCategory": "Top Category",
   "admin.lessons.template.label": "Program Template",
   "admin.lessons.template.description": "Start from a curated template inspired by fikir.txt. You can adjust every field afterwards.",
   "admin.lessons.template.placeholder": "Choose a template to prefill programme details",
@@ -204,11 +207,36 @@ export default {
     "Bir ders için yeni egzersiz oluştur.",
   "admin.lessons.lesson": "Lesson",
   "admin.lessons.exerciseType": "Egzersiz Türü",
+  "admin.lessons.exerciseType.education_image_intro": "Image Intro (3 Cards)",
+  "admin.lessons.exerciseType.education_visual": "Visual Explanation",
+  "admin.lessons.exerciseType.education_video": "Video Tutorial",
+  "admin.lessons.exerciseType.education_audio": "Audio Learning",
+  "admin.lessons.exerciseType.education_tip": "Tip Card",
   "admin.lessons.exerciseType.translate": "Translate",
   "admin.lessons.exerciseType.select": "Select",
   "admin.lessons.exerciseType.arrange": "Arrange",
-  "admin.lessons.exerciseType.speak": "Speak",
+  "admin.lessons.exerciseType.match": "Match",
   "admin.lessons.exerciseType.listen": "Listen",
+  "admin.lessons.exerciseTypeHint.education_image_intro":
+    "Shows a 3-card visual flow to introduce the topic before questions.",
+  "admin.lessons.exerciseTypeHint.education_visual":
+    "Explains a concept with visuals and short text.",
+  "admin.lessons.exerciseTypeHint.education_video":
+    "Teaches through video; learner watches first, then practices.",
+  "admin.lessons.exerciseTypeHint.education_audio":
+    "Teaches through audio narration and listening-focused content.",
+  "admin.lessons.exerciseTypeHint.education_tip":
+    "Displays a short tip/reminder card.",
+  "admin.lessons.exerciseTypeHint.translate":
+    "Learner translates the given text into the target language.",
+  "admin.lessons.exerciseTypeHint.select":
+    "Learner picks the correct option among choices.",
+  "admin.lessons.exerciseTypeHint.arrange":
+    "Learner arranges words in the correct order.",
+  "admin.lessons.exerciseTypeHint.match":
+    "Learner matches related items (for example word-meaning).",
+  "admin.lessons.exerciseTypeHint.listen":
+    "Learner listens to audio and gives the correct answer.",
   "admin.lessons.instruction": "Yönerge",
   "admin.lessons.sourceLanguage": "Kaynak Dil",
   "admin.lessons.targetLanguage": "Hedef Dil",

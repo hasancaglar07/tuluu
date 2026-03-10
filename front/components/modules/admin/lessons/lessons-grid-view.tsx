@@ -1,36 +1,34 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BookOpen, Edit, Layers, Trash2 } from "lucide-react";
+import type { Language, Lesson } from "@/types/lessons";
+import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Edit,
-  Trash2,
-  MoreHorizontal,
-  BookOpen,
-  Star,
-  TestTube,
-} from "lucide-react";
-import type { Language } from "@/types/lessons";
-import Image from "next/image";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+interface LessonTableRow extends Lesson {
+  chapterTitle: string;
+  chapterId: string;
+  unitTitle: string;
+  unitId: string;
+}
 
 interface LessonsGridViewProps {
   currentLanguage?: Language;
   onAddLesson: () => void;
-  onEditLesson?: (lesson: any, chapterId: string, unitId: string) => void;
+  onEditLesson?: (lesson: LessonTableRow, chapterId: string, unitId: string) => void;
   onDeleteLesson?: (
     chapterId: string,
     unitId: string,
@@ -41,16 +39,8 @@ interface LessonsGridViewProps {
 /**
  * Lessons Grid View Component
  *
- * Displays all lessons across all units and chapters for the selected language.
- * Provides a flat view of lessons for easier management and bulk operations.
- *
- * Features:
- * - Grid layout showing all lessons from all units and chapters
- * - Chapter and unit context for each lesson
- * - Lesson metadata display (XP reward, premium status, test status, etc.)
- * - Edit and delete actions for each lesson
- * - Exercise count display
- * - Responsive design with lesson type indicators
+ * Displays all lessons across all units and chapters in a management table.
+ * Includes search, filters and bulk deletion for faster admin workflows.
  */
 export function LessonsGridView({
   currentLanguage,
@@ -58,25 +48,143 @@ export function LessonsGridView({
   onEditLesson,
   onDeleteLesson,
 }: LessonsGridViewProps) {
+  const router = useLocalizedRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "regular" | "test">("all");
+  const [chapterFilter, setChapterFilter] = useState<string>("all");
+  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
+
   // Flatten all lessons from all units and chapters
-  const allLessons =
-    currentLanguage?.chapters.flatMap((chapter) =>
-      chapter.units.flatMap((unit) =>
-        unit.lessons.map((lesson) => ({
-          ...lesson,
-          chapterTitle: chapter.title,
-          chapterId: chapter._id,
-          unitTitle: unit.title,
-          unitId: unit._id,
-          unitColor: unit.color || "bg-blue-500",
-        }))
-      )
-    ) || [];
+  const allLessons = useMemo<LessonTableRow[]>(
+    () =>
+      currentLanguage?.chapters.flatMap((chapter) =>
+        chapter.units.flatMap((unit) =>
+          unit.lessons.map((lesson) => ({
+            ...lesson,
+            chapterTitle: chapter.title,
+            chapterId: chapter._id,
+            unitTitle: unit.title,
+            unitId: unit._id,
+          }))
+        )
+      ) || [],
+    [currentLanguage]
+  );
+
+  const chapterOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(allLessons.map((lesson) => [lesson.chapterId, lesson.chapterTitle])).entries()
+      ).map(([id, title]) => ({ id, title })),
+    [allLessons]
+  );
+
+  const filteredLessons = useMemo(
+    () =>
+      allLessons.filter((lesson) => {
+        const term = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+          term.length === 0 ||
+          lesson.title.toLowerCase().includes(term) ||
+          lesson.description.toLowerCase().includes(term) ||
+          lesson.chapterTitle.toLowerCase().includes(term) ||
+          lesson.unitTitle.toLowerCase().includes(term);
+        const matchesStatus =
+          statusFilter === "all" ||
+          (statusFilter === "active" ? lesson.isActive : !lesson.isActive);
+        const matchesType =
+          typeFilter === "all" ||
+          (typeFilter === "test" ? lesson.isTest : !lesson.isTest);
+        const matchesChapter =
+          chapterFilter === "all" || lesson.chapterId === chapterFilter;
+        return matchesSearch && matchesStatus && matchesType && matchesChapter;
+      }),
+    [allLessons, chapterFilter, searchTerm, statusFilter, typeFilter]
+  );
+
+  const visibleIds = useMemo(
+    () => new Set(filteredLessons.map((lesson) => lesson._id)),
+    [filteredLessons]
+  );
+
+  const selectedVisibleCount = useMemo(
+    () => selectedLessonIds.filter((id) => visibleIds.has(id)).length,
+    [selectedLessonIds, visibleIds]
+  );
+
+  const allVisibleSelected =
+    filteredLessons.length > 0 &&
+    filteredLessons.every((lesson) => selectedLessonIds.includes(lesson._id));
+  const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
+
+  useEffect(() => {
+    setSelectedLessonIds((prev) =>
+      prev.filter((id) => allLessons.some((lesson) => lesson._id === id))
+    );
+  }, [allLessons]);
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setTypeFilter("all");
+    setChapterFilter("all");
+  };
+
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 ||
+    statusFilter !== "all" ||
+    typeFilter !== "all" ||
+    chapterFilter !== "all";
+
+  const toggleSelectAllVisible = (checked: boolean | "indeterminate") => {
+    if (checked === true) {
+      setSelectedLessonIds((prev) =>
+        Array.from(new Set([...prev, ...filteredLessons.map((lesson) => lesson._id)]))
+      );
+      return;
+    }
+    setSelectedLessonIds((prev) => prev.filter((id) => !visibleIds.has(id)));
+  };
+
+  const toggleSelectLesson = (id: string, checked: boolean | "indeterminate") => {
+    if (checked === true) {
+      setSelectedLessonIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      return;
+    }
+    setSelectedLessonIds((prev) => prev.filter((lessonId) => lessonId !== id));
+  };
+
+  const deleteSelectedLessons = () => {
+    if (!onDeleteLesson || selectedLessonIds.length === 0) {
+      return;
+    }
+
+    const selectedLessons = allLessons.filter((lesson) =>
+      selectedLessonIds.includes(lesson._id)
+    );
+
+    if (selectedLessons.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `${selectedLessons.length} dersi silmek istediğinize emin misiniz?`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    selectedLessons.forEach((lesson) => {
+      onDeleteLesson(lesson.chapterId, lesson.unitId, lesson._id);
+    });
+    setSelectedLessonIds([]);
+  };
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
           <h2 className="text-xl font-bold">
             <FormattedMessage
               id="admin.lessons.tabs.lessons"
@@ -93,13 +201,81 @@ export function LessonsGridView({
             />
           </p>
         </div>
-        <Button onClick={onAddLesson}>
+        <Button className="w-full sm:w-auto" onClick={onAddLesson}>
           <BookOpen className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addLesson"
             defaultMessage="Add Lesson"
           />
         </Button>
+      </div>
+
+      <div className="space-y-3 rounded-lg border bg-muted/20 p-3 sm:p-4">
+        <div className="grid gap-2 xl:grid-cols-[1fr,170px,170px,220px,auto]">
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Ders, bölüm veya ünite ara..."
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) =>
+              setStatusFilter(e.target.value as "all" | "active" | "inactive")
+            }
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+          >
+            <option value="all">Tüm Durumlar</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) =>
+              setTypeFilter(e.target.value as "all" | "regular" | "test")
+            }
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+          >
+            <option value="all">Tüm Tipler</option>
+            <option value="regular">Normal</option>
+            <option value="test">Test</option>
+          </select>
+          <select
+            value={chapterFilter}
+            onChange={(e) => setChapterFilter(e.target.value)}
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+          >
+            <option value="all">Tüm Bölümler</option>
+            {chapterOptions.map((chapter) => (
+              <option key={chapter.id} value={chapter.id}>
+                {chapter.title}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="outline"
+            className="w-full xl:w-auto"
+            onClick={clearFilters}
+            disabled={!hasActiveFilters}
+          >
+            Temizle
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">
+            {filteredLessons.length} ders listeleniyor
+            {selectedLessonIds.length > 0 ? ` • ${selectedLessonIds.length} seçili` : ""}
+          </p>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full sm:w-auto"
+            disabled={selectedLessonIds.length === 0 || !onDeleteLesson}
+            onClick={deleteSelectedLessons}
+          >
+            Seçilileri Sil
+          </Button>
+        </div>
       </div>
 
       {allLessons.length === 0 ? (
@@ -127,233 +303,116 @@ export function LessonsGridView({
             />
           </Button>
         </div>
+      ) : filteredLessons.length === 0 ? (
+        <div className="rounded-lg border border-dashed p-10 text-center">
+          <p className="text-sm text-muted-foreground">
+            Aramanıza uyan ders bulunamadı.
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {allLessons.map((lesson) => (
-            <Card key={`${lesson.chapterId}-${lesson.unitId}-${lesson._id}`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        {lesson.isTest ? (
-                          <TestTube className="h-4 w-4 text-orange-500" />
-                        ) : (
-                          <BookOpen className="h-4 w-4 text-blue-500" />
-                        )}
-                        {lesson.title}
-                      </div>
-                    </CardTitle>
-
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {lesson.isPremium && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-yellow-100 text-yellow-800 text-xs"
-                        >
-                          <Star className="h-3 w-3 mr-1" />
-                          <FormattedMessage
-                            id="admin.lessons.premium"
-                            defaultMessage="Premium"
-                          />
-                        </Badge>
-                      )}
-
-                      {lesson.isTest && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-orange-100 text-orange-800 text-xs"
-                        >
-                          <TestTube className="h-3 w-3 mr-1" />
-                          <FormattedMessage
-                            id="admin.lessons.test"
-                            defaultMessage="Test"
-                          />
-                        </Badge>
-                      )}
-
-                      <Badge variant="outline" className="text-xs">
-                        <FormattedMessage
-                          id="admin.lessons.xpReward"
-                          defaultMessage="{xp} XP"
-                          values={{ xp: lesson.xpReward }}
-                        />
-                      </Badge>
+        <div className="rounded-lg border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>
+                  <Checkbox
+                    checked={allVisibleSelected ? true : someVisibleSelected ? "indeterminate" : false}
+                    onCheckedChange={toggleSelectAllVisible}
+                    aria-label="Tüm görünen dersleri seç"
+                  />
+                </TableHead>
+                <TableHead>Ders</TableHead>
+                <TableHead>Konum</TableHead>
+                <TableHead>Tip</TableHead>
+                <TableHead>Durum</TableHead>
+                <TableHead>XP</TableHead>
+                <TableHead>Değer</TableHead>
+                <TableHead>Değer Puanı</TableHead>
+                <TableHead>Aşama</TableHead>
+                <TableHead>Egzersiz</TableHead>
+                <TableHead>Sıra</TableHead>
+                <TableHead className="text-right">İşlemler</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredLessons.map((lesson) => (
+                <TableRow key={`${lesson.chapterId}-${lesson.unitId}-${lesson._id}`}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedLessonIds.includes(lesson._id)}
+                      onCheckedChange={(checked) =>
+                        toggleSelectLesson(lesson._id, checked)
+                      }
+                      aria-label={`${lesson.title} dersini seç`}
+                    />
+                  </TableCell>
+                  <TableCell className="whitespace-normal">
+                    <div className="min-w-[220px]">
+                      <p className="line-clamp-1 font-medium">{lesson.title}</p>
+                      <p className="line-clamp-1 text-xs text-muted-foreground">
+                        {lesson.description || "-"}
+                      </p>
                     </div>
-
-                    <CardDescription className="mt-2 text-xs">
-                      <FormattedMessage
-                        id="admin.lessons.lessonPath"
-                        defaultMessage="{chapterTitle} → {unitTitle}"
-                        values={{
-                          chapterTitle: lesson.chapterTitle,
-                          unitTitle: lesson.unitTitle,
-                        }}
-                      />
-                    </CardDescription>
-                  </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
+                  </TableCell>
+                  <TableCell className="whitespace-normal">
+                    <div className="min-w-[180px] text-xs text-muted-foreground">
+                      <p className="line-clamp-1">{lesson.chapterTitle}</p>
+                      <p className="line-clamp-1">{lesson.unitTitle}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={lesson.isTest ? "secondary" : "outline"}>
+                      {lesson.isTest ? "Test" : "Normal"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={lesson.isActive ? "default" : "secondary"}>
+                      {lesson.isActive ? "Aktif" : "Pasif"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{lesson.xpReward}</TableCell>
+                  <TableCell>{lesson.moralValue || "-"}</TableCell>
+                  <TableCell>{lesson.valuePointsReward ?? 0}</TableCell>
+                  <TableCell>{lesson.teachingPhase || "-"}</TableCell>
+                  <TableCell>{lesson.exercises?.length ?? 0}</TableCell>
+                  <TableCell>{lesson.order}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Egzersizleri yönet"
+                        onClick={() => router.push(`/admin/lessons/${lesson._id}`)}
+                      >
+                        <Layers className="h-4 w-4" />
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Düzenle"
                         onClick={() =>
-                          onEditLesson?.(
-                            lesson,
-                            lesson.chapterId,
-                            lesson.unitId
-                          )
+                          onEditLesson?.(lesson, lesson.chapterId, lesson.unitId)
                         }
                       >
-                        <Edit className="mr-2 h-4 w-4" />
-                        <FormattedMessage
-                          id="admin.lessons.editLesson"
-                          defaultMessage="Edit Lesson"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-red-600"
+                        title="Sil"
                         onClick={() =>
-                          onDeleteLesson?.(
-                            lesson.chapterId,
-                            lesson.unitId,
-                            lesson._id
-                          )
+                          onDeleteLesson?.(lesson.chapterId, lesson.unitId, lesson._id)
                         }
                       >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <FormattedMessage
-                          id="admin.lessons.deleteLesson"
-                          defaultMessage="Delete Lesson"
-                        />
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {lesson.description}
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.exercises"
-                          defaultMessage="Exercises:"
-                        />
-                      </span>
-                      <span className="font-medium">
-                        {lesson.exercises?.length || 0}
-                      </span>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.order"
-                          defaultMessage="Order:"
-                        />
-                      </span>
-                      <span className="font-medium">{lesson.order}</span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.status.label"
-                          defaultMessage="Status:"
-                        />
-                      </span>
-                      <Badge
-                        variant={lesson.isActive ? "default" : "secondary"}
-                      >
-                        {lesson.isActive ? (
-                          <FormattedMessage
-                            id="admin.lessons.status.active"
-                            defaultMessage="Active"
-                          />
-                        ) : (
-                          <FormattedMessage
-                            id="admin.lessons.status.inactive"
-                            defaultMessage="Inactive"
-                          />
-                        )}
-                      </Badge>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        <FormattedMessage
-                          id="admin.lessons.type"
-                          defaultMessage="Type:"
-                        />
-                      </span>
-                      <span className="font-medium">
-                        {lesson.isTest ? (
-                          <FormattedMessage
-                            id="admin.lessons.entryTest"
-                            defaultMessage="Entry Test"
-                          />
-                        ) : (
-                          <FormattedMessage
-                            id="admin.lessons.regularLesson"
-                            defaultMessage="Regular"
-                          />
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {lesson.imageUrl && (
-                    <div className="mt-3">
-                      <Image
-                        src={lesson.imageUrl || "/placeholder.svg"}
-                        alt={lesson.title}
-                        className="w-full h-24 object-cover rounded-md"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                         width={300}
-                        height={150}
-                      />
-                    </div>
-                  )}
-
-                  {/* Progress indicator based on exercises */}
-                  <div className="mt-3">
-                    <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                      <span>
-                        <FormattedMessage
-                          id="admin.lessons.exerciseProgress"
-                          defaultMessage="Exercise Progress"
-                        />
-                      </span>
-                      <span>{lesson.exercises?.length || 0}/10</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1.5">
-                      <div
-                        className="bg-blue-600 h-1.5 rounded-full"
-                        style={{
-                          width: `${Math.min(
-                            ((lesson.exercises?.length || 0) / 10) * 100,
-                            100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
     </>

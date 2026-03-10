@@ -74,7 +74,7 @@ const initialState: SettingsState = {
   currencies: {
     hearts: {
       gemsCost: 500,
-      maxAmount: 5,
+      maxAmount: 1500,
       refillTimeHours: 5,
       enabled: true,
     },

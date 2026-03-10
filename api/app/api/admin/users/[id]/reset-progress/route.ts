@@ -7,6 +7,7 @@ import User from "@/models/User";
 import UserProgress from "@/models/UserProgress";
 import UserAchievement from "@/models/UserAchievement";
 import Activity from "@/models/Activity";
+import { hasAdminRole } from "@/lib/admin-access";
 
 
 
@@ -94,13 +95,12 @@ export async function POST(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const check = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await check).privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const check = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(check)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
@@ -109,7 +109,7 @@ export async function POST(
     // Get the user from our database
     const dbUser = await User.findOne({ clerkId: id });
     if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the request body
@@ -126,7 +126,7 @@ export async function POST(
     // Validate required fields
     if (!reason) {
       return NextResponse.json(
-        { error: "Reason is required" },
+        { error: "Sebep gereklidir" },
         { status: 400 }
       );
     }
@@ -198,7 +198,7 @@ export async function POST(
   } catch (error) {
     console.error("Error resetting user progress:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

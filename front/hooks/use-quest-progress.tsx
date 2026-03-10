@@ -63,8 +63,12 @@ export function useQuestProgress() {
           toast.success("Quest completed! 🎉");
         }
       }
-    } catch (error) {
-      console.error("Failed to update XP quest progress:", error);
+    } catch (error: any) {
+      // 404 is normal if there are no matching active quests
+      const status = error?.response?.status;
+      if (status !== 404) {
+        console.error("Failed to update XP quest progress:", error);
+      }
     }
   };
 
@@ -98,11 +102,14 @@ export function useQuestProgress() {
           toast.success("Lesson quest completed! 🎉");
         }
       }
-    } catch (error) {
-      console.error(
-        "Failed to update lesson completion quest progress:",
-        error
-      );
+    } catch (error: any) {
+      const status = error?.response?.status;
+      if (status !== 404) {
+        console.error(
+          "Failed to update lesson completion quest progress:",
+          error
+        );
+      }
     }
   };
 

@@ -27,6 +27,39 @@ export const LessonSchema = z.object({
     .min(1, "XP Reward must be a positive number")
     .max(10000, "XP Reward must not be greater than 10000")
     .default(10),
+  teachingPhase: z.enum(["teach", "practice", "assess"]).default("teach"),
+  moralValue: z
+    .enum([
+      "patience",
+      "gratitude",
+      "kindness",
+      "honesty",
+      "sharing",
+      "mercy",
+      "justice",
+      "respect",
+    ])
+    .default("kindness"),
+  valuePointsReward: z
+    .number()
+    .min(0, "Value points must be zero or positive")
+    .max(1000, "Value points must not be greater than 1000")
+    .default(0),
+  pedagogyFocus: z.string().max(400).optional().default(""),
+  moralStory: z
+    .object({
+      title: z.string().max(150).optional().default(""),
+      text: z.string().max(2000).optional().default(""),
+      placement: z
+        .enum(["pre_lesson", "mid_lesson", "post_lesson"])
+        .default("post_lesson"),
+    })
+    .optional()
+    .default({
+      title: "",
+      text: "",
+      placement: "post_lesson",
+    }),
 
   imageUrl: z.preprocess(
     (val) => (val === "" || val === null ? undefined : val),

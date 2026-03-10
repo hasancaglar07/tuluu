@@ -18,6 +18,7 @@ import { FormattedMessage } from "react-intl";
 // Import custom components
 import LessonHeader from "./lesson-header";
 import ExerciseDisplay from "./exercise-display";
+import EducationDisplay from "./education-display";
 import AnswerArea from "./answer-area";
 import WordOptions from "./word-options";
 import LessonFooter from "./lesson-footer";
@@ -25,6 +26,7 @@ import LessonResults from "./lesson-results";
 import NoExercises from "@/components/custom/no-exercises";
 import { StreakTracker } from "@/components/custom/streak-tracker";
 import ContinueLearningEncouragement from "@/components/custom/ContinueLearningEncouragement";
+import { normalizeAnswerValue } from "@/lib/media";
 
 // Import custom hooks
 import { useAudioPlayer } from "@/hooks/use-audio-player";
@@ -91,7 +93,6 @@ export default function Lesson({ id }: { id: string }) {
   const { playAudio, isSpeaking } = useAudioPlayer();
   const {
     completeLessonApi,
-    addRewardApi,
     addExercisesApi,
     updateUserHearts,
     // addUserQuest,
@@ -101,7 +102,16 @@ export default function Lesson({ id }: { id: string }) {
   // Current exercise reference
   const currentExercise =
     lessonContent && lessonContent.exercises[lessonState.currentExerciseIndex];
-  console.log("Lesson currentExercise:", currentExercise);
+  const isEducation = !!currentExercise?.type?.startsWith?.("education_");
+
+  const playFeedbackAudio = (url: string) => {
+    try {
+      const audio = new Audio(url);
+      audio.play();
+    } catch (error) {
+      console.error("Failed to play feedback audio", error);
+    }
+  };
 
   /**
    * Update progress bar based on current exercise index
@@ -147,12 +157,15 @@ export default function Lesson({ id }: { id: string }) {
    * Check if the user's answer is correct
    */
   const checkAnswer = async () => {
-    const userAnswer = lessonState.selectedWords.join(" ").toLowerCase();
+    const userAnswer = lessonState.selectedWords
+      .map((word) => normalizeAnswerValue(word))
+      .join(" ")
+      .trim();
     const isAnswerCorrect =
       currentExercise &&
       currentExercise.correctAnswer.length > 0 &&
       currentExercise.correctAnswer.some(
-        (answer: string) => answer.toLowerCase() === userAnswer
+        (answer: string) => normalizeAnswerValue(answer) === userAnswer
       );
 
     setLessonState((prev) => ({
@@ -184,20 +197,22 @@ export default function Lesson({ id }: { id: string }) {
       }));
 
       // Play success sound and show confetti
-      const audio = new Audio(
-        "https://res.cloudinary.com/dlm0ieiyt/video/upload/v1748328096/correct_answer_zngi2u.ogg"
-      );
-      audio.play();
+      if (currentExercise?.answerAudioUrl) {
+        playFeedbackAudio(currentExercise.answerAudioUrl);
+      } else {
+        playFeedbackAudio(
+          "https://res.cloudinary.com/dlm0ieiyt/video/upload/v1748328096/correct_answer_zngi2u.ogg"
+        );
+      }
 
       // Trigger confetti
       const { default: confetti } = await import("canvas-confetti");
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     } else {
       // Handle incorrect answer
-      const audio = new Audio(
+      playFeedbackAudio(
         "https://res.cloudinary.com/dlm0ieiyt/video/upload/v1748328355/11L-bad_answer_error_mes-1748328275089_xqpwgk.mp3"
       );
-      audio.play();
 
       if (currentExercise) {
         setLessonState((prev) => ({
@@ -302,6 +317,7 @@ export default function Lesson({ id }: { id: string }) {
         // Complete lesson via API
         const result = await completeLessonApi({
           lessonId: id,
+          xp: lessonState.earnedXp,
           gems: 0,
           gel: 0,
           xpBoost: null,
@@ -358,13 +374,7 @@ export default function Lesson({ id }: { id: string }) {
     // Update quest progress for XP and lesson completion
     await updateQuestProgress(userId!, lessonState.earnedXp);
 
-    // Add reward via API
-    await addRewardApi({
-      type: "xp",
-      amount: lessonState.earnedXp,
-      reason: "Completed lesson exercises",
-      lessonId: id,
-    });
+    // Note: XP is now recorded during completeLessonApi; no separate reward call needed
 
     // await addUserQuest({
     //   type: "daily",
@@ -439,31 +449,38 @@ export default function Lesson({ id }: { id: string }) {
           <AnimatePresence mode="wait">
             {!lessonState.showResults && currentExercise ? (
               <div className="w-full flex flex-col items-center">
-                {/* Exercise display with character */}
-                <ExerciseDisplay
-                  exercise={currentExercise}
-                  characterState={lessonState.characterState}
-                  isSpeaking={isSpeaking}
-                  onPlayAudio={() => playAudio(currentExercise)}
-                  showStreakTracker={lessonState.showStreakTracker}
-                  showResults={lessonState.showResults}
-                />
+                {/* Education vs classic exercise */}
+                {isEducation ? (
+                  <EducationDisplay exercise={currentExercise as any} />
+                ) : (
+                  <>
+                    {/* Exercise display with character */}
+                    <ExerciseDisplay
+                      exercise={currentExercise}
+                      characterState={lessonState.characterState}
+                      isSpeaking={isSpeaking}
+                      onPlayAudio={() => playAudio(currentExercise)}
+                      showStreakTracker={lessonState.showStreakTracker}
+                      showResults={lessonState.showResults}
+                    />
 
-                {/* Answer selection area */}
-                <AnswerArea
-                  selectedWords={lessonState.selectedWords}
-                  selectedWordIndexes={lessonState.selectedWordIndexes}
-                  isCorrect={lessonState.isCorrect}
-                  onWordSelect={handleWordSelect}
-                />
+                    {/* Answer selection area */}
+                    <AnswerArea
+                      selectedWords={lessonState.selectedWords}
+                      selectedWordIndexes={lessonState.selectedWordIndexes}
+                      isCorrect={lessonState.isCorrect}
+                      onWordSelect={handleWordSelect}
+                    />
 
-                {/* Word options */}
-                <WordOptions
-                  options={currentExercise?.options || []}
-                  selectedWordIndexes={lessonState.selectedWordIndexes}
-                  isCorrect={lessonState.isCorrect}
-                  onWordSelect={handleWordSelect}
-                />
+                    {/* Word options */}
+                    <WordOptions
+                      options={currentExercise?.options || []}
+                      selectedWordIndexes={lessonState.selectedWordIndexes}
+                      isCorrect={lessonState.isCorrect}
+                      onWordSelect={handleWordSelect}
+                    />
+                  </>
+                )}
 
                 {/* Streak tracker display */}
                 {lessonState.showStreakTracker &&
@@ -501,15 +518,15 @@ export default function Lesson({ id }: { id: string }) {
       {/* Footer with action buttons */}
       {lessonContent.exercises.length > 0 && currentExercise && (
         <LessonFooter
-          isCorrect={lessonState.isCorrect}
-          showNextButton={lessonState.showNextButton}
+          isCorrect={isEducation ? true : lessonState.isCorrect}
+          showNextButton={isEducation ? true : lessonState.showNextButton}
           correctAnswer={lessonState.correctAnswer}
           selectedWords={lessonState.selectedWords}
           currentExerciseIndex={lessonState.currentExerciseIndex}
           totalExercises={lessonContent.exercises.length}
           showResults={lessonState.showResults}
-          onCheck={checkAnswer}
-          onSkip={skipExercise}
+          onCheck={isEducation ? continueToNext : checkAnswer}
+          onSkip={isEducation ? continueToNext : skipExercise}
           onContinue={continueToNext}
           lessonId={id}
           exerciseId={currentExercise._id}

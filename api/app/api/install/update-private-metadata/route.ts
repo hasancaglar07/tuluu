@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       xp: 0,
       gems: 0,
       gel: 0,
-      hearts: 5,
+      hearts: 1500,
       streak: 0,
     });
 

@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const url = new URL(req.url);
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error fetching units:", error);
     return NextResponse.json(
-      { error: "Failed to fetch units" },
+      { error: "Üniteler getirilemedi" },
       { status: 500 }
     );
   }
@@ -131,12 +131,12 @@ export async function POST(req: NextRequest) {
     ]);
 
     if (!chapter) {
-      return NextResponse.json({ error: "Chapter not found" }, { status: 500 });
+      return NextResponse.json({ error: "Bölüm bulunamadı" }, { status: 500 });
     }
 
     if (!language) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 500 }
       );
     }
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error creating unit:", error);
     return NextResponse.json(
-      { error: "Failed to create unit" },
+      { error: "Ünite oluşturulamadı" },
       { status: 500 }
     );
   }

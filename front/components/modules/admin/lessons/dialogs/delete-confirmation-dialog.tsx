@@ -36,19 +36,23 @@ export function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+        <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          Bu işlem geri alınamaz.
+        </div>
+        <div className="mt-4 flex flex-col justify-end gap-2 sm:flex-row">
+          <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
               defaultMessage="Cancel"
             />
           </Button>
           <Button
+            className="w-full sm:w-auto"
             variant="destructive"
             onClick={onConfirm}
             disabled={isLoading}

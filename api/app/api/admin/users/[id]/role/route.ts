@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
 import Activity from "@/models/Activity";
+import { getUserRole, hasAdminRole } from "@/lib/admin-access";
 
 /**
  * @swagger
@@ -73,29 +74,28 @@ export async function POST(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const check = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await check).privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const check = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(check)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
     await connectDB();
 
     // Get the user from Clerk
-    const user = (await clerkClient()).users.getUser(id);
+    const user = await (await clerkClient()).users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findByClerkId(id);
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -107,26 +107,25 @@ export async function POST(
     // Validate required fields
     if (!role || !reason) {
       return NextResponse.json(
-        { error: "Role and reason are required" },
+        { error: "Rol ve sebep gereklidir" },
         { status: 400 }
       );
     }
 
     // Validate role
-    if (!["admin", "free"].includes(role)) {
+    if (!["admin", "free", "paid"].includes(role)) {
       return NextResponse.json(
-        { error: "Invalid role. Must be one of: admin, free" },
+        { error: "Geçersiz rol. Şunlardan biri olmalı: admin, free, paid" },
         { status: 400 }
       );
     }
 
-    // Get the current role from privateMetadata
-    const oldRole = ((await user).privateMetadata.role as string) || "free";
+    const oldRole = getUserRole(user) || "free";
 
     // Update the user in Clerk
     (await clerkClient()).users.updateUser(id, {
       privateMetadata: {
-        ...(await user).privateMetadata,
+        ...user.privateMetadata,
         role,
       },
     });
@@ -152,7 +151,7 @@ export async function POST(
   } catch (error) {
     console.error("Error updating user role:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

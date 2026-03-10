@@ -3,6 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
 import { authGuard } from "@/lib/utils";
+import { getUserRole, hasAdminRole } from "@/lib/admin-access";
 
 /**
  * @swagger
@@ -223,8 +224,9 @@ export async function GET(req: NextRequest) {
 
     // Filter by role
     if (role && role !== "all") {
+      const normalizedRole = role.trim().toLowerCase();
       filteredUsers = filteredUsers.filter(
-        (user) => user.privateMetadata.role === role
+        (user) => getUserRole(user) === normalizedRole
       );
     }
 
@@ -253,8 +255,8 @@ export async function GET(req: NextRequest) {
           valueB = (b.publicMetadata.name as string) || b.firstName || "";
           break;
         case "role":
-          valueA = (a.privateMetadata.role as string) || "free";
-          valueB = (b.privateMetadata.role as string) || "free";
+          valueA = getUserRole(a) || "free";
+          valueB = getUserRole(b) || "free";
           break;
         case "status":
           valueA = (a.privateMetadata.status as string) || "active";
@@ -329,7 +331,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error getting users:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }
@@ -340,13 +342,13 @@ export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const clerk = await clerkClient();
     const adminUser = await clerk.users.getUser(userId);
-    if (adminUser.privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!hasAdminRole(adminUser)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -354,7 +356,7 @@ export async function POST(req: NextRequest) {
 
     if (!email || !name || !password) {
       return NextResponse.json(
-        { error: "Email, name, and password are required" },
+        { error: "E-posta, ad ve şifre gereklidir" },
         { status: 400 }
       );
     }
@@ -384,7 +386,7 @@ export async function POST(req: NextRequest) {
       xp: 0,
       gems: 0,
       gel: 0,
-      hearts: 5,
+      hearts: 1500,
       streak: 0,
     });
 
@@ -404,7 +406,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

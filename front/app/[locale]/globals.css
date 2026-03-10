@@ -148,41 +148,41 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
-/* scaling factor 1.25 */
+/* scaling factor 1.5 - Increased for better readability */
 @layer base {
   body {
     font-family: var(--font-fredoka);
-    @apply bg-background text-slate-600 text-[18px] leading-[1.5] tracking-normal;
+    @apply bg-background text-slate-600 text-[22px] leading-[1.6] tracking-normal;
   }
 
-  /* text-[75px] = text-[48px] * 1.25*/
+  /* Increased by ~30% for better readability */
   h1 {
     font-family: var(--font-fredoka);
-    @apply text-[48px] md:text-[60px] lg:text-[75px] font-bold tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[62px] md:text-[78px] lg:text-[98px] font-bold tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
 
-  /* text-[38px] = text-[48px] / 1.25*/
+  /* Increased by ~30% for better readability */
   h2 {
     font-family: var(--font-fredoka);
-    @apply text-[38px] md:text-[47px] lg:text-[59px] font-bold tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[50px] md:text-[61px] lg:text-[77px] font-bold tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
 
   h3 {
     font-family: var(--font-fredoka);
-    @apply text-[28px] md:text-[35px] lg:text-[44px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[36px] md:text-[46px] lg:text-[57px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
   h4 {
     font-family: var(--font-fredoka);
-    @apply text-[24px] md:text-[30px] lg:text-[37px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[31px] md:text-[39px] lg:text-[48px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
   h5 {
     font-family: var(--font-fredoka);
-    @apply text-[20px] md:text-[25px] lg:text-[31px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[26px] md:text-[33px] lg:text-[40px] font-medium tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
 
   h6 {
     font-family: var(--font-fredoka);
-    @apply text-[16px] md:text-[20px] lg:text-[25px] font-normal tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
+    @apply text-[21px] md:text-[26px] lg:text-[33px] font-normal tracking-tight leading-[1.5] md:leading-[1.4] first-letter:capitalize;
   }
 
   button {
@@ -190,16 +190,16 @@
   }
 }
 
-/* Clerk Styles */
+/* Clerk Styles - Increased font sizes for better readability */
 .cl-formFieldLabelRow {
   display: none;
 }
 
 .cl-formFieldInput {
   font-family: var(--font-fredoka);
-  font-size: 20px;
+  font-size: 24px;
   background-color: var(--color-gray-100);
-  padding: 25px 10px;
+  padding: 28px 12px;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border);
 }
@@ -207,10 +207,10 @@
   display: none;
 }
 .cl-formButtonPrimary {
-  font-size: 20px;
+  font-size: 24px;
   text-transform: none;
   background-color: var(--color-primary-500);
-  padding: 14px 10px;
+  padding: 16px 12px;
   border-radius: var(--border-radius-sm);
 }
 
@@ -222,7 +222,7 @@
 
 .cl-socialButtons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .cl-dividerLine {
@@ -230,26 +230,26 @@
 }
 
 .cl-dividerText {
-  font-size: 20px;
+  font-size: 24px;
   text-transform: uppercase;
 }
 
 .cl-socialButtonsBlockButton {
   width: 100%;
-  padding: 20px 10px;
+  padding: 24px 12px;
   border-radius: var(--border-radius-sm);
-  font-size: 20px;
+  font-size: 24px;
   font-family: var(--font-fredoka);
   font-weight: bold;
 }
 
 .cl-headerTitle {
   font-family: var(--font-fredoka);
-  font-size: 20px;
+  font-size: 26px;
   font-weight: bold;
   color: var(--color-gray-700);
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .cl-headerSubtitle {
   display: none;

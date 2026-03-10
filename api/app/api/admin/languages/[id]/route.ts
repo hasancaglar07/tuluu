@@ -161,7 +161,7 @@ export async function GET(
 
     if (!language) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 404 }
       );
     }
@@ -170,7 +170,7 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching language:", error);
     return NextResponse.json(
-      { error: "Failed to fetch language" },
+      { error: "Dil getirilemedi" },
       { status: 500 }
     );
   }
@@ -192,7 +192,7 @@ export async function PUT(
     if (!validatedFields.success) {
       return NextResponse.json(
         {
-          error: "Invalid data",
+          error: "Geçersiz veri",
           errors: validatedFields.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -212,7 +212,7 @@ export async function PUT(
 
     if (!updated) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 404 }
       );
     }
@@ -233,7 +233,7 @@ export async function PUT(
   } catch (error) {
     console.error("Error updating language:", error);
     return NextResponse.json(
-      { error: "Failed to update language" },
+      { error: "Dil güncellenemedi" },
       { status: 500 }
     );
   }
@@ -255,19 +255,19 @@ export async function DELETE(
 
     if (!language) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { message: "Language disabled successfully", language },
+      { message: "Dil başarıyla devre dışı bırakıldı", language },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error disabling language:", error);
     return NextResponse.json(
-      { error: "Failed to disable language" },
+      { error: "Dil devre dışı bırakılamadı" },
       { status: 500 }
     );
   }

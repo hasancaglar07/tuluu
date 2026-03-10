@@ -6,6 +6,7 @@ import UserProgress from "@/models/UserProgress";
 import UserAchievement from "@/models/UserAchievement";
 import Activity from "@/models/Activity";
 import Report from "@/models/Report";
+import { hasAdminRole } from "@/lib/admin-access";
 
 /**
  * @swagger
@@ -190,16 +191,15 @@ export async function GET(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     // Get the admin user from Clerk
     const clerk = await clerkClient();
     const adminUser = await clerk.users.getUser(userId);
 
-    // Check if user has admin role in privateMetadata
-    if (adminUser.privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!hasAdminRole(adminUser)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
@@ -208,14 +208,14 @@ export async function GET(
     // Get the user from Clerk
     const user = await clerk.users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findByClerkId(id);
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -275,7 +275,7 @@ export async function GET(
   } catch (error) {
     console.error("Error getting user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }
@@ -291,16 +291,15 @@ export async function PUT(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     // Get the admin user from Clerk
     const clerk = await clerkClient();
     const adminUser = await clerk.users.getUser(userId);
 
-    // Check if user has admin role in privateMetadata
-    if (adminUser.privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!hasAdminRole(adminUser)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
@@ -309,14 +308,14 @@ export async function PUT(
     // Get the user from Clerk
     const user = await clerk.users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findOne({ clerkId: id });
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -398,7 +397,7 @@ export async function PUT(
   } catch (error) {
     console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }
@@ -414,16 +413,15 @@ export async function DELETE(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     // Get the admin user from Clerk
     const clerk = await clerkClient();
     const adminUser = await clerk.users.getUser(userId);
 
-    // Check if user has admin role in privateMetadata
-    if (adminUser.privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!hasAdminRole(adminUser)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
@@ -432,14 +430,14 @@ export async function DELETE(
     // Get the user from Clerk
     const user = await clerk.users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findOne({ clerkId: id });
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -454,7 +452,7 @@ export async function DELETE(
   } catch (error) {
     console.error("Error deleting user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

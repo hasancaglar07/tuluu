@@ -1464,7 +1464,7 @@ export async function PUT(
         const updateData: { xp: number; hearts: number } = { xp: 0, hearts: 0 };
         if (xpToAdd > 0) updateData.xp = (user.xp || 0) + xpToAdd;
         if (heartsToAdd > 0)
-          updateData.hearts = Math.min((user.hearts || 0) + heartsToAdd, 5); // Cap at 5 hearts
+          updateData.hearts = (user.hearts || 0) + heartsToAdd;
 
         if (Object.keys(updateData).length > 0) {
           await User.findByIdAndUpdate(user._id, updateData);

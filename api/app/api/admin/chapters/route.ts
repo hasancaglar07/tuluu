@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error fetching chapters:", error);
     return NextResponse.json(
-      { error: "Failed to fetch chapters" },
+      { error: "Bölümler getirilemedi" },
       { status: 500 }
     );
   }
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
     if (!validated.success) {
       return NextResponse.json(
         {
-          message: "Validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     const language = await Language.findById(validated.data.languageId);
     if (!language) {
       return NextResponse.json(
-        { error: "Language not found" },
+        { error: "Dil bulunamadı" },
         { status: 404 }
       );
     }
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error creating chapter:", error);
     return NextResponse.json(
-      { error: "Failed to create chapter" },
+      { error: "Bölüm oluşturulamadı" },
       { status: 500 }
     );
   }

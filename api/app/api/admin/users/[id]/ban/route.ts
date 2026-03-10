@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import Activity from "@/models/Activity";
 import User from "@/models/User";
+import { hasAdminRole } from "@/lib/admin-access";
 
 
 
@@ -80,29 +81,28 @@ export async function POST(
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
-    const role = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await role).privateMetadata.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const role = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(role)) {
+      return NextResponse.json({ error: "Yasaklandı" }, { status: 403 });
     }
 
     // Connect to the database
     await connectDB();
 
     // Get the user from Clerk
-    const user = (await clerkClient()).users.getUser(id);
+    const user = await (await clerkClient()).users.getUser(id);
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı" }, { status: 404 });
     }
 
     // Get the user from our database
     const dbUser = await User.findOne({ clerkId: id });
     if (!dbUser) {
       return NextResponse.json(
-        { error: "User not found in database" },
+        { error: "Kullanıcı veritabanında bulunamadı" },
         { status: 404 }
       );
     }
@@ -114,7 +114,7 @@ export async function POST(
     // Validate required fields
     if (!action || !reason) {
       return NextResponse.json(
-        { error: "Action and reason are required" },
+        { error: "İşlem ve sebep gereklidir" },
         { status: 400 }
       );
     }
@@ -122,7 +122,7 @@ export async function POST(
     // Validate action
     if (!["ban", "suspend", "activate"].includes(action)) {
       return NextResponse.json(
-        { error: "Invalid action. Must be one of: ban, suspend, activate" },
+        { error: "Geçersiz işlem. Şunlardan biri olmalı: ban, suspend, activate" },
         { status: 400 }
       );
     }
@@ -130,14 +130,13 @@ export async function POST(
     // If suspending, validate duration
     if (action === "suspend" && !duration) {
       return NextResponse.json(
-        { error: "Duration is required for suspension" },
+        { error: "Askıya alma için süre gereklidir" },
         { status: 400 }
       );
     }
 
     // Get the current status from privateMetadata
-    const oldStatus =
-      ((await user).privateMetadata.status as string) || "active";
+    const oldStatus = (user.privateMetadata.status as string) || "active";
 
     // Calculate the new status
     const newStatus =
@@ -159,7 +158,7 @@ export async function POST(
     // Update the user in Clerk
     (await clerkClient()).users.updateUser(id, {
       privateMetadata: {
-        ...(await user).privateMetadata,
+        ...user.privateMetadata,
         status: newStatus,
         suspensionEndDate: suspensionEndDate?.toISOString(),
       },
@@ -189,7 +188,7 @@ export async function POST(
   } catch (error) {
     console.error("Error banning/suspending user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Sunucu hatası" },
       { status: 500 }
     );
   }

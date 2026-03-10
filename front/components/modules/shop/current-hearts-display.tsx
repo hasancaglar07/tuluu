@@ -11,15 +11,18 @@ import { FormattedMessage } from "react-intl";
  *
  * @param {Object} props - Component props
  * @param {number} props.currentHearts - User's current heart count
- * @param {number} props.maxHearts - Maximum hearts allowed (default: 5)
+ * @param {number} props.maxHearts - Maximum hearts allowed (default: 1500)
  */
 export function CurrentHeartsDisplay({
   currentHearts,
-  maxHearts = 5,
+  maxHearts = 1500,
 }: {
   currentHearts: number;
   maxHearts?: number;
 }) {
+  const previewHearts = Math.min(currentHearts, 20);
+  const hiddenHearts = Math.max(0, currentHearts - previewHearts);
+
   return (
     <div className="mb-8 p-6 border border-gray-200 rounded-xl bg-white">
       <div className="flex justify-between items-center">
@@ -46,7 +49,7 @@ export function CurrentHeartsDisplay({
 
       <div className="mt-4 flex justify-center">
         <div className="flex">
-          {[...Array(currentHearts)].map((_, i) => (
+          {[...Array(previewHearts)].map((_, i) => (
             <div key={i} className="text-4xl -ml-2 first:ml-0">
               {i < currentHearts ? (
                 <m.div
@@ -66,6 +69,11 @@ export function CurrentHeartsDisplay({
           ))}
         </div>
       </div>
+      {hiddenHearts > 0 && (
+        <p className="mt-3 text-sm text-gray-500 text-center">
+          +{hiddenHearts} <FormattedMessage id="shop.hearts.more" defaultMessage="more hearts" />
+        </p>
+      )}
     </div>
   );
 }

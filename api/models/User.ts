@@ -31,7 +31,7 @@ const UserSchema = new Schema(
     xp: { type: Number, default: 0 },
     gems: { type: Number, default: 0 },
     gel: { type: Number, default: 0 },
-    hearts: { type: Number, default: 5 },
+    hearts: { type: Number, default: 1500 },
     streak: { type: Number, default: 0 },
     achievements: [{ type: String }],
     loginHistory: [LoginRecordSchema],

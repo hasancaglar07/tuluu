@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db/connect";
 import User from "@/models/User";
+import { getUserRole, hasAdminRole } from "@/lib/admin-access";
 
 /**
  * @swagger
@@ -114,9 +115,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = (await clerkClient()).users.getUser(userId);
-    // Check if user has admin role in privateMetadata
-    if ((await user).privateMetadata.role !== "admin") {
+    const user = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(user)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -157,8 +157,9 @@ export async function GET(req: NextRequest) {
 
     // Filter by role
     if (role && role !== "all") {
+      const normalizedRole = role.trim().toLowerCase();
       filteredUsers = filteredUsers.filter(
-        (user) => user.privateMetadata.role === role
+        (user) => getUserRole(user) === normalizedRole
       );
     }
 
@@ -187,8 +188,8 @@ export async function GET(req: NextRequest) {
           valueB = (b.publicMetadata.name as string) || b.firstName || "";
           break;
         case "role":
-          valueA = (a.privateMetadata.role as string) || "free";
-          valueB = (b.privateMetadata.role as string) || "free";
+          valueA = getUserRole(a) || "free";
+          valueB = getUserRole(b) || "free";
           break;
         case "status":
           valueA = (a.privateMetadata.status as string) || "active";
@@ -278,8 +279,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const adminUser = (await clerkClient()).users.getUser(userId);
-    if ((await adminUser).privateMetadata.role !== "admin") {
+    const adminUser = await (await clerkClient()).users.getUser(userId);
+    if (!hasAdminRole(adminUser)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -320,7 +321,7 @@ export async function POST(req: NextRequest) {
       xp: 0,
       gems: 0,
       gel: 0,
-      hearts: 5,
+      hearts: 1500,
       streak: 0,
       joinDate: new Date(),
       lastActive: new Date(),

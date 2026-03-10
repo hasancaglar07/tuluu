@@ -128,7 +128,7 @@ export async function GET(
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -156,14 +156,14 @@ export async function GET(
     const unit = await Unit.findOne(query);
 
     if (!unit) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 404 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 404 });
     }
 
     return NextResponse.json(unit, { status: 200 });
   } catch (error) {
     console.error("Error fetching unit:", error);
     return NextResponse.json(
-      { error: "Failed to fetch unit" },
+      { error: "Ünite getirilemedi" },
       { status: 500 }
     );
   }
@@ -185,7 +185,7 @@ export async function PUT(
     if (!validated.success) {
       return NextResponse.json(
         {
-          message: "Validation error",
+          message: "Doğrulama hatası",
           errors: validated.error.flatten().fieldErrors,
         },
         { status: 400 }
@@ -196,7 +196,7 @@ export async function PUT(
 
     const unit = await Unit.findById({ _id: id });
     if (!unit) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 500 });
     }
 
     // 🛠️ Update language
@@ -205,14 +205,14 @@ export async function PUT(
     });
 
     if (!updated) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 500 });
     }
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error updating chapter:", error);
     return NextResponse.json(
-      { error: "Failed to update chapter" },
+      { error: "Bölüm güncellenemedi" },
       { status: 500 }
     );
   }
@@ -234,17 +234,17 @@ export async function DELETE(
     const unit = await Unit.disableById(id);
 
     if (!unit) {
-      return NextResponse.json({ error: "Unit not found" }, { status: 500 });
+      return NextResponse.json({ error: "Ünite bulunamadı" }, { status: 500 });
     }
 
     return NextResponse.json(
-      { message: "Unit disabled successfully", unit },
+      { message: "Ünite başarıyla devre dışı bırakıldı", unit },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error disabling chapter:", error);
     return NextResponse.json(
-      { error: "Failed to disable chapter" },
+      { error: "Bölüm devre dışı bırakılamadı" },
       { status: 500 }
     );
   }
