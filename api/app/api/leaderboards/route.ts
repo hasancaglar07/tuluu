@@ -5,6 +5,20 @@ import { Etype } from "@/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+const LEADERBOARD_CACHE_TTL_MS = 60 * 1000;
+
+type LeaderboardCacheValue = {
+  expiresAt: number;
+  payload: unknown;
+};
+
+const globalForLeaderboardCache = globalThis as typeof globalThis & {
+  _leaderboardCache?: Map<string, LeaderboardCacheValue>;
+};
+
+const leaderboardCache = globalForLeaderboardCache._leaderboardCache ?? new Map();
+globalForLeaderboardCache._leaderboardCache = leaderboardCache;
+
 /**
  * @swagger
  * /api/leaderboards:
@@ -465,6 +479,12 @@ export async function GET(request: Request) {
     const limit = Number.parseInt(searchParams.get("limit") || "50");
     const timeFilter = searchParams.get("timeFilter") || "allTime"; // week, month, allTime
     const search = searchParams.get("search") || "";
+    const cacheKey = `${timeFilter}|${search}|${limit}`;
+    const now = Date.now();
+    const cached = leaderboardCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return NextResponse.json(cached.payload);
+    }
 
     // Get all users from Clerk
     const clerkAwait = await clerkClient();
@@ -591,13 +611,20 @@ export async function GET(request: Request) {
       rank: index + 1,
     }));
 
-    return NextResponse.json({
+    const payload = {
       success: true,
       data: rankedData,
       total: filteredData.length,
       timeFilter,
       search,
+    };
+
+    leaderboardCache.set(cacheKey, {
+      expiresAt: now + LEADERBOARD_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error fetching leaderboard data:", error);
     return NextResponse.json(

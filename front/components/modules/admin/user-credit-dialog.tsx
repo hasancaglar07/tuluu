@@ -48,7 +48,7 @@ export default function UserCreditDialog({
       const token = await getToken();
       const parsedAmount = Number.parseInt(amount);
       if (Number.isNaN(parsedAmount)) {
-        toast.error("Please enter a valid amount");
+        toast.error("Lütfen geçerli bir miktar girin");
         setIsLoading(false);
         return;
       }
@@ -67,7 +67,7 @@ export default function UserCreditDialog({
         }
       );
 
-      toast.success(`${activeTab.toUpperCase()} adjusted successfully`);
+      toast.success(`${activeTab.toUpperCase()} başarıyla güncellendi`);
       onOpenChange(false);
       // Refresh current view to reflect updated values
       try {
@@ -76,8 +76,8 @@ export default function UserCreditDialog({
         // no-op if router not available
       }
     } catch (error) {
-      console.error("Failed to adjust credits:", error);
-      toast.error("Failed to adjust credits. Please try again.");
+      console.error("Kredi güncelleme hatası:", error);
+      toast.error("Krediler güncellenemedi. Lütfen tekrar deneyin.");
     } finally {
       setIsLoading(false);
     }
@@ -87,9 +87,9 @@ export default function UserCreditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Adjust User Credits</DialogTitle>
+          <DialogTitle>Kullanıcı Kredilerini Güncelle</DialogTitle>
           <DialogDescription>
-            Add or remove XP, Gems, Hearts, or Gel for user {user.name}.
+            {user.name} kullanıcısı için XP, Elmas, Kalp veya Jel ekleyin/çıkarın.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -105,21 +105,21 @@ export default function UserCreditDialog({
               </TabsTrigger>
               <TabsTrigger value="gems" className="flex items-center gap-1">
                 <Gem className="h-4 w-4 text-blue-500" />
-                Gems
+                Elmas
               </TabsTrigger>
               <TabsTrigger value="hearts" className="flex items-center gap-1">
                 <Heart className="h-4 w-4 text-red-500" />
-                Hearts
+                Kalp
               </TabsTrigger>
               <TabsTrigger value="gel" className="flex items-center gap-1">
                 <Droplets className="h-4 w-4 text-cyan-500" />
-                Gel
+                Jel
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="xp" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <span>Current XP:</span>
+                <span>Mevcut XP:</span>
                 <span className="font-bold flex items-center">
                   <Star className="h-4 w-4 text-yellow-500 mr-1" />
                   {user.xp.toLocaleString()}
@@ -129,7 +129,7 @@ export default function UserCreditDialog({
 
             <TabsContent value="gems" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <span>Current Gems:</span>
+                <span>Mevcut Elmas:</span>
                 <span className="font-bold flex items-center">
                   <Gem className="h-4 w-4 text-blue-500 mr-1" />
                   {user.gems.toLocaleString()}
@@ -139,7 +139,7 @@ export default function UserCreditDialog({
 
             <TabsContent value="hearts" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <span>Current Hearts:</span>
+                <span>Mevcut Kalp:</span>
                 <span className="font-bold flex items-center">
                   <Heart className="h-4 w-4 text-red-500 mr-1" />
                   {user.hearts} / 5
@@ -149,7 +149,7 @@ export default function UserCreditDialog({
 
             <TabsContent value="gel" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <span>Current Gel:</span>
+                <span>Mevcut Jel:</span>
                 <span className="font-bold flex items-center">
                   <Droplets className="h-4 w-4 text-cyan-500 mr-1" />
                   {user.gel.toLocaleString()}
@@ -161,25 +161,25 @@ export default function UserCreditDialog({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Amount (use negative for deduction)
+                Miktar (düşmek için negatif girin)
               </Label>
               <Input
                 id="amount"
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount"
+                placeholder="Miktar girin"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="reason">Reason</Label>
+              <Label htmlFor="reason">Açıklama</Label>
               <Textarea
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Explain why you're adjusting this user's credits"
+                placeholder="Bu kullanıcının kredisini neden düzenlediğinizi yazın"
                 rows={3}
                 required
               />
@@ -192,10 +192,10 @@ export default function UserCreditDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Applying..." : "Apply Changes"}
+              {isLoading ? "Uygulanıyor..." : "Değişiklikleri Uygula"}
             </Button>
           </DialogFooter>
         </form>

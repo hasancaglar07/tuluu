@@ -157,11 +157,7 @@ export default function SEOAdminPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Locales</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                {/* Add more locales as needed */}
+                <SelectItem value="tr">Türkçe</SelectItem>
               </SelectContent>
             </Select>
           </div>

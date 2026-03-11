@@ -73,7 +73,7 @@ export const UnitCard = ({
           <h5 className="capitalize">
             <FormattedMessage
               id="dashboard.unit.title"
-              defaultMessage="Unit {order}: {title}"
+              defaultMessage="Ünite {order}: {title}"
               values={{ order: unit.order, title: unit.title }}
             />
           </h5>
@@ -88,7 +88,7 @@ export const UnitCard = ({
                 <p>
                   <FormattedMessage
                     id="dashboard.unit.premiumLocked"
-                    defaultMessage="Premium content - Subscribe to unlock"
+                    defaultMessage="Premium içerik - Kilidi açmak için abone ol"
                   />
                 </p>
               </TooltipContent>
@@ -107,7 +107,7 @@ export const UnitCard = ({
               <Badge className="bg-primary-500">
                 <FormattedMessage
                   id="dashboard.unit.completed"
-                  defaultMessage="COMPLETED"
+                  defaultMessage="TAMAMLANDI"
                 />
               </Badge>
             </m.div>

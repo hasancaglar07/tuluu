@@ -10,6 +10,8 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExerciseDialog } from "@/components/modules/admin/lessons/dialogs/exercise-dialog";
 import { exerciseTypes } from "@/types";
@@ -21,6 +23,10 @@ import { detectMediaKind } from "@/lib/media";
 
 const EXERCISE_TYPE_MAP = new Map(
   exerciseTypes.map((item) => [item.value, item])
+);
+const BULK_DISABLED_TYPES = new Set(["listen", "education_audio"]);
+const BULK_EDITABLE_TYPES = exerciseTypes.filter(
+  (item) => !BULK_DISABLED_TYPES.has(item.value)
 );
 
 export default function LessonManager({ lessonData }: { lessonData: LessonResponseType }) {
@@ -36,6 +42,10 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
   const [orderDirty, setOrderDirty] = useState(false);
   const [previewEx, setPreviewEx] = useState<ExerciseResponse | null>(null);
   const [isDndReady, setIsDndReady] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedExerciseIds, setSelectedExerciseIds] = useState<string[]>([]);
+  const [bulkType, setBulkType] = useState("keep");
+  const [bulkStatus, setBulkStatus] = useState<"keep" | "active" | "inactive">("keep");
   const [form, setForm] = useState<any>({
     _id: "",
     lessonId: tripleId,
@@ -72,6 +82,39 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
     setIsDndReady(true);
   }, []);
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredExercises = useMemo(
+    () =>
+      exercises.filter((exercise) => {
+        if (!normalizedSearch) return true;
+        return (
+          (exercise.type || "").toLowerCase().includes(normalizedSearch) ||
+          (exercise.instruction || "").toLowerCase().includes(normalizedSearch) ||
+          (exercise.sourceText || "").toLowerCase().includes(normalizedSearch)
+        );
+      }),
+    [exercises, normalizedSearch]
+  );
+
+  const visibleExerciseIds = useMemo(
+    () => filteredExercises.map((exercise) => exercise._id).filter(Boolean),
+    [filteredExercises]
+  );
+  const visibleExerciseSet = useMemo(() => new Set(visibleExerciseIds), [visibleExerciseIds]);
+  const selectedVisibleCount = useMemo(
+    () => selectedExerciseIds.filter((id) => visibleExerciseSet.has(id)).length,
+    [selectedExerciseIds, visibleExerciseSet]
+  );
+  const allVisibleSelected =
+    visibleExerciseIds.length > 0 && selectedVisibleCount === visibleExerciseIds.length;
+  const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
+
+  useEffect(() => {
+    setSelectedExerciseIds((prev) =>
+      prev.filter((id) => exercises.some((exercise) => exercise._id === id))
+    );
+  }, [exercises]);
+
   const prepareMediaPack = (pack?: any) => {
     if (!pack) return undefined;
     const cleaned = Object.entries(pack).reduce((acc: Record<string, any>, [key, val]) => {
@@ -100,6 +143,40 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
       return acc;
     }, {});
     return Object.keys(cleaned).length ? cleaned : undefined;
+  };
+
+  const buildExercisePayload = (
+    exercise: any,
+    order: number,
+    overrides?: Partial<any>
+  ) => {
+    const merged = { ...exercise, ...(overrides || {}) };
+    return {
+      lessonId: lessonData.lessonId,
+      unitId: lessonData.unitId,
+      chapterId: lessonData.chapterId,
+      languageId: lessonData.languageId,
+      type: merged.type,
+      instruction: merged.instruction || "",
+      sourceText: merged.sourceText || "",
+      sourceLanguage: merged.sourceLanguage,
+      targetLanguage: merged.targetLanguage,
+      correctAnswer: merged.correctAnswer || [],
+      options: merged.options || [],
+      isNewWord: !!merged.isNewWord,
+      audioUrl: merged.audioUrl || "",
+      neutralAnswerImage: merged.neutralAnswerImage || "",
+      badAnswerImage: merged.badAnswerImage || "",
+      correctAnswerImage: merged.correctAnswerImage || "",
+      isActive: merged.isActive !== false,
+      educationContent: merged.educationContent,
+      mediaPack: merged.mediaPack,
+      hoverHint: merged.hoverHint,
+      answerAudioUrl: merged.answerAudioUrl,
+      ttsVoiceId: merged.ttsVoiceId,
+      autoRevealMilliseconds: merged.autoRevealMilliseconds,
+      order,
+    };
   };
 
   const shorten = (t?: string, n = 140) => (t ? (t.length > n ? t.slice(0, n) + "…" : t) : "");
@@ -269,16 +346,16 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <div className="text-xs text-muted-foreground mb-1">Instruction</div>
+          <div className="text-xs text-muted-foreground mb-1">Yönerge</div>
           <div className="text-sm">{ex.instruction}</div>
         </div>
         <div>
-          <div className="text-xs text-muted-foreground mb-1">Languages</div>
+          <div className="text-xs text-muted-foreground mb-1">Diller</div>
           <div className="text-sm">{ex.sourceLanguage} → {ex.targetLanguage}</div>
         </div>
         {ex.sourceText && (
           <div className="sm:col-span-2">
-            <div className="text-xs text-muted-foreground mb-1">Source</div>
+            <div className="text-xs text-muted-foreground mb-1">Kaynak</div>
             {detectMediaKind(ex.sourceText) === "image" ? (
               <div className="w-full max-w-sm rounded-2xl border overflow-hidden bg-white">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -303,7 +380,7 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
         )}
         {ex.options && ex.options.length > 0 && (
           <div className="sm:col-span-2">
-            <div className="text-xs text-muted-foreground mb-1">Options</div>
+            <div className="text-xs text-muted-foreground mb-1">Seçenekler</div>
             <div className="flex flex-wrap gap-2">
               {ex.options.map((o, i) => renderMediaChip(o, `option-${i}`))}
             </div>
@@ -311,7 +388,7 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
         )}
         {ex.audioUrl && (
           <div className="sm:col-span-2">
-            <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Music className="h-4 w-4" /> Audio</div>
+            <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Music className="h-4 w-4" /> Ses</div>
             <audio controls className="w-full"><source src={ex.audioUrl} /></audio>
           </div>
         )}
@@ -321,14 +398,14 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
             {ex.mediaPack && (
               <div className="text-sm flex flex-wrap gap-3">
                 {ex.mediaPack.characterName && <span>Karakter: {ex.mediaPack.characterName}</span>}
-                {ex.mediaPack.idleAnimationUrl && <span>Idle animasyon eklendi</span>}
+                {ex.mediaPack.idleAnimationUrl && <span>Bekleme animasyonu eklendi</span>}
                 {ex.mediaPack.successAnimationUrl && <span>Başarı animasyonu eklendi</span>}
                 {ex.mediaPack.failAnimationUrl && <span>Hata animasyonu eklendi</span>}
               </div>
             )}
             {ex.hoverHint && (
               <div className="text-sm">
-                Hover ipucu: {shorten(ex.hoverHint.text, 80)}
+                Üzerine gelince ipucu: {shorten(ex.hoverHint.text, 80)}
               </div>
             )}
             {ex.answerAudioUrl && (
@@ -340,30 +417,48 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
     );
   };
 
-  const ExerciseCard = ({ ex, idx }: { ex: ExerciseResponse; idx: number }) => {
+  const ExerciseCard = ({
+    ex,
+    idx,
+    isSelected,
+    onSelectChange,
+  }: {
+    ex: ExerciseResponse;
+    idx: number;
+    isSelected: boolean;
+    onSelectChange: (id: string, checked: boolean | "indeterminate") => void;
+  }) => {
     const exerciseTypeMeta = EXERCISE_TYPE_MAP.get(ex.type);
 
     return (
       <Card className="overflow-hidden">
         <CardHeader className="space-y-3 p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <CardTitle className="min-w-0 text-lg leading-tight">
-              <FormattedMessage
-                id="admin.lessons.manager.exerciseNumber"
-                defaultMessage="Egzersiz {number}:"
-                values={{ number: idx + 1 }}
-              />{" "}
-              <span className="break-words text-muted-foreground">
-                {exerciseTypeMeta ? (
-                  <FormattedMessage
-                    id={exerciseTypeMeta.labelKey}
-                    defaultMessage={exerciseTypeMeta.defaultMessage}
-                  />
-                ) : (
-                  ex.type
-                )}
-              </span>
-            </CardTitle>
+            <div className="flex min-w-0 items-start gap-3">
+              <Checkbox
+                className="mt-1"
+                checked={isSelected}
+                onCheckedChange={(checked) => onSelectChange(ex._id, checked)}
+                aria-label={`Egzersiz ${idx + 1} seç`}
+              />
+              <CardTitle className="min-w-0 text-lg leading-tight">
+                <FormattedMessage
+                  id="admin.lessons.manager.exerciseNumber"
+                  defaultMessage="Egzersiz {number}:"
+                  values={{ number: idx + 1 }}
+                />{" "}
+                <span className="break-words text-muted-foreground">
+                  {exerciseTypeMeta ? (
+                    <FormattedMessage
+                      id={exerciseTypeMeta.labelKey}
+                      defaultMessage={exerciseTypeMeta.defaultMessage}
+                    />
+                  ) : (
+                    ex.type
+                  )}
+                </span>
+              </CardTitle>
+            </div>
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
             <Button
               variant="outline"
@@ -429,7 +524,7 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
         <CardContent className="space-y-2 pt-0">
           <CardDescription className="font-medium">
             {(ex.type || "").startsWith("education_")
-              ? (ex as any).educationContent?.title || "Education Content"
+              ? (ex as any).educationContent?.title || "Eğitim İçeriği"
               : ex.instruction}
           </CardDescription>
           {renderPreview(ex)}
@@ -592,6 +687,111 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
     }
   };
 
+  const toggleExerciseSelection = (
+    id: string,
+    checked: boolean | "indeterminate"
+  ) => {
+    if (checked === true) {
+      setSelectedExerciseIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      return;
+    }
+    setSelectedExerciseIds((prev) => prev.filter((item) => item !== id));
+  };
+
+  const toggleSelectAllVisible = (checked: boolean | "indeterminate") => {
+    if (checked === true) {
+      setSelectedExerciseIds((prev) =>
+        Array.from(new Set([...prev, ...visibleExerciseIds]))
+      );
+      return;
+    }
+    setSelectedExerciseIds((prev) => prev.filter((id) => !visibleExerciseSet.has(id)));
+  };
+
+  const applyBulkUpdate = async () => {
+    if (selectedExerciseIds.length === 0) {
+      toast.error("Önce en az bir egzersiz seçin.");
+      return;
+    }
+    if (bulkType === "keep" && bulkStatus === "keep") {
+      toast.error("Toplu düzenleme için en az bir değişiklik seçin.");
+      return;
+    }
+
+    try {
+      setPending(true);
+      const token = await getToken();
+      const selectedSet = new Set(selectedExerciseIds);
+      const orderById = new Map(exercises.map((exercise, index) => [exercise._id, index + 1]));
+
+      const results = await Promise.all(
+        exercises
+          .filter((exercise) => selectedSet.has(exercise._id))
+          .map(async (exercise) => {
+            const overrides: Partial<ExerciseResponse> = {};
+            if (bulkType !== "keep") {
+              overrides.type = bulkType;
+            }
+            if (bulkStatus !== "keep") {
+              overrides.isActive = bulkStatus === "active";
+            }
+
+            try {
+              const payload = buildExercisePayload(
+                exercise,
+                orderById.get(exercise._id) || 1,
+                overrides
+              );
+              const response = await apiClient.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/admin/exercises/${exercise._id}`,
+                payload,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              return {
+                ok: response.status === 200,
+                id: exercise._id,
+                data: response.data?.data as ExerciseResponse | undefined,
+              };
+            } catch {
+              return { ok: false, id: exercise._id, data: undefined };
+            }
+          })
+      );
+
+      const updatedMap = new Map<string, ExerciseResponse>();
+      let failedCount = 0;
+
+      results.forEach((result) => {
+        if (result.ok && result.data) {
+          updatedMap.set(result.id, result.data);
+        } else {
+          failedCount += 1;
+        }
+      });
+
+      if (updatedMap.size > 0) {
+        setExercises((prev) =>
+          prev.map((exercise) => updatedMap.get(exercise._id) || exercise)
+        );
+        toast.success(`${updatedMap.size} egzersiz güncellendi.`);
+      }
+      if (failedCount > 0) {
+        toast.error(`${failedCount} egzersiz güncellenemedi.`);
+      }
+      if (failedCount === 0) {
+        setSelectedExerciseIds([]);
+        setBulkType("keep");
+        setBulkStatus("keep");
+      }
+    } catch (error: any) {
+      toast.error(extractApiMessage(error, "Toplu düzenleme uygulanamadı"));
+    } finally {
+      setPending(false);
+    }
+  };
+
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     const src = result.source.index;
@@ -612,32 +812,7 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
       const token = await getToken();
       for (let i = 0; i < exercises.length; i++) {
         const ex = exercises[i] as any;
-        const payload = {
-          lessonId: lessonData.lessonId,
-          unitId: lessonData.unitId,
-          chapterId: lessonData.chapterId,
-          languageId: lessonData.languageId,
-          type: ex.type,
-          instruction: ex.instruction || "",
-          sourceText: ex.sourceText || "",
-          sourceLanguage: ex.sourceLanguage,
-          targetLanguage: ex.targetLanguage,
-          correctAnswer: ex.correctAnswer || [],
-          options: ex.options || [],
-          isNewWord: !!ex.isNewWord,
-          audioUrl: ex.audioUrl || "",
-          neutralAnswerImage: ex.neutralAnswerImage || "",
-          badAnswerImage: ex.badAnswerImage || "",
-          correctAnswerImage: ex.correctAnswerImage || "",
-          isActive: ex.isActive !== false,
-          educationContent: ex.educationContent,
-          mediaPack: ex.mediaPack,
-          hoverHint: ex.hoverHint,
-          answerAudioUrl: ex.answerAudioUrl,
-          ttsVoiceId: ex.ttsVoiceId,
-          autoRevealMilliseconds: ex.autoRevealMilliseconds,
-          order: i + 1,
-        };
+        const payload = buildExercisePayload(ex, i + 1);
         await apiClient.put(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/exercises/${ex._id}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -654,12 +829,9 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
       <div className="rounded-xl border bg-card p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => router.push("/admin/lessons")}
-            >
-              <ArrowLeft className="h-4 w-4" />
+            <Button variant="outline" size="sm" onClick={() => router.push("/admin/lessons")}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Ders Yönetimine Dön
             </Button>
             <div className="space-y-1">
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -672,13 +844,17 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
               <p className="line-clamp-2 text-sm text-muted-foreground sm:text-base">
                 {lessonData.description}
               </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Badge variant="outline">Ders ID: {lessonData.lessonId}</Badge>
+                <Badge variant="outline">Ünite: {lessonData.unitId}</Badge>
+                <Badge variant="outline">Bölüm: {lessonData.chapterId}</Badge>
+              </div>
             </div>
           </div>
 
           <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto lg:justify-end">
-            <Badge variant="secondary">
-              {exercises.length} <FormattedMessage id="admin.lessons.exercises" defaultMessage="Exercises:" />
-            </Badge>
+            <Badge>{exercises.length} egzersiz</Badge>
+            <Badge variant="secondary">Sürükle-bırak ile sıralama</Badge>
             {orderDirty && (
               <Badge variant="outline">
                 <FormattedMessage
@@ -686,6 +862,19 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
                   defaultMessage="Sıralama kaydedilmedi"
                 />
               </Badge>
+            )}
+            {orderDirty && (
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={pending}
+                onClick={saveOrder}
+              >
+                <FormattedMessage
+                  id="admin.lessons.manager.saveOrder"
+                  defaultMessage="Sıralamayı Kaydet"
+                />
+              </Button>
             )}
             <Button
               className="w-full sm:w-auto"
@@ -736,66 +925,168 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
       </div>
 
       <div className="space-y-4">
-        {orderDirty && (
-          <div className="flex justify-end">
-            <Button className="w-full sm:w-auto" disabled={pending} onClick={saveOrder}>
-              <FormattedMessage
-                id="admin.lessons.manager.saveOrder"
-                defaultMessage="Sıralamayı Kaydet"
-              />
+        <div className="rounded-lg border bg-muted/20 p-3">
+          <div className="grid gap-2 lg:grid-cols-[1fr,auto]">
+            <Input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Egzersiz türü, yönerge veya metin ara..."
+            />
+            <Button
+              variant="outline"
+              className="w-full lg:w-auto"
+              onClick={() => setSearchTerm("")}
+              disabled={!searchTerm.trim()}
+            >
+              Temizle
             </Button>
           </div>
-        )}
-        {isDndReady ? (
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              droppableId="exercise-list"
-              isDropDisabled={false}
-              isCombineEnabled={false}
-              ignoreContainerClipping={false}
+          <p className="mt-2 text-xs text-muted-foreground">
+            {filteredExercises.length} egzersiz görüntüleniyor
+            {normalizedSearch ? " • filtre aktifken sürükle-bırak devre dışı" : ""}
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-card p-3">
+          <div className="grid gap-2 xl:grid-cols-[auto,1fr,220px,220px,auto,auto]">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={allVisibleSelected ? true : someVisibleSelected ? "indeterminate" : false}
+                onCheckedChange={toggleSelectAllVisible}
+                aria-label="Filtrelenen egzersizleri seç"
+              />
+              <span className="text-sm font-medium">Filtrelenenleri seç</span>
+            </div>
+            <p className="text-xs text-muted-foreground xl:self-center">
+              {selectedExerciseIds.length} seçili egzersiz
+            </p>
+            <select
+              value={bulkType}
+              onChange={(event) => setBulkType(event.target.value)}
+              className="h-10 rounded-md border bg-background px-3 text-sm"
             >
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="space-y-3"
-                >
-                  {exercises.map((ex, idx) => (
-                    <Draggable
-                      draggableId={String(ex._id || idx)}
-                      index={idx}
-                      key={ex._id || idx}
-                    >
-                      {(pp) => (
-                        <div
-                          ref={pp.innerRef}
-                          {...pp.draggableProps}
-                          {...pp.dragHandleProps}
-                        >
-                          <ExerciseCard ex={ex} idx={idx} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+              <option value="keep">Tür değişmesin</option>
+              {BULK_EDITABLE_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.defaultMessage}
+                </option>
+              ))}
+            </select>
+            <select
+              value={bulkStatus}
+              onChange={(event) =>
+                setBulkStatus(event.target.value as "keep" | "active" | "inactive")
+              }
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="keep">Durum değişmesin</option>
+              <option value="active">Aktif yap</option>
+              <option value="inactive">Pasif yap</option>
+            </select>
+            <Button
+              className="w-full xl:w-auto"
+              onClick={applyBulkUpdate}
+              disabled={
+                pending ||
+                selectedExerciseIds.length === 0 ||
+                (bulkType === "keep" && bulkStatus === "keep")
+              }
+            >
+              Seçililere Uygula
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full xl:w-auto"
+              onClick={() => setSelectedExerciseIds([])}
+              disabled={selectedExerciseIds.length === 0}
+            >
+              Seçimi Temizle
+            </Button>
+          </div>
+        </div>
+
+        {isDndReady ? (
+          normalizedSearch ? (
+            <div className="space-y-3">
+              {filteredExercises.map((ex, idx) => (
+                <ExerciseCard
+                  ex={ex}
+                  idx={idx}
+                  key={ex._id || idx}
+                  isSelected={selectedExerciseIds.includes(ex._id)}
+                  onSelectChange={toggleExerciseSelection}
+                />
+              ))}
+            </div>
+          ) : (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable
+                droppableId="exercise-list"
+                isDropDisabled={false}
+                isCombineEnabled={false}
+                ignoreContainerClipping={false}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="space-y-3"
+                  >
+                    {exercises.map((ex, idx) => (
+                      <Draggable
+                        draggableId={String(ex._id || idx)}
+                        index={idx}
+                        key={ex._id || idx}
+                      >
+                        {(pp) => (
+                          <div
+                            ref={pp.innerRef}
+                            {...pp.draggableProps}
+                            {...pp.dragHandleProps}
+                          >
+                            <ExerciseCard
+                              ex={ex}
+                              idx={idx}
+                              isSelected={selectedExerciseIds.includes(ex._id)}
+                              onSelectChange={toggleExerciseSelection}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          )
         ) : (
           <div className="space-y-4">
-            {exercises.map((ex, idx) => (
+            {filteredExercises.map((ex, idx) => (
               <div key={ex._id || idx} className="animate-pulse">
-                <ExerciseCard ex={ex} idx={idx} />
+                <ExerciseCard
+                  ex={ex}
+                  idx={idx}
+                  isSelected={selectedExerciseIds.includes(ex._id)}
+                  onSelectChange={toggleExerciseSelection}
+                />
               </div>
             ))}
           </div>
         )}
-        {exercises.length === 0 && (
+        {filteredExercises.length === 0 && (
           <Card>
             <CardHeader>
-              <CardTitle><FormattedMessage id="admin.lessons.manager.noExercisesTitle" defaultMessage="Henüz egzersiz yok" /></CardTitle>
-              <CardDescription><FormattedMessage id="admin.lessons.manager.noExercisesDescription" defaultMessage="Bu derse ilk egzersizini ekle." /></CardDescription>
+              <CardTitle>
+                {normalizedSearch ? "Eşleşen egzersiz bulunamadı" : (
+                  <FormattedMessage id="admin.lessons.manager.noExercisesTitle" defaultMessage="Henüz egzersiz yok" />
+                )}
+              </CardTitle>
+              <CardDescription>
+                {normalizedSearch
+                  ? "Arama terimini değiştirerek tekrar deneyin."
+                  : <FormattedMessage id="admin.lessons.manager.noExercisesDescription" defaultMessage="Bu derse ilk egzersizini ekle." />}
+              </CardDescription>
             </CardHeader>
           </Card>
         )}
@@ -832,7 +1123,7 @@ export default function LessonManager({ lessonData }: { lessonData: LessonRespon
           {previewEx && (
             <div className="space-y-2">
               <CardDescription className="font-medium">
-                {(previewEx.type || '').startsWith('education_') ? (previewEx as any).educationContent?.title || 'Education Content' : previewEx.instruction}
+                {(previewEx.type || '').startsWith('education_') ? (previewEx as any).educationContent?.title || 'Eğitim İçeriği' : previewEx.instruction}
               </CardDescription>
               {renderPreview(previewEx)}
             </div>

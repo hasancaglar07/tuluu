@@ -32,7 +32,7 @@ export default function LessonHeader({
   onExit,
 }: LessonHeaderProps) {
   return (
-    <header className="py-8">
+    <header className="py-4 md:py-8 shrink-0">
       <Container>
         <div className="flex items-center justify-between">
           {/* Exit button with confirmation dialog */}
@@ -45,13 +45,13 @@ export default function LessonHeader({
 
             <DialogContent className="flex flex-col items-center gap-8 w-fit">
               <DialogTitle>
-                <VisuallyHidden>Exit Confirmation</VisuallyHidden>
+                <VisuallyHidden>Çıkış Onayı</VisuallyHidden>
               </DialogTitle>
 
               {/* Mascot image */}
               <Image
                 src="/images/bobo.gif"
-                alt="Exit Mascot"
+                alt="Çıkış Maskotu"
                 className="w-24 h-24"
                 width="40"
                 height="40"
@@ -61,7 +61,7 @@ export default function LessonHeader({
               <h5 className="text-center max-w-sm">
                 <FormattedMessage
                   id="lesson.exitWarning"
-                  defaultMessage="Wait, don't leave! If you stop now, you'll lose your progress."
+                  defaultMessage="Dur, hemen çıkma! Şimdi bırakırsan ilerlemeni kaybedersin."
                 />
               </h5>
 
@@ -70,8 +70,8 @@ export default function LessonHeader({
                 <DialogClose asChild>
                   <Button variant="secondary" size="lg">
                     <FormattedMessage
-                      id="button.continueLearning"
-                      defaultMessage="Keep Learning"
+                      id="lesson.keepLearning"
+                      defaultMessage="Öğrenmeye devam et"
                     />
                   </Button>
                 </DialogClose>
@@ -79,7 +79,7 @@ export default function LessonHeader({
                 <Button onClick={onExit} variant="danger">
                   <FormattedMessage
                     id="lesson.backToDashboard"
-                    defaultMessage="Back to Dashboard"
+                    defaultMessage="Panele Dön"
                   />
                 </Button>
               </div>

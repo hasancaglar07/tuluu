@@ -8,44 +8,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // Country options
 const countries = [
-  { value: "US", label: "United States" },
-  { value: "CA", label: "Canada" },
-  { value: "GB", label: "United Kingdom" },
-  { value: "FR", label: "France" },
-  { value: "DE", label: "Germany" },
-  { value: "JP", label: "Japan" },
-  { value: "CN", label: "China" },
-  { value: "AU", label: "Australia" },
-  { value: "BR", label: "Brazil" },
-  { value: "IN", label: "India" },
+  { value: "US", label: "Amerika Birleşik Devletleri" },
+  { value: "CA", label: "Kanada" },
+  { value: "GB", label: "Birleşik Krallık" },
+  { value: "FR", label: "Fransa" },
+  { value: "DE", label: "Almanya" },
+  { value: "JP", label: "Japonya" },
+  { value: "CN", label: "Çin" },
+  { value: "AU", label: "Avustralya" },
+  { value: "BR", label: "Brezilya" },
+  { value: "IN", label: "Hindistan" },
 ]
 
 // Language options
 const languages = [
-  { value: "en-US", label: "English (US)" },
-  { value: "en-GB", label: "English (UK)" },
-  { value: "fr-FR", label: "French" },
-  { value: "de-DE", label: "German" },
-  { value: "es-ES", label: "Spanish" },
-  { value: "it-IT", label: "Italian" },
-  { value: "ja-JP", label: "Japanese" },
-  { value: "zh-CN", label: "Chinese (Simplified)" },
-  { value: "pt-BR", label: "Portuguese (Brazil)" },
-  { value: "ru-RU", label: "Russian" },
+  { value: "tr-TR", label: "Türkçe" },
 ]
 
 // Timezone options
 const timezones = [
-  { value: "America/New_York", label: "Eastern Time (ET)" },
-  { value: "America/Chicago", label: "Central Time (CT)" },
-  { value: "America/Denver", label: "Mountain Time (MT)" },
-  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
-  { value: "Europe/London", label: "Greenwich Mean Time (GMT)" },
-  { value: "Europe/Paris", label: "Central European Time (CET)" },
-  { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
-  { value: "Asia/Shanghai", label: "China Standard Time (CST)" },
-  { value: "Australia/Sydney", label: "Australian Eastern Time (AET)" },
-  { value: "Pacific/Auckland", label: "New Zealand Standard Time (NZST)" },
+  { value: "America/New_York", label: "Doğu Saati (ET)" },
+  { value: "America/Chicago", label: "Merkez Saati (CT)" },
+  { value: "America/Denver", label: "Dağ Saati (MT)" },
+  { value: "America/Los_Angeles", label: "Pasifik Saati (PT)" },
+  { value: "Europe/London", label: "Greenwich Ortalama Saati (GMT)" },
+  { value: "Europe/Paris", label: "Orta Avrupa Saati (CET)" },
+  { value: "Asia/Tokyo", label: "Japonya Standart Saati (JST)" },
+  { value: "Asia/Shanghai", label: "Çin Standart Saati (CST)" },
+  { value: "Australia/Sydney", label: "Avustralya Doğu Saati (AET)" },
+  { value: "Pacific/Auckland", label: "Yeni Zelanda Standart Saati (NZST)" },
 ]
 
 /**
@@ -61,14 +52,14 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
     <Card>
       <CardHeader>
         <CardTitle>
-          <FormattedMessage id="location.title" defaultMessage="Location & Language" />
+          <FormattedMessage id="location.title" defaultMessage="Konum ve Dil" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Country */}
         <div className="space-y-2">
           <Label htmlFor="country">
-            <FormattedMessage id="location.country" defaultMessage="Country" />
+            <FormattedMessage id="location.country" defaultMessage="Ülke" />
           </Label>
           <Select
             name="country"
@@ -78,7 +69,10 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
             <SelectTrigger>
               <SelectValue
                 placeholder={
-                  <FormattedMessage id="location.country.placeholder" defaultMessage="Select your country" />
+                  <FormattedMessage
+                    id="location.country.placeholder"
+                    defaultMessage="Ülkeni seç"
+                  />
                 }
               />
             </SelectTrigger>
@@ -98,7 +92,7 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
         {/* Language */}
         <div className="space-y-2">
           <Label htmlFor="language">
-            <FormattedMessage id="location.language" defaultMessage="Language" />
+            <FormattedMessage id="location.language" defaultMessage="Dil" />
           </Label>
           <Select
             name="language"
@@ -108,7 +102,10 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
             <SelectTrigger>
               <SelectValue
                 placeholder={
-                  <FormattedMessage id="location.language.placeholder" defaultMessage="Select your language" />
+                  <FormattedMessage
+                    id="location.language.placeholder"
+                    defaultMessage="Dilini seç"
+                  />
                 }
               />
             </SelectTrigger>
@@ -128,7 +125,7 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
         {/* Timezone */}
         <div className="space-y-2">
           <Label htmlFor="timezone">
-            <FormattedMessage id="location.timezone" defaultMessage="Timezone" />
+            <FormattedMessage id="location.timezone" defaultMessage="Saat Dilimi" />
           </Label>
           <Select
             name="timezone"
@@ -138,7 +135,10 @@ export function LocationLanguageForm({ formik }: { formik: FormikProps<any> }) {
             <SelectTrigger>
               <SelectValue
                 placeholder={
-                  <FormattedMessage id="location.timezone.placeholder" defaultMessage="Select your timezone" />
+                  <FormattedMessage
+                    id="location.timezone.placeholder"
+                    defaultMessage="Saat dilimini seç"
+                  />
                 }
               />
             </SelectTrigger>

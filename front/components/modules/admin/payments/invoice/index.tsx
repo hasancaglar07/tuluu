@@ -60,7 +60,7 @@ export function InvoiceManagementPage({
         }>;
 
         const message = error.response?.data?.message;
-        toast.error(message || "Failed to load invoice");
+        toast.error(message || "Fatura yüklenemedi");
       } finally {
         setLoading(false);
       }
@@ -96,14 +96,14 @@ export function InvoiceManagementPage({
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `invoice-${invoice?.number}.pdf`);
+      link.setAttribute("download", `fatura-${invoice?.number}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
 
-      toast.success("Invoice downloaded successfully");
+      toast.success("Fatura başarıyla indirildi");
     } catch (err) {
-      toast.error("Failed to download invoice");
+      toast.error("Fatura indirilemedi");
     }
   };
 

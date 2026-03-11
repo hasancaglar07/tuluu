@@ -3,16 +3,10 @@
 
 import React from "react";
 import { IntlProvider } from "react-intl";
-import en from "@/public/locales/messages/en";
-import fr from "@/public/locales/messages/fr";
-import ar from "@/public/locales/messages/ar";
-import hi from "@/public/locales/messages/hi";
-import zh from "@/public/locales/messages/zh";
-import es from "@/public/locales/messages/es";
 import tr from "@/public/locales/messages/tr";
 import { i18n } from "@/i18n-config";
 
-const messages = { en, fr, ar, es, hi, zh, tr };
+const messages = { tr };
 
 type IntProviderProps = {
   locale: string;
@@ -33,7 +27,7 @@ function I18nProvider({ locale, children }: IntProviderProps) {
     <IntlProvider
       messages={messages[resolvedLocale] ?? messages[i18n.defaultLocale]}
       locale={resolvedLocale}
-      defaultLocale="en"
+      defaultLocale="tr"
       onError={(err) => {
         if (err.code === "MISSING_TRANSLATION") {
           console.warn("Missing translation", err.message);

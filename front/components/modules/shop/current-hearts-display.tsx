@@ -30,7 +30,7 @@ export function CurrentHeartsDisplay({
           <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
           <FormattedMessage
             id="shop.hearts.current.title"
-            defaultMessage="Your Hearts"
+            defaultMessage="Kalplerin"
           />
         </h2>
 
@@ -71,7 +71,7 @@ export function CurrentHeartsDisplay({
       </div>
       {hiddenHearts > 0 && (
         <p className="mt-3 text-sm text-gray-500 text-center">
-          +{hiddenHearts} <FormattedMessage id="shop.hearts.more" defaultMessage="more hearts" />
+          +{hiddenHearts} <FormattedMessage id="shop.hearts.more" defaultMessage="daha fazla kalp" />
         </p>
       )}
     </div>

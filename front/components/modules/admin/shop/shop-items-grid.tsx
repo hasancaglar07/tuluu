@@ -61,7 +61,11 @@ export function ShopItemsGrid({ items, loading, onSelectItem, formatCurrency, fo
 
   if (items.length === 0) {
     return (
-      <EmptyState icon={Package} title="No items found" description="Try adjusting your search or filter criteria" />
+      <EmptyState
+        icon={Package}
+        title="Ürün bulunamadı"
+        description="Arama veya filtre kriterlerini değiştirerek tekrar dene"
+      />
     )
   }
 

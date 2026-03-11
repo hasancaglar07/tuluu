@@ -55,12 +55,12 @@ export type Settings = {
  * Ensures data integrity and provides client-side validation
  */
 const profileSchema = z.object({
-  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  avatar: z.string().url("Please enter a valid URL"),
-  country: z.string().min(1, "Please select a country"),
-  language: z.string().min(1, "Please select a language"),
-  timezone: z.string().min(1, "Please select a timezone"),
+  bio: z.string().max(500, "Biyografi en fazla 500 karakter olabilir").optional(),
+  name: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
+  avatar: z.string().url("Lütfen geçerli bir URL girin"),
+  country: z.string().min(1, "Lütfen bir ülke seçin"),
+  language: z.string().min(1, "Lütfen bir dil seçin"),
+  timezone: z.string().min(1, "Lütfen bir saat dilimi seçin"),
   userName: z.string(),
   settings: z.object({
     notifications: z.object({
@@ -120,12 +120,12 @@ export default function ProfileEdit() {
     toast.success(
       intl.formatMessage({
         id: "logout.success",
-        defaultMessage: "You logged out",
+        defaultMessage: "Çıkış yaptın",
       }),
       {
         description: intl.formatMessage({
           id: "logout.success.description",
-          defaultMessage: "Catch you later, alligator! 🐶​",
+          defaultMessage: "Tekrar görüşmek üzere!",
         }),
       }
     );
@@ -141,7 +141,7 @@ export default function ProfileEdit() {
    */
   const handleDeleteAccount = async () => {
     setIsLoading(true);
-    if (deleteConfirmation === "DELETE") {
+    if (deleteConfirmation === "SIL") {
       try {
         const token = await getToken();
         const response = await apiClient.delete("/api/users/profile", {
@@ -161,12 +161,12 @@ export default function ProfileEdit() {
     toast.warning(
       intl.formatMessage({
         id: "account.deleted",
-        defaultMessage: "Account deleted",
+        defaultMessage: "Hesap silindi",
       }),
       {
         description: intl.formatMessage({
           id: "account.deleted.description",
-          defaultMessage: "Your journey ends here... but we'll miss you! 💔",
+          defaultMessage: "Yolculuğun burada sona erdi. Seni özleyeceğiz.",
         }),
       }
     );
@@ -233,7 +233,7 @@ export default function ProfileEdit() {
         toast.success(
           intl.formatMessage({
             id: "profile.updated",
-            defaultMessage: "Profile updated!",
+            defaultMessage: "Profil güncellendi!",
           })
         );
         return response.data;
@@ -242,7 +242,7 @@ export default function ProfileEdit() {
         toast.error(
           intl.formatMessage({
             id: "profile.update.failed",
-            defaultMessage: "Failed to update profile",
+            defaultMessage: "Profil güncellenemedi",
           })
         );
       } finally {
@@ -265,7 +265,7 @@ export default function ProfileEdit() {
         name: user.fullName || "",
         avatar: (metadata.avatar as string) || user.imageUrl,
         country: (metadata.country as string) || "US",
-        language: (metadata.language as string) || "en-US",
+        language: (metadata.language as string) || "tr-TR",
         timezone: (metadata.timezone as string) || "America/New_York",
         userName: user.id,
         settings: (metadata.settings as Settings) || {
@@ -327,13 +327,13 @@ export default function ProfileEdit() {
               <TabsTrigger value="profile">
                 <FormattedMessage
                   id="tabs.profile"
-                  defaultMessage="Profile Information"
+                  defaultMessage="Profil Bilgileri"
                 />
               </TabsTrigger>
               <TabsTrigger value="settings">
                 <FormattedMessage
                   id="tabs.settings"
-                  defaultMessage="Settings"
+                  defaultMessage="Ayarlar"
                 />
               </TabsTrigger>
             </TabsList>

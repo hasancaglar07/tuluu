@@ -151,6 +151,7 @@ export default function UsersPage() {
     statusFilter,
     subscriptionFilter,
     getToken,
+    intl,
   ]);
 
   // Run effect
@@ -422,6 +423,45 @@ export default function UsersPage() {
     }
   };
 
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "free":
+        return intl.formatMessage({ id: "admin.users.filters.free" });
+      case "paid":
+        return intl.formatMessage({ id: "admin.users.filters.paid" });
+      case "admin":
+        return intl.formatMessage({ id: "admin.users.filters.admin" });
+      default:
+        return role;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return intl.formatMessage({ id: "admin.users.filters.active" });
+      case "inactive":
+        return intl.formatMessage({ id: "admin.users.filters.inactive" });
+      case "banned":
+        return intl.formatMessage({ id: "admin.users.filters.banned" });
+      case "suspended":
+        return intl.formatMessage({ id: "admin.users.filters.suspended" });
+      default:
+        return status;
+    }
+  };
+
+  const getSubscriptionLabel = (subscription: string) => {
+    switch (subscription) {
+      case "free":
+        return intl.formatMessage({ id: "admin.users.filters.free" });
+      case "premium":
+        return intl.formatMessage({ id: "admin.users.filters.premium" });
+      default:
+        return subscription;
+    }
+  };
+
   // Toggle sort order
   const toggleSort = (field: string) => {
     if (sortBy === field) {
@@ -538,7 +578,10 @@ export default function UsersPage() {
                   ).length}
             </div>
             <p className="text-xs text-muted-foreground">
-              +12% from last month
+              {intl.formatMessage(
+                { id: "admin.users.stats.lastMonthChange" },
+                { percent: "12" }
+              )}
             </p>
           </CardContent>
         </Card>
@@ -550,7 +593,12 @@ export default function UsersPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">68%</div>
-            <p className="text-xs text-muted-foreground">+5% from last month</p>
+            <p className="text-xs text-muted-foreground">
+              {intl.formatMessage(
+                { id: "admin.users.stats.lastMonthChange" },
+                { percent: "5" }
+              )}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -577,26 +625,48 @@ export default function UsersPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="h-9 w-[130px]">
-                <SelectValue placeholder="Role" />
+                <SelectValue
+                  placeholder={intl.formatMessage({ id: "admin.users.filters.role" })}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="free">Free</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="all">
+                  {intl.formatMessage({ id: "admin.users.filters.allRoles" })}
+                </SelectItem>
+                <SelectItem value="free">
+                  {intl.formatMessage({ id: "admin.users.filters.free" })}
+                </SelectItem>
+                <SelectItem value="paid">
+                  {intl.formatMessage({ id: "admin.users.filters.paid" })}
+                </SelectItem>
+                <SelectItem value="admin">
+                  {intl.formatMessage({ id: "admin.users.filters.admin" })}
+                </SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="h-9 w-[130px]">
-                <SelectValue placeholder="Status" />
+                <SelectValue
+                  placeholder={intl.formatMessage({ id: "admin.users.filters.status" })}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="banned">Banned</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
+                <SelectItem value="all">
+                  {intl.formatMessage({ id: "admin.users.filters.allStatus" })}
+                </SelectItem>
+                <SelectItem value="active">
+                  {intl.formatMessage({ id: "admin.users.filters.active" })}
+                </SelectItem>
+                <SelectItem value="inactive">
+                  {intl.formatMessage({ id: "admin.users.filters.inactive" })}
+                </SelectItem>
+                <SelectItem value="banned">
+                  {intl.formatMessage({ id: "admin.users.filters.banned" })}
+                </SelectItem>
+                <SelectItem value="suspended">
+                  {intl.formatMessage({ id: "admin.users.filters.suspended" })}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -605,12 +675,22 @@ export default function UsersPage() {
               onValueChange={setSubscriptionFilter}
             >
               <SelectTrigger className="h-9 w-[130px]">
-                <SelectValue placeholder="Subscription" />
+                <SelectValue
+                  placeholder={intl.formatMessage({
+                    id: "admin.users.filters.subscription",
+                  })}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Plans</SelectItem>
-                <SelectItem value="free">Free</SelectItem>
-                <SelectItem value="premium">Premium</SelectItem>
+                <SelectItem value="all">
+                  {intl.formatMessage({ id: "admin.users.filters.allPlans" })}
+                </SelectItem>
+                <SelectItem value="free">
+                  {intl.formatMessage({ id: "admin.users.filters.free" })}
+                </SelectItem>
+                <SelectItem value="premium">
+                  {intl.formatMessage({ id: "admin.users.filters.premium" })}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -619,13 +699,37 @@ export default function UsersPage() {
               onValueChange={(value) => handlePageSizeChange(Number(value))}
             >
               <SelectTrigger className="h-9 w-[130px]">
-                <SelectValue placeholder="Page Size" />
+                <SelectValue
+                  placeholder={intl.formatMessage({
+                    id: "admin.users.filters.pageSize",
+                  })}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="5">5 per page</SelectItem>
-                <SelectItem value="10">10 per page</SelectItem>
-                <SelectItem value="25">25 per page</SelectItem>
-                <SelectItem value="50">50 per page</SelectItem>
+                <SelectItem value="5">
+                  {intl.formatMessage(
+                    { id: "admin.users.filters.perPage" },
+                    { count: 5 }
+                  )}
+                </SelectItem>
+                <SelectItem value="10">
+                  {intl.formatMessage(
+                    { id: "admin.users.filters.perPage" },
+                    { count: 10 }
+                  )}
+                </SelectItem>
+                <SelectItem value="25">
+                  {intl.formatMessage(
+                    { id: "admin.users.filters.perPage" },
+                    { count: 25 }
+                  )}
+                </SelectItem>
+                <SelectItem value="50">
+                  {intl.formatMessage(
+                    { id: "admin.users.filters.perPage" },
+                    { count: 50 }
+                  )}
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -635,12 +739,12 @@ export default function UsersPage() {
               onClick={() => setAddUserDialogOpen(true)}
             >
               <UserPlus className="mr-2 h-4 w-4" />
-              Add User
+              {intl.formatMessage({ id: "admin.users.addUser" })}
             </Button>
 
             <Button variant="outline" size="sm" className="h-9">
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {intl.formatMessage({ id: "admin.users.export" })}
             </Button>
           </div>
         </CardContent>
@@ -652,13 +756,13 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]">ID</TableHead>
+                <TableHead className="w-[50px]">Kimlik</TableHead>
                 <TableHead className="w-[250px]">
                   <button
                     className="flex items-center"
                     onClick={() => toggleSort("name")}
                   >
-                    Name/Email
+                    {intl.formatMessage({ id: "admin.users.table.nameEmail" })}
                     {sortBy === "name" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -671,7 +775,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("role")}
                   >
-                    Role
+                    {intl.formatMessage({ id: "admin.users.table.role" })}
                     {sortBy === "role" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -684,7 +788,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("status")}
                   >
-                    Status
+                    {intl.formatMessage({ id: "admin.users.table.status" })}
                     {sortBy === "status" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -697,7 +801,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("subscription")}
                   >
-                    Plan
+                    {intl.formatMessage({ id: "admin.users.table.plan" })}
                     {sortBy === "subscription" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -723,7 +827,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("gems")}
                   >
-                    Gems
+                    {intl.formatMessage({ id: "admin.users.table.gems" })}
                     {sortBy === "gems" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -736,7 +840,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("streak")}
                   >
-                    Streak
+                    {intl.formatMessage({ id: "admin.users.table.streak" })}
                     {sortBy === "streak" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -749,7 +853,7 @@ export default function UsersPage() {
                     className="flex items-center"
                     onClick={() => toggleSort("joinDate")}
                   >
-                    Joined
+                    {intl.formatMessage({ id: "admin.users.table.joined" })}
                     {sortBy === "joinDate" && (
                       <span className="ml-1">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -757,7 +861,9 @@ export default function UsersPage() {
                     )}
                   </button>
                 </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">
+                  {intl.formatMessage({ id: "admin.users.table.actions" })}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -774,7 +880,7 @@ export default function UsersPage() {
               ) : users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="h-24 text-center">
-                    No users found.
+                    {intl.formatMessage({ id: "admin.users.table.noUsers" })}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -825,14 +931,9 @@ export default function UsersPage() {
                         )}
                         variant="secondary"
                       >
-                        {getNestedValue(user, "privateMetadata.role", "free")
-                          .charAt(0)
-                          .toUpperCase() +
-                          getNestedValue(
-                            user,
-                            "privateMetadata.role",
-                            "free"
-                          ).slice(1)}
+                        {getRoleLabel(
+                          String(getNestedValue(user, "privateMetadata.role", "free"))
+                        )}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -846,18 +947,9 @@ export default function UsersPage() {
                         )}
                         variant="secondary"
                       >
-                        {getNestedValue(
-                          user,
-                          "privateMetadata.status",
-                          "active"
-                        )
-                          .charAt(0)
-                          .toUpperCase() +
-                          getNestedValue(
-                            user,
-                            "privateMetadata.status",
-                            "active"
-                          ).slice(1)}
+                        {getStatusLabel(
+                          String(getNestedValue(user, "privateMetadata.status", "active"))
+                        )}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -871,18 +963,11 @@ export default function UsersPage() {
                         )}
                         variant="secondary"
                       >
-                        {getNestedValue(
-                          user,
-                          "privateMetadata.subscription",
-                          "free"
-                        )
-                          .charAt(0)
-                          .toUpperCase() +
-                          getNestedValue(
-                            user,
-                            "privateMetadata.subscription",
-                            "free"
-                          ).slice(1)}
+                        {getSubscriptionLabel(
+                          String(
+                            getNestedValue(user, "privateMetadata.subscription", "free")
+                          )
+                        )}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -897,7 +982,12 @@ export default function UsersPage() {
                         {user.gems?.toLocaleString() || 0}
                       </div>
                     </TableCell>
-                    <TableCell>{user.streak || 0} days</TableCell>
+                    <TableCell>
+                      {intl.formatMessage(
+                        { id: "admin.users.table.days" },
+                        { count: user.streak || 0 }
+                      )}
+                    </TableCell>
                     <TableCell>
                       {format(new Date(user.joinDate), "MMM d, yyyy")}
                     </TableCell>
@@ -906,18 +996,20 @@ export default function UsersPage() {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Menüyü aç</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>
+                            {intl.formatMessage({ id: "admin.users.actions.title" })}
+                          </DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() =>
                               router.push(`/admin/users/${user.id}`)
                             }
                           >
                             <Eye className="mr-2 h-4 w-4" />
-                            View Profile
+                            {intl.formatMessage({ id: "admin.users.actions.viewProfile" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -926,7 +1018,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Edit className="mr-2 h-4 w-4" />
-                            Edit User
+                            {intl.formatMessage({ id: "admin.users.actions.editUser" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -935,7 +1027,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Shield className="mr-2 h-4 w-4" />
-                            Change Role
+                            {intl.formatMessage({ id: "admin.users.actions.changeRole" })}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -945,7 +1037,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Star className="mr-2 h-4 w-4" />
-                            Adjust XP
+                            {intl.formatMessage({ id: "admin.users.actions.adjustXP" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -954,7 +1046,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Gem className="mr-2 h-4 w-4" />
-                            Adjust Gems
+                            {intl.formatMessage({ id: "admin.users.actions.adjustGems" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -963,7 +1055,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Heart className="mr-2 h-4 w-4" />
-                            Adjust Hearts
+                            {intl.formatMessage({ id: "admin.users.actions.adjustHearts" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -972,7 +1064,7 @@ export default function UsersPage() {
                             }}
                           >
                             <Droplets className="mr-2 h-4 w-4" />
-                            Adjust Gel
+                            {intl.formatMessage({ id: "admin.users.actions.adjustGel" })}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -988,8 +1080,8 @@ export default function UsersPage() {
                               "privateMetadata.status",
                               ""
                             ) === "banned"
-                              ? "Unban User"
-                              : "Ban User"}
+                              ? intl.formatMessage({ id: "admin.users.actions.unbanUser" })
+                              : intl.formatMessage({ id: "admin.users.actions.banUser" })}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600"

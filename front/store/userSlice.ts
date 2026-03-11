@@ -40,6 +40,9 @@ export const fetchUserData = createAsyncThunk(
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          fast: 1,
+        },
       });
       return response.data;
     } catch (error) {

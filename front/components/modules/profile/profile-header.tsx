@@ -38,7 +38,7 @@ export function ProfileHeader({
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-xl font-bold">
-          <FormattedMessage id="header.title" defaultMessage="Edit Profile" />
+          <FormattedMessage id="header.title" defaultMessage="Profili Düzenle" />
         </h1>
       </div>
       <Button
@@ -52,7 +52,7 @@ export function ProfileHeader({
         ) : (
           <Save className="h-4 w-4 mr-2" />
         )}
-        <FormattedMessage id="header.save" defaultMessage="Save Changes" />
+        <FormattedMessage id="header.save" defaultMessage="Değişiklikleri Kaydet" />
       </Button>
     </div>
   );

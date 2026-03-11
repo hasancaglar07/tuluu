@@ -24,8 +24,8 @@ export default async function page({
   );
 }
 export const metadata: Metadata = {
-  title: "What to learn ? - TULU",
-  description: "An enjoyable way to learn a new language",
+  title: "Ne Öğrenmek İstersin? - TULU",
+  description: "İlgi alanına göre öğrenme içeriklerini keşfet.",
   icons: {
     icon: "/images/logo_icon.png",
     shortcut: "/favicon.ico",

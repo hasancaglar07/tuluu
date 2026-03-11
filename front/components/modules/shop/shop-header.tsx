@@ -32,7 +32,7 @@ export function ShopHeader({
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-xl font-bold">
-          <FormattedMessage id="shop.title" defaultMessage="Shop" />
+          <FormattedMessage id="shop.title" defaultMessage="Mağaza" />
         </h1>
       </div>
       <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export function ShopHeader({
           <span className="font-bold">
             <FormattedMessage
               id="shop.gems.balance"
-              defaultMessage="{gems} Gems"
+              defaultMessage="{gems} Elmas"
               values={{ gems: userGems.toLocaleString() }}
             />
           </span>

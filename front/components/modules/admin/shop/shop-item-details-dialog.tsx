@@ -216,6 +216,40 @@ export function ShopItemDetailsDialog({
 
   const { getToken } = useAuth();
 
+  const getHistoryActionLabel = (action: string) => {
+    switch (action) {
+      case "created":
+        return "Oluşturuldu";
+      case "updated":
+        return "Güncellendi";
+      case "deleted":
+        return "Silindi";
+      case "status_changed":
+        return "Durum Güncellendi";
+      case "activated":
+        return "Aktifleştirildi";
+      case "deactivated":
+        return "Pasifleştirildi";
+      default:
+        return action;
+    }
+  };
+
+  const getPurchaseStatusLabel = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "Tamamlandı";
+      case "pending":
+        return "Beklemede";
+      case "refunded":
+        return "İade Edildi";
+      case "failed":
+        return "Başarısız";
+      default:
+        return status;
+    }
+  };
+
   // Fetch analytics data
   const fetchAnalytics = async (period: string = analyticsPeriod) => {
     try {
@@ -231,8 +265,8 @@ export function ShopItemDetailsDialog({
 
       setAnalyticsData(response.data.data);
     } catch (error) {
-      console.error("Error fetching analytics:", error);
-      toast.error("Failed to load analytics data");
+      console.error("Analiz verisi alınırken hata:", error);
+      toast.error("Analiz verileri yüklenemedi");
     } finally {
       setAnalyticsLoading(false);
     }
@@ -253,8 +287,8 @@ export function ShopItemDetailsDialog({
 
       setHistoryData(response.data.data);
     } catch (error) {
-      console.error("Error fetching history:", error);
-      toast.error("Failed to load history data");
+      console.error("Geçmiş verisi alınırken hata:", error);
+      toast.error("Geçmiş verileri yüklenemedi");
     } finally {
       setHistoryLoading(false);
     }
@@ -284,8 +318,8 @@ export function ShopItemDetailsDialog({
 
       setPurchaseData(response.data.data);
     } catch (error) {
-      console.error("Error fetching purchases:", error);
-      toast.error("Failed to load purchase data");
+      console.error("Satın alma verisi alınırken hata:", error);
+      toast.error("Satın alma verileri yüklenemedi");
     } finally {
       setPurchaseLoading(false);
     }
@@ -321,7 +355,7 @@ export function ShopItemDetailsDialog({
       onItemDeleted(item.id);
       onOpenChange(false);
     } catch (error) {
-      console.error("Error deleting shop item:", error);
+      console.error("Mağaza ürünü silinirken hata:", error);
       toast.error(
         <FormattedMessage
           id="shop.error.delete-item"
@@ -356,7 +390,7 @@ export function ShopItemDetailsDialog({
         />
       );
     } catch (error) {
-      console.error("Error updating item status:", error);
+      console.error("Ürün durumu güncellenirken hata:", error);
       toast.error(
         <FormattedMessage
           id="shop.error.update-status"
@@ -437,18 +471,18 @@ export function ShopItemDetailsDialog({
           className="flex-1 overflow-hidden"
         >
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
             <TabsTrigger value="analytics">
               <TrendingUp className="mr-2 h-4 w-4" />
-              Analytics
+              Analiz
             </TabsTrigger>
             <TabsTrigger value="history">
               <History className="mr-2 h-4 w-4" />
-              History
+              Geçmiş
             </TabsTrigger>
             <TabsTrigger value="purchases">
               <ShoppingCart className="mr-2 h-4 w-4" />
-              Purchases
+              Satın Almalar
             </TabsTrigger>
           </TabsList>
 
@@ -499,7 +533,7 @@ export function ShopItemDetailsDialog({
                   </h4>
                   <p>
                     {item.stockType === "unlimited"
-                      ? "Unlimited"
+                      ? "Sınırsız"
                       : formatNumber(item.stockQuantity || 0)}
                   </p>
                 </div>
@@ -702,7 +736,7 @@ export function ShopItemDetailsDialog({
 
             <TabsContent value="analytics" className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Analytics Dashboard</h3>
+                <h3 className="text-lg font-semibold">Analiz Paneli</h3>
                 <div className="flex items-center gap-2">
                   <Select
                     value={analyticsPeriod}
@@ -715,10 +749,10 @@ export function ShopItemDetailsDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="7d">Last 7 days</SelectItem>
-                      <SelectItem value="30d">Last 30 days</SelectItem>
-                      <SelectItem value="90d">Last 90 days</SelectItem>
-                      <SelectItem value="1y">Last year</SelectItem>
+                      <SelectItem value="7d">Son 7 Gün</SelectItem>
+                      <SelectItem value="30d">Son 30 Gün</SelectItem>
+                      <SelectItem value="90d">Son 90 Gün</SelectItem>
+                      <SelectItem value="1y">Son 1 Yıl</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -741,7 +775,9 @@ export function ShopItemDetailsDialog({
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Card>
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Total Sales</CardTitle>
+                        <CardTitle className="text-sm">
+                          Toplam Satış
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
@@ -750,13 +786,13 @@ export function ShopItemDetailsDialog({
                         <p className="text-xs text-muted-foreground">
                           {analyticsData.performance.salesGrowth > 0 ? "+" : ""}
                           {analyticsData.performance.salesGrowth.toFixed(1)}%
-                          from last period
+                          önceki döneme göre
                         </p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Revenue</CardTitle>
+                        <CardTitle className="text-sm">Gelir</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
@@ -770,14 +806,14 @@ export function ShopItemDetailsDialog({
                             ? "+"
                             : ""}
                           {analyticsData.performance.revenueGrowth.toFixed(1)}%
-                          from last period
+                          önceki döneme göre
                         </p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm">
-                          Conversion Rate
+                          Dönüşüm Oranı
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -785,15 +821,15 @@ export function ShopItemDetailsDialog({
                           {analyticsData.performance.conversionRate.toFixed(2)}%
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {formatNumber(analyticsData.performance.views)} total
-                          views
+                          {formatNumber(analyticsData.performance.views)} toplam
+                          görüntülenme
                         </p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm">
-                          Avg Order Value
+                          Ortalama Sipariş Tutarı
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -805,7 +841,7 @@ export function ShopItemDetailsDialog({
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {formatNumber(analyticsData.overview.uniqueCustomers)}{" "}
-                          unique customers
+                          benzersiz müşteri
                         </p>
                       </CardContent>
                     </Card>
@@ -814,9 +850,9 @@ export function ShopItemDetailsDialog({
                   {/* Sales Trend Chart */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>Sales Trend</CardTitle>
+                      <CardTitle>Satış Trendi</CardTitle>
                       <CardDescription>
-                        Daily sales and revenue over the selected period
+                        Seçilen dönem için günlük satış ve gelir
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -830,13 +866,13 @@ export function ShopItemDetailsDialog({
                             type="monotone"
                             dataKey="sales"
                             stroke="#8884d8"
-                            name="Sales"
+                            name="Satış"
                           />
                           <Line
                             type="monotone"
                             dataKey="revenue"
                             stroke="#82ca9d"
-                            name="Revenue"
+                            name="Gelir"
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -846,19 +882,19 @@ export function ShopItemDetailsDialog({
                   {/* Top Customers */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>Top Customers</CardTitle>
+                      <CardTitle>En İyi Müşteriler</CardTitle>
                       <CardDescription>
-                        Customers with highest spending on this item
+                        Bu üründe en fazla harcama yapan müşteriler
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Customer</TableHead>
-                            <TableHead>Purchases</TableHead>
-                            <TableHead>Total Spent</TableHead>
-                            <TableHead>Last Purchase</TableHead>
+                            <TableHead>Müşteri</TableHead>
+                            <TableHead>Satın Alma</TableHead>
+                            <TableHead>Toplam Harcama</TableHead>
+                            <TableHead>Son Satın Alma</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -909,7 +945,7 @@ export function ShopItemDetailsDialog({
               ) : (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">
-                    No analytics data available
+                    Analiz verisi bulunamadı
                   </p>
                 </div>
               )}
@@ -917,7 +953,7 @@ export function ShopItemDetailsDialog({
 
             <TabsContent value="history" className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Change History</h3>
+                <h3 className="text-lg font-semibold">Değişiklik Geçmişi</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -936,23 +972,25 @@ export function ShopItemDetailsDialog({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Action</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>User</TableHead>
+                        <TableHead>İşlem</TableHead>
+                        <TableHead>Açıklama</TableHead>
+                        <TableHead>Tarih</TableHead>
+                        <TableHead>Kullanıcı</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {historyData.history.map((record) => (
                         <TableRow key={record.id}>
                           <TableCell>
-                            <Badge variant="outline">{record.action}</Badge>
+                            <Badge variant="outline">
+                              {getHistoryActionLabel(record.action)}
+                            </Badge>
                           </TableCell>
                           <TableCell>{record.description}</TableCell>
                           <TableCell>
                             {new Date(record.timestamp).toLocaleString()}
                           </TableCell>
-                          <TableCell>{record.userId || "System"}</TableCell>
+                          <TableCell>{record.userId || "Sistem"}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -970,10 +1008,10 @@ export function ShopItemDetailsDialog({
                           fetchHistory(newPage);
                         }}
                       >
-                        Previous
+                        Önceki
                       </Button>
                       <span className="text-sm text-muted-foreground">
-                        Page {historyData.pagination.currentPage} of{" "}
+                        Sayfa {historyData.pagination.currentPage} /{" "}
                         {historyData.pagination.totalPages}
                       </span>
                       <Button
@@ -985,7 +1023,7 @@ export function ShopItemDetailsDialog({
                           fetchHistory(newPage);
                         }}
                       >
-                        Next
+                        Sonraki
                       </Button>
                     </div>
                   )}
@@ -993,7 +1031,7 @@ export function ShopItemDetailsDialog({
               ) : (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">
-                    No history data available
+                    Geçmiş verisi bulunamadı
                   </p>
                 </div>
               )}
@@ -1001,7 +1039,7 @@ export function ShopItemDetailsDialog({
 
             <TabsContent value="purchases" className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Purchase History</h3>
+                <h3 className="text-lg font-semibold">Satın Alma Geçmişi</h3>
                 <div className="flex items-center gap-2">
                   <Select
                     value={purchaseStatus}
@@ -1011,13 +1049,13 @@ export function ShopItemDetailsDialog({
                     }}
                   >
                     <SelectTrigger className="w-40">
-                      <SelectValue placeholder="All statuses" />
+                      <SelectValue placeholder="Tüm durumlar" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All statuses</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="refunded">Refunded</SelectItem>
+                      <SelectItem value="all">Tüm durumlar</SelectItem>
+                      <SelectItem value="completed">Tamamlandı</SelectItem>
+                      <SelectItem value="pending">Beklemede</SelectItem>
+                      <SelectItem value="refunded">İade Edildi</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -1041,7 +1079,7 @@ export function ShopItemDetailsDialog({
                     <Card>
                       <CardHeader className="pb-2">
                         <CardTitle className="text-sm">
-                          Total Purchases
+                          Toplam Satın Alma
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -1052,7 +1090,7 @@ export function ShopItemDetailsDialog({
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Completed</CardTitle>
+                        <CardTitle className="text-sm">Tamamlanan</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
@@ -1064,7 +1102,7 @@ export function ShopItemDetailsDialog({
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Refunded</CardTitle>
+                        <CardTitle className="text-sm">İade Edilen</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
@@ -1074,7 +1112,7 @@ export function ShopItemDetailsDialog({
                     </Card>
                     <Card>
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm">Total Revenue</CardTitle>
+                        <CardTitle className="text-sm">Toplam Gelir</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
@@ -1091,12 +1129,12 @@ export function ShopItemDetailsDialog({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Payment Method</TableHead>
+                        <TableHead>Müşteri</TableHead>
+                        <TableHead>Tarih</TableHead>
+                        <TableHead>Adet</TableHead>
+                        <TableHead>Tutar</TableHead>
+                        <TableHead>Durum</TableHead>
+                        <TableHead>Ödeme Yöntemi</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1109,14 +1147,14 @@ export function ShopItemDetailsDialog({
                                   purchase.userId?.avatar ||
                                   "/placeholder.svg?height=24&width=24"
                                 }
-                                alt={purchase.userId?.username || "User"}
+                                alt={purchase.userId?.username || "Kullanıcı"}
                                 width={24}
                                 height={24}
                                 className="rounded-full"
                               />
                               <div>
                                 <div className="font-medium">
-                                  {purchase.userId?.username || "Unknown"}
+                                  {purchase.userId?.username || "Bilinmiyor"}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
                                   {purchase.userId?.email || ""}
@@ -1146,7 +1184,7 @@ export function ShopItemDetailsDialog({
                                   : "secondary"
                               }
                             >
-                              {purchase.status}
+                              {getPurchaseStatusLabel(purchase.status)}
                             </Badge>
                           </TableCell>
                           <TableCell className="capitalize">
@@ -1169,10 +1207,10 @@ export function ShopItemDetailsDialog({
                           fetchPurchases(newPage, purchaseStatus);
                         }}
                       >
-                        Previous
+                        Önceki
                       </Button>
                       <span className="text-sm text-muted-foreground">
-                        Page {purchaseData.pagination.currentPage} of{" "}
+                        Sayfa {purchaseData.pagination.currentPage} /{" "}
                         {purchaseData.pagination.totalPages}
                       </span>
                       <Button
@@ -1184,7 +1222,7 @@ export function ShopItemDetailsDialog({
                           fetchPurchases(newPage, purchaseStatus);
                         }}
                       >
-                        Next
+                        Sonraki
                       </Button>
                     </div>
                   )}
@@ -1192,7 +1230,7 @@ export function ShopItemDetailsDialog({
               ) : (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">
-                    No purchase data available
+                    Satın alma verisi bulunamadı
                   </p>
                 </div>
               )}

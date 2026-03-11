@@ -3,6 +3,26 @@ import User from "@/models/User";
 import connectDB from "@/lib/db/connect";
 import { authGuard } from "@/lib/utils";
 
+const DASHBOARD_ACTIVITY_CACHE_TTL_MS = 30 * 1000;
+
+type ActivityPoint = {
+  date: string;
+  activeUsers: number;
+};
+
+type DashboardActivityCacheValue = {
+  expiresAt: number;
+  payload: ActivityPoint[];
+};
+
+const globalForDashboardActivityCache = globalThis as typeof globalThis & {
+  _dashboardActivityCache?: Map<string, DashboardActivityCacheValue>;
+};
+
+const dashboardActivityCache =
+  globalForDashboardActivityCache._dashboardActivityCache ?? new Map();
+globalForDashboardActivityCache._dashboardActivityCache = dashboardActivityCache;
+
 /**
  * @swagger
  * /api/admin/user-activity:
@@ -40,30 +60,67 @@ export async function GET() {
     if (auth instanceof NextResponse) {
       return auth; // early return on unauthorized or forbidden
     }
+
+    const nowTs = Date.now();
+    const cached = dashboardActivityCache.get("last30days");
+    if (cached && cached.expiresAt > nowTs) {
+      return NextResponse.json(cached.payload);
+    }
+
     await connectDB();
 
     // Get the date 30 days ago
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Aggregate login data by day
+    // Filter loginHistory before unwind to reduce pipeline volume.
     const activityData = await User.aggregate([
-      { $unwind: "$loginHistory" },
       {
         $match: {
-          "loginHistory.date": { $gte: thirtyDaysAgo },
-          "loginHistory.success": true,
+          loginHistory: {
+            $elemMatch: {
+              date: { $gte: thirtyDaysAgo },
+              success: true,
+            },
+          },
         },
       },
+      {
+        $project: {
+          userId: "$_id",
+          loginHistory: {
+            $filter: {
+              input: { $ifNull: ["$loginHistory", []] },
+              as: "entry",
+              cond: {
+                $and: [
+                  { $gte: ["$$entry.date", thirtyDaysAgo] },
+                  { $eq: ["$$entry.success", true] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $unwind: "$loginHistory" },
       {
         $group: {
           _id: {
             year: { $year: "$loginHistory.date" },
             month: { $month: "$loginHistory.date" },
             day: { $dayOfMonth: "$loginHistory.date" },
+            userId: "$userId",
           },
-          count: { $sum: 1 },
-          uniqueUsers: { $addToSet: "$_id" },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month",
+            day: "$_id.day",
+          },
+          activeUsers: { $sum: 1 },
         },
       },
       {
@@ -76,18 +133,22 @@ export async function GET() {
               day: "$_id.day",
             },
           },
-          count: 1,
-          uniqueUsers: { $size: "$uniqueUsers" },
+          activeUsers: 1,
         },
       },
       { $sort: { date: 1 } },
     ]);
 
     // Format the data for the chart
-    const formattedData = activityData.map((day) => ({
+    const formattedData: ActivityPoint[] = activityData.map((day) => ({
       date: day.date.toISOString().split("T")[0],
-      activeUsers: day.uniqueUsers,
+      activeUsers: day.activeUsers,
     }));
+
+    dashboardActivityCache.set("last30days", {
+      expiresAt: nowTs + DASHBOARD_ACTIVITY_CACHE_TTL_MS,
+      payload: formattedData,
+    });
 
     return NextResponse.json(formattedData);
   } catch (error) {

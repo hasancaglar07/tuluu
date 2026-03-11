@@ -74,11 +74,11 @@ export default function UserRoleDialog({
         }
       );
 
-      toast.success("User role updated successfully!");
+      toast.success("Kullanıcı rolü başarıyla güncellendi!");
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to update user role:", error);
-      toast.error("Failed to update role. Please try again.");
+      console.error("Kullanıcı rolü güncelleme hatası:", error);
+      toast.error("Rol güncellenemedi. Lütfen tekrar deneyin.");
     }
   };
 
@@ -88,23 +88,23 @@ export default function UserRoleDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Change User Role
+            Kullanıcı Rolünü Değiştir
           </DialogTitle>
           <DialogDescription>
-            Update role and permissions for user {user.publicMetadata.name}.
+            {user.publicMetadata.name} kullanıcısının rol ve yetkilerini güncelleyin.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
             <div className="flex items-center justify-between">
-              <span>Current Role:</span>
+              <span>Mevcut Rol:</span>
               <Badge className={getRoleColor(user.privateMetadata.role)}>
                 {user.privateMetadata.role.replace("_", " ")}
               </Badge>
             </div>
 
             <div className="space-y-2">
-              <Label>New Role</Label>
+              <Label>Yeni Rol</Label>
               <RadioGroup
                 value={role}
                 onValueChange={setRole}
@@ -113,14 +113,14 @@ export default function UserRoleDialog({
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="free" id="free" />
                   <Label htmlFor="free" className="font-normal">
-                    Free
+                    Ücretsiz
                   </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="admin" id="admin" />
                   <Label htmlFor="admin" className="font-normal">
-                    Admin
+                    Yönetici
                   </Label>
                 </div>
               </RadioGroup>
@@ -134,13 +134,13 @@ export default function UserRoleDialog({
                   </div>
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-yellow-800">
-                      Elevated Permissions Warning
+                      Geniş Yetki Uyarısı
                     </h3>
                     <div className="mt-2 text-sm text-yellow-700">
                       <p>
-                        This role grants significant permissions including user
-                        management and content moderation. Only assign to
-                        trusted users.
+                        Bu rol; kullanıcı yönetimi ve içerik moderasyonu dahil
+                        kapsamlı yetkiler verir. Yalnızca güvenilir
+                        kullanıcılara atayın.
                       </p>
                     </div>
                   </div>
@@ -149,12 +149,12 @@ export default function UserRoleDialog({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="reason">Reason for Change</Label>
+              <Label htmlFor="reason">Değişiklik Gerekçesi</Label>
               <Textarea
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Explain why you're changing this user's role"
+                placeholder="Bu kullanıcının rolünü neden değiştirdiğinizi yazın"
                 rows={3}
                 required
               />
@@ -168,11 +168,11 @@ export default function UserRoleDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
             <Button type="submit" disabled={isLoading}>
               {" "}
-              {isLoading && <Loader2 className="animate-spin" />}Update Role
+              {isLoading && <Loader2 className="animate-spin" />}Rolü Güncelle
             </Button>
           </DialogFooter>
         </form>

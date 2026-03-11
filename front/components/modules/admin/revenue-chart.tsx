@@ -139,7 +139,7 @@ export function RevenueChart() {
                           id="admin.payments.revenue.chart.tooltip"
                           defaultMessage="Revenue: ${revenue}"
                           values={{
-                            revenue: new Intl.NumberFormat("en-US", {
+                            revenue: new Intl.NumberFormat("tr-TR", {
                               style: "currency",
                               currency: "USD",
                               minimumFractionDigits: 0,

@@ -835,11 +835,17 @@ export type Language = {
   baseLanguage: string;
   nativeName: string;
   flag: string;
+  locale?: string;
   isCompleted: boolean;
   isActive: boolean;
   userCount: number;
   category: LanguageCategory;
   themeMetadata: ThemeMetadata;
+  stats?: {
+    chapters: number;
+    units: number;
+    lessons: number;
+  };
   chapters: Chapter[];
 };
 

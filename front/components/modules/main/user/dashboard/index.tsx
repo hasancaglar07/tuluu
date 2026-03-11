@@ -92,13 +92,13 @@ export default function MainContentDashboard({
       intl.formatMessage({
         id: "dashboard.toast.support",
         defaultMessage:
-          "If you'd like to know the status or share feedback, click the Support link in the bottom-left corner.",
+          "Durumu öğrenmek veya geri bildirim paylaşmak istersen sol alttaki Destek bağlantısına tıkla.",
       })
     );
     toast.info(
       intl.formatMessage({
         id: "dashboard.toast.comingSoon",
-        defaultMessage: "This chapter is locked and is still in progress.",
+        defaultMessage: "Bu bölüm kilitli ve hâlâ geliştirme aşamasında.",
       })
     );
   };
@@ -338,7 +338,7 @@ export default function MainContentDashboard({
           <ArrowLeft className="h-6 w-6" />
           <div>
             <div className="text-sm font-medium">
-              CHAPTER {progress.currentChapter?.order}, UNIT{" "}
+              BÖLÜM {progress.currentChapter?.order}, ÜNİTE{" "}
               {progress.currentUnit?.order}
             </div>
             <div className="text-xl font-bold">
@@ -346,7 +346,7 @@ export default function MainContentDashboard({
                 (u: { chapterId: string; unitId: string }) =>
                   u.chapterId === progress.currentChapter?._id &&
                   u.unitId === progress.currentUnit?._id
-              )?.title || "Commande au café"}
+              )?.title || "Kafe Siparişi"}
             </div>
           </div>
           <div className="ml-auto">
@@ -357,7 +357,7 @@ export default function MainContentDashboard({
             >
               <div className="flex items-center gap-2">
                 <File />
-                <span className="hidden sm:inline">GUIDE</span>
+                <span className="hidden sm:inline">REHBER</span>
               </div>
             </Button>
           </div>
@@ -380,7 +380,7 @@ export default function MainContentDashboard({
           variant={hasPremium ? "default" : "outline"}
           className={hasPremium ? "bg-secondary-500 text-black" : ""}
         >
-          {hasPremium ? "PREMIUM" : "FREE"}
+          {hasPremium ? "PREMIUM" : "ÜCRETSİZ"}
         </Badge>
       </div>
 
@@ -389,7 +389,7 @@ export default function MainContentDashboard({
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
             <div className="flex gap-4">
-              Change view:
+              Görünümü değiştir:
               <button
                 className="cursor-pointer"
                 onClick={() => setView("game")}
@@ -539,7 +539,7 @@ export default function MainContentDashboard({
               onClick={() => dispatch(toggleChapter(chapter._id))}
             >
               <h4>
-                Chapter {chapter.order}: {chapter.title}
+                Bölüm {chapter.order}: {chapter.title}
               </h4>
               {chapter.isPremium && !hasPremium && (
                 <Tooltip>
@@ -549,7 +549,7 @@ export default function MainContentDashboard({
                     </m.div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Contenu premium - Abonnez-vous pour débloquer</p>
+                    <p>Premium içerik - Kilidi açmak için abone olun</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -559,7 +559,7 @@ export default function MainContentDashboard({
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 10 }}
                 >
-                  <Badge className="bg-primary-500">COMPLÉTÉ</Badge>
+                  <Badge className="bg-primary-500">TAMAMLANDI</Badge>
                 </m.div>
               )}
               <m.div
@@ -607,7 +607,7 @@ export default function MainContentDashboard({
                         whileTap={{ scale: 0.99 }}
                       >
                         <h5 className="capitalize">
-                          Unit {unit.order}: {unit.title}
+                          Ünite {unit.order}: {unit.title}
                         </h5>
                         {unit.isPremium && !hasPremium && (
                           <Tooltip>
@@ -620,7 +620,7 @@ export default function MainContentDashboard({
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>
-                                Contenu premium - Abonnez-vous pour débloquer
+                                Premium içerik - Kilidi açmak için abone olun
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -635,7 +635,7 @@ export default function MainContentDashboard({
                               damping: 10,
                             }}
                           >
-                            <Badge className="bg-primary-500">COMPLÉTÉ</Badge>
+                            <Badge className="bg-primary-500">TAMAMLANDI</Badge>
                           </m.div>
                         )}
                         <m.div
@@ -710,7 +710,7 @@ export default function MainContentDashboard({
                                   <div className="mb-3 sm:mb-0">
                                     <div className="flex items-center gap-2">
                                       <h6>
-                                        Lesson {lesson.order}: {lesson.title}
+                                        Ders {lesson.order}: {lesson.title}
                                       </h6>
                                       {isPremiumLocked && (
                                         <Tooltip>
@@ -725,8 +725,8 @@ export default function MainContentDashboard({
                                           </TooltipTrigger>
                                           <TooltipContent>
                                             <p>
-                                              Contenu premium - Abonnez-vous
-                                              pour débloquer
+                                              Premium içerik - Kilidi açmak
+                                              için abone olun
                                             </p>
                                           </TooltipContent>
                                         </Tooltip>
@@ -745,8 +745,8 @@ export default function MainContentDashboard({
                                             </TooltipTrigger>
                                             <TooltipContent>
                                               <p>
-                                                Terminez les leçons précédentes
-                                                pour débloquer
+                                                Kilidi açmak için önceki
+                                                dersleri tamamlayın
                                               </p>
                                             </TooltipContent>
                                           </Tooltip>
@@ -784,13 +784,13 @@ export default function MainContentDashboard({
                                       }
                                     >
                                       {lesson.isCompleted
-                                        ? "RESTART"
+                                        ? "TEKRARLA"
                                         : !lesson.isCompleted &&
                                           !isPremiumLocked
-                                        ? "START"
+                                        ? "BAŞLA"
                                         : isPremiumLocked
-                                        ? "UNLOCK"
-                                        : "LOCKED"}
+                                        ? "KİLİDİ AÇ"
+                                        : "KİLİTLİ"}
                                     </Button>
                                   </m.div>
                                 </m.div>

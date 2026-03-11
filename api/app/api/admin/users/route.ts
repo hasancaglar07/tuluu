@@ -5,6 +5,21 @@ import User from "@/models/User";
 import { authGuard } from "@/lib/utils";
 import { getUserRole, hasAdminRole } from "@/lib/admin-access";
 
+const ADMIN_USERS_LIST_CACHE_TTL_MS = 30 * 1000;
+
+type AdminUsersListCacheValue = {
+  expiresAt: number;
+  payload: unknown;
+};
+
+const globalForAdminUsersListCache = globalThis as typeof globalThis & {
+  _adminUsersListCache?: Map<string, AdminUsersListCacheValue>;
+};
+
+const adminUsersListCache =
+  globalForAdminUsersListCache._adminUsersListCache ?? new Map();
+globalForAdminUsersListCache._adminUsersListCache = adminUsersListCache;
+
 /**
  * @swagger
  * /api/admin/users/{id}:
@@ -200,6 +215,21 @@ export async function GET(req: NextRequest) {
     const subscription = searchParams.get("subscription") || "";
     const sortBy = searchParams.get("sortBy") || "joinDate";
     const sortOrder = searchParams.get("sortOrder") || "desc";
+    const cacheKey = [
+      page,
+      limit,
+      search,
+      role,
+      status,
+      subscription,
+      sortBy,
+      sortOrder,
+    ].join("|");
+    const now = Date.now();
+    const cached = adminUsersListCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return NextResponse.json(cached.payload);
+    }
 
     // Get all users from Clerk
     const clerkUsers = (await clerkClient()).users.getUserList({
@@ -319,7 +349,7 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    const payload = {
       users,
       pagination: {
         total,
@@ -327,7 +357,14 @@ export async function GET(req: NextRequest) {
         limit,
         pages: Math.ceil(total / limit),
       },
+    };
+
+    adminUsersListCache.set(cacheKey, {
+      expiresAt: now + ADMIN_USERS_LIST_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error getting users:", error);
     return NextResponse.json(

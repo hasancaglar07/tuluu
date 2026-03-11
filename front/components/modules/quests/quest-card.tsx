@@ -120,12 +120,12 @@ export function QuestCard({
               {isLocked
                 ? intl.formatMessage({
                     id: "quest.locked",
-                    defaultMessage: "Locked",
+                    defaultMessage: "Kilitli",
                   })
                 : isCompleted
                 ? intl.formatMessage({
                     id: "quest.completed",
-                    defaultMessage: "Completed",
+                    defaultMessage: "Tamamlandı",
                   })
                 : getDifficultyLabel(quest.difficulty)}
             </span>
@@ -140,7 +140,7 @@ export function QuestCard({
                   <span>
                     {intl.formatMessage({
                       id: "quest.progress.label",
-                      defaultMessage: "Progress",
+                      defaultMessage: "İlerleme",
                     })}
                   </span>
                   <span>
@@ -202,7 +202,7 @@ export function QuestCard({
                     {intl.formatMessage(
                       {
                         id: "quest.expiresIn",
-                        defaultMessage: "Expires in {time}",
+                        defaultMessage: "{time} içinde sona erer",
                       },
                       { time: quest.expiresIn }
                     )}
@@ -224,7 +224,7 @@ export function QuestCard({
                       })
                     : intl.formatMessage({
                         id: "quest.progressButton",
-                        defaultMessage: "Progress",
+                        defaultMessage: "İlerlet",
                       })}
                 </Button>
               )}

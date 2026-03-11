@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { CircleDot, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { upload as uploadBlob } from "@vercel/blob/client";
 import { exerciseTypes } from "@/types";
 import type { MoralValue } from "@/types";
@@ -127,19 +127,7 @@ interface ExerciseDialogProps {
 
 // Languages for exercises
 const exerciseLanguages = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "French" },
-  { value: "es", label: "Spanish" },
-  { value: "de", label: "German" },
-  { value: "it", label: "Italian" },
-  { value: "pt", label: "Portuguese" },
-  { value: "ja", label: "Japanese" },
-  { value: "zh", label: "Chinese" },
-  { value: "ko", label: "Korean" },
-  { value: "ru", label: "Russian" },
-  { value: "ar", label: "Arabic" },
   { value: "tr", label: "Turkish" },
-  { value: "hi", label: "Hindi" },
 ];
 
 const COMPONENT_OPTIONS: Array<{
@@ -147,7 +135,7 @@ const COMPONENT_OPTIONS: Array<{
   label: string;
 }> = [
   { value: "learning_card", label: "Öğretim Kartı" },
-  { value: "moral_story", label: "Moral Story" },
+  { value: "moral_story", label: "Ahlaki Hikaye" },
   { value: "multiple_choice", label: "Çoktan Seçmeli" },
   { value: "listening_challenge", label: "Dinleme Görevi" },
   { value: "matching_board", label: "Eşleştirme Tahtası" },
@@ -283,6 +271,17 @@ export function ExerciseDialog({
   const [showBulkOptions, setShowBulkOptions] = useState(false);
   const [bulkText, setBulkText] = useState("");
   const [simpleMode, setSimpleMode] = useState(true);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const previousEducationContentRef = useRef<unknown>(null);
+
+  const clearError = (field: string) => {
+    setFormErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   const resolvedSourceLanguage =
     currentLanguage?.baseLanguage ?? newExercise.sourceLanguage;
@@ -319,6 +318,26 @@ export function ExerciseDialog({
     newExercise,
     setNewExercise,
   ]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFormErrors({});
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const educationContentChanged =
+      previousEducationContentRef.current !== newExercise.educationContent;
+    if (educationContentChanged && formErrors.educationContent) {
+      setFormErrors((prev) => {
+        if (!prev.educationContent) return prev;
+        const next = { ...prev };
+        delete next.educationContent;
+        return next;
+      });
+    }
+    previousEducationContentRef.current = newExercise.educationContent;
+  }, [formErrors.educationContent, newExercise.educationContent]);
 
   // Initialize skeleton education content when type switches
   useEffect(() => {
@@ -388,6 +407,7 @@ export function ExerciseDialog({
     const updatedAnswers = [...newExercise.correctAnswer];
     updatedAnswers[index] = value;
     setNewExercise({ ...newExercise, correctAnswer: updatedAnswers });
+    clearError("correctAnswer");
   };
 
   /**
@@ -398,6 +418,7 @@ export function ExerciseDialog({
       ...newExercise,
       correctAnswer: [...newExercise.correctAnswer, ""],
     });
+    clearError("correctAnswer");
   };
 
   /**
@@ -410,6 +431,7 @@ export function ExerciseDialog({
       ...newExercise,
       correctAnswer: updatedAnswers.length ? updatedAnswers : [""],
     });
+    clearError("correctAnswer");
   };
 
   /**
@@ -419,6 +441,7 @@ export function ExerciseDialog({
     const updatedOptions = [...newExercise.options];
     updatedOptions[index] = value;
     setNewExercise({ ...newExercise, options: updatedOptions });
+    clearError("options");
   };
 
   const updateMediaPack = (field: string, value: string) => {
@@ -480,6 +503,7 @@ export function ExerciseDialog({
       ...newExercise,
       options: [...newExercise.options, ""],
     });
+    clearError("options");
   };
 
   const removeOption = (index: number) => {
@@ -489,6 +513,7 @@ export function ExerciseDialog({
       ...newExercise,
       options: updatedOptions.length ? updatedOptions : [""],
     });
+    clearError("options");
   };
 
   /**
@@ -500,22 +525,88 @@ export function ExerciseDialog({
       (option) => (option ?? "").trim().length > 0
     );
     const requiresAudio = audioSupportedTypes.includes(newExercise.type);
+    const nextErrors: Record<string, string> = {};
 
-    if (!newExercise.lessonId) return;
+    if (!newExercise.lessonId) {
+      nextErrors.lessonId = "Ders seçimi zorunludur.";
+    }
+    if (!newExercise.type) {
+      nextErrors.type = "Egzersiz türü zorunludur.";
+    }
 
     if (!isEducationType) {
-      if (
-        !newExercise.instruction ||
-        !newExercise.sourceText ||
-        !newExercise.correctAnswer[0] ||
-        (requiresOptions && !hasOptions) ||
-        (requiresAudio && !newExercise.audioUrl.trim())
-      ) {
-        return;
+      if (!newExercise.instruction?.trim()) {
+        nextErrors.instruction = "Yönerge zorunludur.";
+      }
+      if (!newExercise.sourceText?.trim()) {
+        nextErrors.sourceText = "Kaynak metin zorunludur.";
+      }
+      const hasCorrectAnswer = (newExercise.correctAnswer ?? []).some(
+        (answer) => (answer ?? "").trim().length > 0
+      );
+      if (!hasCorrectAnswer) {
+        nextErrors.correctAnswer = "En az bir doğru cevap girin.";
+      }
+      if (requiresOptions && !hasOptions) {
+        nextErrors.options = "En az bir seçenek girin.";
+      }
+      if (requiresAudio && !newExercise.audioUrl.trim()) {
+        nextErrors.audioUrl = "Ses dosyası ya da URL alanı zorunludur.";
       }
     } else {
-      if (!newExercise.educationContent) return;
+      const content = (newExercise.educationContent ?? null) as
+        | Record<string, unknown>
+        | null;
+      if (!content) {
+        nextErrors.educationContent = "Eğitim içeriği alanlarını doldurun.";
+      } else if (newExercise.type === "education_visual") {
+        const title = String(content.title ?? "").trim();
+        const imageUrl = String(content.imageUrl ?? "").trim();
+        if (!title || !imageUrl) {
+          nextErrors.educationContent =
+            "Görsel anlatım için başlık ve görsel zorunludur.";
+        }
+      } else if (newExercise.type === "education_video") {
+        const title = String(content.title ?? "").trim();
+        const videoUrl = String(content.videoUrl ?? "").trim();
+        if (!title || !videoUrl) {
+          nextErrors.educationContent =
+            "Video anlatım için başlık ve video zorunludur.";
+        }
+      } else if (newExercise.type === "education_audio") {
+        const title = String(content.title ?? "").trim();
+        const audioUrl = String(content.audioUrl ?? "").trim();
+        if (!title || !audioUrl) {
+          nextErrors.educationContent =
+            "Sesli anlatım için başlık ve ses dosyası zorunludur.";
+        }
+      } else if (newExercise.type === "education_tip") {
+        const title = String(content.title ?? "").trim();
+        const body = String(content.content ?? "").trim();
+        if (!title || !body) {
+          nextErrors.educationContent =
+            "İpucu kartı için başlık ve içerik zorunludur.";
+        }
+      } else if (newExercise.type === "education_image_intro") {
+        const title = String(content.title ?? "").trim();
+        const cards = Array.isArray(content.cards)
+          ? (content.cards as Array<{ imageUrl?: string; text?: string }>)
+          : [];
+        const hasAnyCardContent = cards.some(
+          (card) => (card.imageUrl ?? "").trim() || (card.text ?? "").trim()
+        );
+        if (!title || !hasAnyCardContent) {
+          nextErrors.educationContent =
+            "Görsel giriş için başlık ve en az bir kart içeriği girin.";
+        }
+      }
     }
+
+    setFormErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
     await onSubmit();
   };
 
@@ -562,6 +653,7 @@ export function ExerciseDialog({
     onChange,
     placeholder,
     helperText,
+    errorText,
     variant = "default",
   }: {
     id: string;
@@ -571,6 +663,7 @@ export function ExerciseDialog({
     onChange: (v: string) => void;
     placeholder?: string;
     helperText?: string;
+    errorText?: string;
     variant?: "default" | "inline";
   }) {
     const fileRef = useRef<HTMLInputElement | null>(null);
@@ -660,6 +753,7 @@ export function ExerciseDialog({
         {helperText && (
           <p className="text-xs text-muted-foreground">{helperText}</p>
         )}
+        {errorText && <p className="text-xs text-red-600">{errorText}</p>}
         {uploading?.fieldId === id && (
           <div className="flex items-center gap-2">
             <Progress value={uploadProgress} className="h-2 w-full" />
@@ -682,7 +776,7 @@ export function ExerciseDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? (
@@ -704,6 +798,11 @@ export function ExerciseDialog({
             />
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <CircleDot className="h-3.5 w-3.5" />
+          <span>Hızlı modda temel alanları doldurun. Gelişmiş modda medya, ipucu ve eğitim kartı ayarlarını detaylandırın.</span>
+        </div>
 
         <div className="flex items-center justify-between rounded-lg border bg-muted/20 px-3 py-2 text-sm">
           <span>{simpleMode ? "Hızlı Mod" : "Gelişmiş Mod"}</span>
@@ -729,11 +828,15 @@ export function ExerciseDialog({
               </Label>
               <Select
                 value={newExercise.lessonId}
-                onValueChange={(value) =>
-                  setNewExercise({ ...newExercise, lessonId: value })
-                }
+                onValueChange={(value) => {
+                  setNewExercise({ ...newExercise, lessonId: value });
+                  clearError("lessonId");
+                }}
               >
-                <SelectTrigger id="exercise-lesson">
+                <SelectTrigger
+                  id="exercise-lesson"
+                  className={formErrors.lessonId ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                >
                   <SelectValue placeholder={intl.formatMessage({
                     id: "admin.lessons.placeholder.selectLesson",
                     defaultMessage: "Ders seçin"
@@ -755,6 +858,9 @@ export function ExerciseDialog({
                     )}
                 </SelectContent>
               </Select>
+              {formErrors.lessonId ? (
+                <p className="text-xs text-red-600">{formErrors.lessonId}</p>
+              ) : null}
             </div>
           )}
 
@@ -769,15 +875,22 @@ export function ExerciseDialog({
               </Label>
               <Select
                 value={newExercise.type}
-                onValueChange={(value) =>
+                onValueChange={(value) => {
                   setNewExercise({
                     ...newExercise,
                     type: value,
                     componentType: componentTypeByExerciseType(value),
-                  })
-                }
+                  });
+                  clearError("type");
+                  clearError("educationContent");
+                  clearError("options");
+                  clearError("audioUrl");
+                }}
               >
-                <SelectTrigger id="exercise-type">
+                <SelectTrigger
+                  id="exercise-type"
+                  className={formErrors.type ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                >
                   <SelectValue placeholder={intl.formatMessage({
                     id: "admin.lessons.placeholder.selectType",
                     defaultMessage: "Tür seçin"
@@ -806,6 +919,9 @@ export function ExerciseDialog({
                   />
                 </p>
               ) : null}
+              {formErrors.type ? (
+                <p className="text-xs text-red-600">{formErrors.type}</p>
+              ) : null}
             </div>
 
             {/* Instruction */}
@@ -818,18 +934,23 @@ export function ExerciseDialog({
               </Label>
               <Input
                 id="exercise-instruction"
+                className={formErrors.instruction ? "border-red-500 focus-visible:ring-red-500" : undefined}
                 value={newExercise.instruction}
-                onChange={(e) =>
+                onChange={(e) => {
                   setNewExercise({
                     ...newExercise,
                     instruction: e.target.value,
-                  })
-                }
+                  });
+                  clearError("instruction");
+                }}
                 placeholder={intl.formatMessage({
                   id: "admin.lessons.placeholder.instruction",
                   defaultMessage: "örn. Bu cümleyi çevirin"
                 })}
               />
+              {formErrors.instruction ? (
+                <p className="text-xs text-red-600">{formErrors.instruction}</p>
+              ) : null}
             </div>
           </div>
 
@@ -984,10 +1105,13 @@ export function ExerciseDialog({
               accept="image/*"
               value={newExercise.sourceText}
               onChange={(value) =>
-                setNewExercise({
-                  ...newExercise,
-                  sourceText: value,
-                })
+                {
+                  setNewExercise({
+                    ...newExercise,
+                    sourceText: value,
+                  });
+                  clearError("sourceText");
+                }
               }
               placeholder={intl.formatMessage({
                 id: "admin.lessons.placeholder.sourceText",
@@ -997,6 +1121,7 @@ export function ExerciseDialog({
                 id: "admin.lessons.helper.mediaField",
                 defaultMessage: "Metin yazabilir veya görsel yükleyebilirsin.",
               })}
+              errorText={formErrors.sourceText}
             />
           )}
 
@@ -1056,6 +1181,9 @@ export function ExerciseDialog({
                   )}
                 </div>
               ))}
+              {formErrors.correctAnswer ? (
+                <p className="text-xs text-red-600">{formErrors.correctAnswer}</p>
+              ) : null}
             </div>
           )}
 
@@ -1092,7 +1220,10 @@ export function ExerciseDialog({
                     <Button variant="outline" size="sm" onClick={()=> setShowBulkOptions(false)}>İptal</Button>
                     <Button size="sm" onClick={()=>{
                       const parts = bulkText.split(/\n|,/).map(t=>t.trim()).filter(Boolean);
-                      if (parts.length){ setNewExercise({ ...newExercise, options: parts }); }
+                      if (parts.length){
+                        setNewExercise({ ...newExercise, options: parts });
+                        clearError("options");
+                      }
                       setShowBulkOptions(false);
                     }}>Uygula</Button>
                   </div>
@@ -1128,6 +1259,9 @@ export function ExerciseDialog({
                   )}
                 </div>
               ))}
+              {formErrors.options ? (
+                <p className="text-xs text-red-600">{formErrors.options}</p>
+              ) : null}
             </div>
           )}
 
@@ -1138,11 +1272,15 @@ export function ExerciseDialog({
               label="Ses URL'si veya Yükle"
               accept="audio/*"
               value={newExercise.audioUrl}
-              onChange={(v) => setNewExercise({ ...newExercise, audioUrl: v })}
+              onChange={(v) => {
+                setNewExercise({ ...newExercise, audioUrl: v });
+                clearError("audioUrl");
+              }}
               placeholder={intl.formatMessage({
                 id: "admin.lessons.placeholder.audioUrl",
                 defaultMessage: "örn. https://.../audio.mp3"
               })}
+              errorText={formErrors.audioUrl}
             />
           )}
 
@@ -1300,6 +1438,11 @@ export function ExerciseDialog({
           {/* Education type dynamic forms */}
   {isEducationType && (
     <div className="space-y-4">
+      {formErrors.educationContent ? (
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+          {formErrors.educationContent}
+        </p>
+      ) : null}
       {newExercise.type === "education_image_intro" && (
         <div className="space-y-3">
           <Input
@@ -1671,7 +1814,7 @@ export function ExerciseDialog({
                     <SelectTrigger>
                       <SelectValue placeholder={intl.formatMessage({
                         id: "admin.lessons.placeholder.tipType",
-                        defaultMessage: "Tip tipi"
+                        defaultMessage: "İpucu tipi"
                       })} />
                     </SelectTrigger>
                     <SelectContent>
@@ -1765,7 +1908,7 @@ export function ExerciseDialog({
             ) : (
               <FormattedMessage
                 id="admin.lessons.addExercise"
-                defaultMessage="Egzersiz Ekle"
+                defaultMessage="Egzersizi Kaydet"
               />
             )}
           </Button>

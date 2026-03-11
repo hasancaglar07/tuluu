@@ -12,7 +12,7 @@ import type { Language } from "@/types";
 import type { Chapter, Lesson as StoreLesson } from "@/types/lessons";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { useParams } from "next/navigation";
 import { i18n } from "@/i18n-config";
@@ -66,6 +66,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
   );
   const [syncingLanguage, setSyncingLanguage] = useState(false);
   const [progressMap, setProgressMap] = useState<Record<string, number>>({});
+  const syncedLanguageIdRef = useRef<string | null>(null);
 
   const isSameLanguage = activeLanguageId
     ? language?._id === activeLanguageId
@@ -112,18 +113,8 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
     const loadLanguages = async () => {
       try {
         setLanguageOptionsLoading(true);
-        const token = await getToken();
         const response = await apiClient.get(
-          `/api/public/lessons?action=learn&locale=${currentLocale}`,
-          {
-            headers: token
-              ? {
-                  Authorization: `Bearer ${token}`,
-                }
-              : {
-                  "Content-Type": "application/json",
-                },
-          }
+          `/api/public/lessons?action=learn&locale=${currentLocale}&detail=summary`
         );
         if (!isMounted) return;
         const fetchedLanguages: Language[] = response.data.languages ?? [];
@@ -137,8 +128,8 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
             storyLanguages.some((lang) => lang._id === languageId)
           ) {
             setActiveLanguageId(languageId);
-          } else if (!activeLanguageId) {
-            setActiveLanguageId(storyLanguages[0]._id);
+          } else {
+            setActiveLanguageId((previousId) => previousId ?? storyLanguages[0]._id);
           }
         } else {
           setActiveLanguageId(null);
@@ -148,7 +139,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
         setLanguageError(
           intl.formatMessage({
             id: "stories.library.loadError",
-            defaultMessage: "Stories could not be loaded. Please try again.",
+            defaultMessage: "Hikâyeler yüklenemedi. Lütfen tekrar deneyin.",
           })
         );
       } finally {
@@ -165,15 +156,19 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
     };
   }, [
     currentLocale,
-    getToken,
     intl,
     languageId,
-    activeLanguageId,
-    chapters.length,
   ]);
 
   useEffect(() => {
     if (!activeLanguageId) {
+      return;
+    }
+
+    const shouldFetchLessons =
+      language?._id !== activeLanguageId || chapters.length === 0;
+
+    if (!shouldFetchLessons && syncedLanguageIdRef.current === activeLanguageId) {
       return;
     }
 
@@ -203,18 +198,17 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
 
         if (!isMounted) return;
 
-        const shouldFetchLessons =
-          language?._id !== activeLanguageId || chapters.length === 0;
-
         if (shouldFetchLessons) {
           await dispatch(fetchLessons({ languageId: activeLanguageId, token }));
         }
+
+        syncedLanguageIdRef.current = activeLanguageId;
       } catch {
         if (!isMounted) return;
         setLanguageError(
           intl.formatMessage({
             id: "stories.library.loadError",
-            defaultMessage: "Stories could not be loaded. Please try again.",
+            defaultMessage: "Hikâyeler yüklenemedi. Lütfen tekrar deneyin.",
           })
         );
       } finally {
@@ -362,160 +356,31 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between pb-4 border-b">
+          <h2 className="text-2xl font-extrabold text-[#4b4b4b]">
+            {intl.formatMessage({
+              id: "stories.library.title",
+              defaultMessage: "Hikâye Kütüphanesi",
+            })}
+          </h2>
           <Button
             variant="ghost"
             onClick={handleBackToDashboard}
-            className="rounded-full border border-muted bg-white/60 px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm hover:bg-white"
+            className="text-muted-foreground hover:bg-gray-100 uppercase font-extrabold text-sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {intl.formatMessage({
               id: "stories.library.backToDashboard",
-              defaultMessage: "Back to dashboard",
+              defaultMessage: "Panele Dön",
             })}
           </Button>
-          {activeLanguage && (
-            <Badge className="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
-              {intl.formatMessage(
-                {
-                  id: "stories.library.currentLanguage",
-                  defaultMessage: "Selected: {language}",
-                },
-                { language: activeLanguage.name }
-              )}
-            </Badge>
-          )}
         </div>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {intl.formatMessage({
-            id: "stories.library.dashboardHint",
-            defaultMessage:
-              "Jump back to your dashboard anytime without losing your place.",
-          })}
-        </p>
-      </div>
-
-      {featuredLesson && (
-        <div
-          className="grid gap-6 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
-          style={{
-            background: `linear-gradient(135deg, ${featuredAccent}12, #ffffff)`,
-            borderColor: `${featuredAccent}33`,
-          }}
-        >
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 text-sm font-semibold text-primary-600 uppercase">
-              <BookOpen className="h-5 w-5" />
-              {featuredChapter?.title}
-            </div>
-            <h1 className="text-3xl font-bold text-foreground">
-              {featuredLesson.storyMetadata?.displayName || featuredLesson.title}
-            </h1>
-            <p className="text-muted-foreground">
-              {intl.formatMessage({
-                id: "stories.library.heroDescription",
-                defaultMessage:
-                  "Continue the next story adventure just like you would in your course dashboard. Flip pages, listen together, and earn XP.",
-              })}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span>
-                {intl.formatMessage(
-                  {
-                    id: "stories.library.heroPages",
-                    defaultMessage: "{count} pages",
-                  },
-                  {
-                    count:
-                      featuredLesson.storyPages?.length ??
-                      featuredLesson.order ??
-                      0,
-                  }
-                )}
-              </span>
-              <span aria-hidden="true">•</span>
-              <span>
-                {intl.formatMessage(
-                  {
-                    id: "stories.library.xpReward",
-                    defaultMessage: "+{xp} XP",
-                  },
-                  { xp: featuredLesson.xpReward }
-                )}
-              </span>
-              {featuredLesson.storyMetadata?.hasAudio && (
-                <>
-                  <span aria-hidden="true">•</span>
-                  <span>
-                    {intl.formatMessage({
-                      id: "stories.reader.audioAvailable",
-                      defaultMessage: "Page narration available",
-                    })}
-                  </span>
-                </>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Button
-                size="lg"
-                className="rounded-full px-8 py-6 text-lg font-semibold"
-                style={{ backgroundColor: featuredAccent, borderColor: "transparent" }}
-                onClick={() => handleOpenStory(featuredLesson)}
-              >
-                <Play className="mr-2 h-5 w-5" />
-                {intl.formatMessage({
-                  id: "stories.library.startStory",
-                  defaultMessage: "Start reading",
-                })}
-              </Button>
-              {featuredLesson.storyMetadata?.ageBadge && (
-                <Badge className="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
-                  {featuredLesson.storyMetadata.ageBadge}
-                </Badge>
-              )}
-              {featuredLesson.isPremium && (
-                <Badge className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-                  <Crown className="h-3 w-3" />
-                  {intl.formatMessage({
-                    id: "stories.library.premiumBadge",
-                    defaultMessage: "Premium",
-                  })}
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          <div className="relative h-56 w-full overflow-hidden rounded-3xl border border-white/30 bg-white/60 shadow-inner">
-            <Image
-              src={
-                featuredLesson.storyMetadata?.coverImageUrl ||
-                featuredLesson.imageUrl ||
-                "/images/book.png"
-              }
-              alt={featuredLesson.storyMetadata?.displayName || featuredLesson.title}
-              fill
-              className="object-contain p-8"
-              priority
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="text-center flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold text-foreground">
-          {intl.formatMessage({
-            id: "stories.library.title",
-            defaultMessage: "Story Library",
-          })}
-        </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-[#777] font-medium text-[15px]">
           {intl.formatMessage({
             id: "stories.library.subtitle",
             defaultMessage:
-              "Choose a book, turn the pages, and follow the narration together with your little explorer.",
+              "Bir kitap seç, sayfaları çevir ve anlatımı minik kaşifinle birlikte takip et.",
           })}
         </p>
       </div>
@@ -527,8 +392,8 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
           </p>
         </div>
       ) : availableLanguages.length > 1 ? (
-        <ScrollArea orientation="horizontal" className="w-full">
-          <div className="flex items-center justify-center gap-3 pb-2 pr-6">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex w-max items-center justify-center gap-3 pb-2 pr-6">
             {availableLanguages.map((storyLanguage) => {
               const isActive = storyLanguage._id === activeLanguageId;
               return (
@@ -557,13 +422,13 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
           <p className="text-lg font-semibold text-primary-700">
             {intl.formatMessage({
               id: "stories.library.empty",
-              defaultMessage: "No story books are available yet.",
+              defaultMessage: "Henüz hikâye kitabı bulunmuyor.",
             })}
           </p>
           <p className="text-sm text-primary-600 mt-2">
             {intl.formatMessage({
               id: "stories.library.emptyDescription",
-              defaultMessage: "New adventures will be added very soon.",
+              defaultMessage: "Yeni maceralar çok yakında eklenecek.",
             })}
           </p>
         </div>
@@ -575,47 +440,44 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
             ).length;
 
             return (
-              <section key={chapter._id} className="space-y-5">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                  <div className="space-y-1">
-                    <h2 className="text-2xl font-semibold text-foreground">
+              <section key={chapter._id} className="space-y-6">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between px-2 border-b-[3px] border-[#e5e5e5] pb-3">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-extrabold text-[#4b4b4b]">
                       {chapter.title}
                     </h2>
                     {chapter.description && (
-                      <p className="text-sm text-muted-foreground max-w-2xl">
+                      <p className="text-[15px] font-medium text-[#777]">
                         {chapter.description}
                       </p>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs font-semibold">
+                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                    <div className="rounded-xl bg-[#e5e5e5] px-3 py-1.5 text-xs font-bold text-[#afafaf] uppercase tracking-wider">
                       {intl.formatMessage(
                         {
                           id: "stories.library.chapterCount",
-                          defaultMessage: "{count} stories",
+                          defaultMessage: "{count} hikâye",
                         },
                         { count: lessons.length }
                       )}
-                    </Badge>
+                    </div>
                     {completedCount > 0 && (
-                      <Badge
-                        variant="outline"
-                        className="rounded-full border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
-                      >
+                      <div className="rounded-xl bg-[#d7ffb8] px-3 py-1.5 text-xs font-bold text-[#58cc02] uppercase tracking-wider">
                         {intl.formatMessage(
                           {
-                            id: "stories.library.chapterCompleted",
-                            defaultMessage: "{count} completed",
-                          },
+                          id: "stories.library.chapterCompleted",
+                          defaultMessage: "{count} tamamlandı",
+                        },
                           { count: completedCount }
                         )}
-                      </Badge>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <ScrollArea orientation="horizontal" className="w-full">
-                  <div className="flex gap-6 pb-4">
+                <ScrollArea className="w-full whitespace-nowrap">
+                  <div className="flex w-max gap-6 pb-4">
                     {lessons.map((lesson) => {
                       const metadata = lesson.storyMetadata;
                       const coverImage =
@@ -647,8 +509,8 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                       return (
                         <m.div
                           key={bookId}
-                          className="group relative flex min-w-[280px] max-w-[320px] flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                          whileHover={{ y: -6 }}
+                          className="group relative flex min-w-[280px] max-w-[320px] flex-col overflow-hidden rounded-2xl border-2 border-b-4 border-gray-200 bg-white transition-all hover:border-b-2 hover:mt-[2px] active:border-b-0 active:mt-[4px]"
+                          whileHover={{ y: -2 }}
                           whileTap={{ scale: 0.98 }}
                         >
                           <div
@@ -657,13 +519,10 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                               background: `linear-gradient(130deg, ${accentColor}26, ${accentColor}0f)`,
                             }}
                           >
-                            <Image
+                            <img
                               src={coverImage}
                               alt={metadata?.displayName || lesson.title}
-                              fill
-                              sizes="(max-width: 768px) 100vw, 320px"
-                              className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
-                              priority={false}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                             />
                             {isLocked && (
                               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/85 px-6 text-center backdrop-blur-sm">
@@ -671,7 +530,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                 <p className="text-sm font-semibold text-primary-700">
                                   {intl.formatMessage({
                                     id: "stories.library.premiumRequired",
-                                    defaultMessage: "Premium story",
+                                    defaultMessage: "Premium hikâye",
                                   })}
                                 </p>
                                 <Button
@@ -683,7 +542,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                   <Crown className="h-4 w-4" />
                                   {intl.formatMessage({
                                     id: "stories.library.upgrade",
-                                    defaultMessage: "Upgrade to Premium",
+                                    defaultMessage: "Premium'a Yükselt",
                                   })}
                                 </Button>
                               </div>
@@ -693,7 +552,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                 <Sparkles className="h-3 w-3" />
                                 {intl.formatMessage({
                                   id: "stories.library.completedBadge",
-                                  defaultMessage: "Completed",
+                                  defaultMessage: "Tamamlandı",
                                 })}
                               </div>
                             )}
@@ -736,7 +595,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                   {intl.formatMessage(
                                     {
                                       id: "stories.library.progressLabel",
-                                      defaultMessage: "{read} / {total} pages",
+                                      defaultMessage: "{read} / {total} sayfa",
                                     },
                                     {
                                       read: normalizedPages,
@@ -766,7 +625,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                 {intl.formatMessage(
                                   {
                                     id: "stories.library.pages",
-                                    defaultMessage: "{count} pages",
+                                    defaultMessage: "{count} sayfa",
                                   },
                                   { count: pagesCount }
                                 )}
@@ -800,7 +659,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                                 <Badge className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
                                   {intl.formatMessage({
                                     id: "stories.library.audioBadge",
-                                    defaultMessage: "Audio",
+                                    defaultMessage: "Sesli",
                                   })}
                                 </Badge>
                               )}
@@ -809,18 +668,18 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
                             <Button
                               onClick={() => handleOpenStory(lesson)}
                               variant={isLocked ? "locked" : "primary"}
-                              className="mt-auto rounded-full px-5 py-2 text-sm font-semibold normal-case"
+                              className="mt-auto w-full rounded-xl border-b-4 active:border-b-0 active:mt-1 py-6 text-sm font-bold normal-case uppercase tracking-wider"
                               disabled={isLocked}
                               aria-disabled={isLocked}
                             >
                               {isLocked
                                 ? intl.formatMessage({
                                     id: "stories.library.locked",
-                                    defaultMessage: "Premium required",
+                                    defaultMessage: "Premium gerekli",
                                   })
                                 : intl.formatMessage({
                                     id: "stories.library.readNow",
-                                    defaultMessage: "Read now",
+                                    defaultMessage: "Şimdi Oku",
                                   })}
                             </Button>
                           </div>

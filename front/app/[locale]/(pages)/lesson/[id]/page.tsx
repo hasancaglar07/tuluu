@@ -17,8 +17,8 @@ export default async function page({
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: "Lesson - TULU",
-    description: "An enjoyable way to learn a new language",
+    title: "Ders - TULU",
+    description: "Ders içeriğini tamamlayarak ilerlemeni artır.",
     icons: {
       icon: "/images/logo_icon.png",
       shortcut: "/favicon.ico",

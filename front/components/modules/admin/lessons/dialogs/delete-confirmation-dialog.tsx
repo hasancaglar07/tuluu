@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -36,19 +36,22 @@ export function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            {title}
+          </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          Bu işlem geri alınamaz.
+        <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          Bu işlem geri alınamaz. Yanlış silme işlemlerini önlemek için devam etmeden önce bilgiyi kontrol edin.
         </div>
         <div className="mt-4 flex flex-col justify-end gap-2 sm:flex-row">
           <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
@@ -60,7 +63,7 @@ export function DeleteConfirmationDialog({
             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
             <FormattedMessage
               id="admin.lessons.confirmDelete"
-              defaultMessage="Confirm Delete"
+              defaultMessage="Evet, Sil"
             />
           </Button>
         </div>

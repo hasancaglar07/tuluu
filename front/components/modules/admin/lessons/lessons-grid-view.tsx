@@ -136,6 +136,8 @@ export function LessonsGridView({
     statusFilter !== "all" ||
     typeFilter !== "all" ||
     chapterFilter !== "all";
+  const activeLessonsCount = allLessons.filter((lesson) => lesson.isActive).length;
+  const testLessonsCount = allLessons.filter((lesson) => lesson.isTest).length;
 
   const toggleSelectAllVisible = (checked: boolean | "indeterminate") => {
     if (checked === true) {
@@ -188,15 +190,15 @@ export function LessonsGridView({
           <h2 className="text-xl font-bold">
             <FormattedMessage
               id="admin.lessons.tabs.lessons"
-              defaultMessage="Lessons"
+              defaultMessage="Dersler"
             />
           </h2>
           <p className="text-sm text-muted-foreground">
             <FormattedMessage
               id="admin.lessons.lessonsGridDescription"
-              defaultMessage="Manage all lessons across units and chapters for {languageName}"
+              defaultMessage="{languageName} için tüm dersleri ünite ve bölüm bazında yönetin."
               values={{
-                languageName: currentLanguage?.name || "selected language",
+                languageName: currentLanguage?.name || "seçili program",
               }}
             />
           </p>
@@ -205,12 +207,17 @@ export function LessonsGridView({
           <BookOpen className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addLesson"
-            defaultMessage="Add Lesson"
+            defaultMessage="Ders Ekle"
           />
         </Button>
       </div>
 
       <div className="space-y-3 rounded-lg border bg-muted/20 p-3 sm:p-4">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline">{allLessons.length} toplam ders</Badge>
+          <Badge>{activeLessonsCount} aktif</Badge>
+          <Badge variant="secondary">{testLessonsCount} test</Badge>
+        </div>
         <div className="grid gap-2 xl:grid-cols-[1fr,170px,170px,220px,auto]">
           <Input
             value={searchTerm}
@@ -286,20 +293,20 @@ export function LessonsGridView({
           <h3 className="text-lg font-medium">
             <FormattedMessage
               id="admin.lessons.noLessons.title"
-              defaultMessage="No lessons yet"
+              defaultMessage="Henüz ders yok"
             />
           </h3>
           <p className="text-sm text-slate-500 mt-1 mb-4">
             <FormattedMessage
               id="admin.lessons.noLessons.subtitle"
-              defaultMessage="Create chapters and units first, then add lessons to teach your content."
+              defaultMessage="Önce bölüm ve üniteleri oluşturun, ardından içeriği öğretmek için ders ekleyin."
             />
           </p>
           <Button onClick={onAddLesson}>
             <BookOpen className="mr-2 h-4 w-4" />
             <FormattedMessage
               id="admin.lessons.addLesson"
-              defaultMessage="Add Lesson"
+              defaultMessage="Ders Ekle"
             />
           </Button>
         </div>
@@ -310,7 +317,7 @@ export function LessonsGridView({
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="overflow-hidden rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

@@ -131,7 +131,7 @@ export function PaymentTransactionsTable() {
                     </div>
                   </td>
                   <td className="p-3 text-sm font-medium">
-                    {transaction.amount.toLocaleString("en-US", {
+                    {transaction.amount.toLocaleString("tr-TR", {
                       style: "currency",
                       currency: transaction.currency,
                     })}

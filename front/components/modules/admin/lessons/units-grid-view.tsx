@@ -104,6 +104,8 @@ export function UnitsGridView({
     searchTerm.trim().length > 0 ||
     statusFilter !== "all" ||
     chapterFilter !== "all";
+  const activeUnits = allUnits.filter((unit) => unit.isActive).length;
+  const premiumUnits = allUnits.filter((unit) => unit.isPremium).length;
 
   return (
     <>
@@ -112,15 +114,15 @@ export function UnitsGridView({
           <h2 className="text-xl font-bold">
             <FormattedMessage
               id="admin.lessons.tabs.units"
-              defaultMessage="Units"
+              defaultMessage="Üniteler"
             />
           </h2>
           <p className="text-sm text-muted-foreground">
             <FormattedMessage
               id="admin.lessons.unitsGridDescription"
-              defaultMessage="Manage all units across chapters for {languageName}"
+              defaultMessage="{languageName} için tüm üniteleri bölümler arasında yönetin."
               values={{
-                languageName: currentLanguage?.name || "selected language",
+                languageName: currentLanguage?.name || "seçili program",
               }}
             />
           </p>
@@ -129,12 +131,17 @@ export function UnitsGridView({
           <FolderPlus className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addUnit"
-            defaultMessage="Add Unit"
+            defaultMessage="Ünite Ekle"
           />
         </Button>
       </div>
 
       <div className="rounded-lg border bg-muted/20 p-3 sm:p-4">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Badge variant="outline">{allUnits.length} ünite</Badge>
+          <Badge>{activeUnits} aktif</Badge>
+          <Badge variant="secondary">{premiumUnits} premium</Badge>
+        </div>
         <div className="grid gap-2 lg:grid-cols-[1fr,180px,220px,auto]">
           <Input
             value={searchTerm}
@@ -183,20 +190,20 @@ export function UnitsGridView({
           <h3 className="text-lg font-medium">
             <FormattedMessage
               id="admin.lessons.noUnits.title"
-              defaultMessage="No units yet"
+              defaultMessage="Henüz ünite yok"
             />
           </h3>
           <p className="text-sm text-slate-500 mt-1 mb-4">
             <FormattedMessage
               id="admin.lessons.noUnits.subtitle"
-              defaultMessage="Create chapters first, then add units to organize your lessons."
+              defaultMessage="Önce bölümleri oluşturun, sonra dersleri düzenlemek için ünite ekleyin."
             />
           </p>
           <Button onClick={onAddUnit}>
             <FolderPlus className="mr-2 h-4 w-4" />
             <FormattedMessage
               id="admin.lessons.addUnit"
-              defaultMessage="Add Unit"
+              defaultMessage="Ünite Ekle"
             />
           </Button>
         </div>
@@ -207,7 +214,7 @@ export function UnitsGridView({
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="overflow-hidden rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

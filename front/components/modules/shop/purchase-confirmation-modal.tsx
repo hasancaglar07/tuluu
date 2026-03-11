@@ -52,13 +52,13 @@ export function PurchaseConfirmationModal({
               <h2 className="text-xl font-bold mb-2">
                 <FormattedMessage
                   id="shop.purchase.success.title"
-                  defaultMessage="Purchase Successful!"
+                  defaultMessage="Satın Alma Başarılı!"
                 />
               </h2>
               <p className="text-gray-600 mb-4">
                 <FormattedMessage
                   id="shop.purchase.success.message"
-                  defaultMessage="You have purchased {quantity} heart{plural} for {cost} Gems."
+                  defaultMessage="{quantity} kalp satın aldın. Toplam: {cost} elmas."
                   values={{
                     quantity: heartQuantity,
                     plural: heartQuantity > 1 ? "s" : "",
@@ -70,7 +70,7 @@ export function PurchaseConfirmationModal({
               <Button onClick={onClose} className="w-full">
                 <FormattedMessage
                   id="shop.continue"
-                  defaultMessage="Continue"
+                  defaultMessage="Devam Et"
                 />
               </Button>
             </div>

@@ -1,7 +1,7 @@
 // LeaderboardPage.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
@@ -60,7 +60,7 @@ export default function LeaderboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [timeFilter, setTimeFilter] = useState("allTime");
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -82,7 +82,7 @@ export default function LeaderboardPage() {
 
       const data: LeaderboardResponse = response.data;
 
-      if (!data.success) throw new Error("Failed to fetch leaderboard");
+      if (!data.success) throw new Error("Lider tablosu alınamadı");
 
       const usersWithCurrentUser = data.data.map((user) => ({
         ...user,
@@ -91,33 +91,31 @@ export default function LeaderboardPage() {
 
       setLeaderboardUsers(usersWithCurrentUser);
     } catch (err) {
-      console.error("Error fetching leaderboard:", err);
+      console.error("Lider tablosu alınırken hata:", err);
       if (axios.isAxiosError(err)) {
         setError(
           err.response?.data?.error ||
             err.message ||
-            "Failed to load leaderboard"
+            "Lider tablosu yüklenemedi"
         );
       } else {
         setError(
-          err instanceof Error ? err.message : "Failed to load leaderboard"
+          err instanceof Error ? err.message : "Lider tablosu yüklenemedi"
         );
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeFilter, searchQuery, getToken, userId]);
 
   useEffect(() => {
-    fetchLeaderboard();
-  }, [timeFilter]);
-
-  useEffect(() => {
+    const delay = searchQuery.trim() ? 500 : 0;
     const timer = setTimeout(() => {
       fetchLeaderboard();
-    }, 500);
+    }, delay);
+
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [timeFilter, searchQuery, fetchLeaderboard]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -138,7 +136,7 @@ export default function LeaderboardPage() {
             <span className="ml-2 text-gray-600">
               <FormattedMessage
                 id="leaderboard.loading"
-                defaultMessage="Loading leaderboard..."
+                defaultMessage="Lider tablosu yükleniyor..."
               />
             </span>
           </div>
@@ -150,7 +148,7 @@ export default function LeaderboardPage() {
             <Button onClick={fetchLeaderboard} variant="outline">
               <FormattedMessage
                 id="leaderboard.retry"
-                defaultMessage="Retry"
+                defaultMessage="Tekrar Dene"
               />
             </Button>
           </div>
@@ -162,7 +160,7 @@ export default function LeaderboardPage() {
       <div className="p-4 border-t border-gray-200 text-center text-sm text-gray-500">
         <FormattedMessage
           id="leaderboard.realtime"
-          defaultMessage="The leaderboard is updated in real-time"
+          defaultMessage="Lider tablosu anlık olarak güncellenir"
         />
       </div>
     </div>
@@ -181,7 +179,7 @@ const LeaderboardHeader = ({ onBack }: { onBack: () => void }) => (
         <ArrowLeft className="h-6 w-6" />
       </Button>
       <h1 className="text-xl font-bold">
-        <FormattedMessage id="leaderboard.title" defaultMessage="Leaderboard" />
+        <FormattedMessage id="leaderboard.title" defaultMessage="Lider Tablosu" />
       </h1>
     </div>
   </div>
@@ -204,7 +202,7 @@ const LeaderboardFilters = ({
     <div className="relative flex-1">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
       <Input
-        placeholder="Kullanici ara..."
+        placeholder="Kullanıcı ara..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="pl-10"
@@ -213,12 +211,12 @@ const LeaderboardFilters = ({
     </div>
     <Select value={timeFilter} onValueChange={setTimeFilter} disabled={loading}>
       <SelectTrigger className="w-full sm:w-[180px]">
-        <SelectValue placeholder="Donem" />
+        <SelectValue placeholder="Dönem" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="week">Bu hafta</SelectItem>
         <SelectItem value="month">Bu ay</SelectItem>
-        <SelectItem value="allTime">Tum zamanlar</SelectItem>
+        <SelectItem value="allTime">Tüm zamanlar</SelectItem>
       </SelectContent>
     </Select>
   </div>
@@ -252,7 +250,7 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
       <div className="text-center py-8 text-gray-500">
         <FormattedMessage
           id="leaderboard.noUsers"
-          defaultMessage="No users found"
+          defaultMessage="Kullanıcı bulunamadı"
         />
       </div>
     );
@@ -262,19 +260,19 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
     <div className="space-y-4">
       <div className="flex justify-between items-center px-4 py-2 font-bold text-gray-500 text-sm">
         <div className="w-12 text-center">
-          <FormattedMessage id="leaderboard.rank" defaultMessage="RANK" />
+          <FormattedMessage id="leaderboard.rank" defaultMessage="SIRA" />
         </div>
         <div className="flex-1">
           <FormattedMessage
             id="leaderboard.user"
-            defaultMessage="USER"
+            defaultMessage="KULLANICI"
           />
         </div>
         <div className="w-20 text-center">
           <FormattedMessage id="leaderboard.xp" defaultMessage="XP" />
         </div>
         <div className="w-20 text-center hidden sm:block">
-          <FormattedMessage id="leaderboard.streak" defaultMessage="STREAK" />
+          <FormattedMessage id="leaderboard.streak" defaultMessage="SERİ" />
         </div>
       </div>
 
@@ -312,7 +310,7 @@ const LeaderboardList = ({ users }: { users: LeaderboardUser[] }) => {
                   <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
                     <FormattedMessage
                       id="leaderboard.you"
-                      defaultMessage="You"
+                      defaultMessage="Sen"
                     />
                   </span>
                 )}

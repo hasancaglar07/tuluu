@@ -164,12 +164,12 @@ export async function GET(
       id: transaction._id.toString(),
       number: invoiceNumber,
       transactionId: transaction.transactionId,
-      date: transaction.createdAt.toLocaleDateString("en-US", {
+      date: transaction.createdAt.toLocaleDateString("tr-TR", {
         year: "numeric",
         month: "long",
         day: "numeric",
       }),
-      dueDate: transaction.createdAt.toLocaleDateString("en-US", {
+      dueDate: transaction.createdAt.toLocaleDateString("tr-TR", {
         year: "numeric",
         month: "long",
         day: "numeric",

@@ -28,10 +28,12 @@ export default async function page({
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Page - Title here`,
-    description: `Page - Description here`,
+    title: `Ünite Testi - TULU`,
+    description: `Ünite sonu testini tamamlayarak ilerlemeni ölç.`,
     icons: {
-      icon: `path to asset file`,
+      icon: "/images/logo_icon.png",
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
     },
   };
 }

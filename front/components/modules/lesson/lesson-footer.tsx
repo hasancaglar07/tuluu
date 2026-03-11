@@ -73,7 +73,7 @@ export default function LessonFooter({
   return (
     <footer
       className={cn(
-        "border-t border-t-border py-8 transition-colors duration-300",
+        "border-t border-t-border py-4 md:py-8 transition-colors duration-300 shrink-0",
         isCorrect === true
           ? "bg-green-100"
           : isCorrect === false

@@ -37,7 +37,7 @@ export function SaveProgressAlert() {
         className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
         aria-label={intl.formatMessage({
           id: "alert.close",
-          defaultMessage: "Close alert",
+          defaultMessage: "Uyarıyı kapat",
         })}
       >
         <X size={16} />
@@ -52,13 +52,13 @@ export function SaveProgressAlert() {
           <h4 className="text-left text-lg font-bold text-yellow-800 mb-1">
             <FormattedMessage
               id="saveProgress.title"
-              defaultMessage="Save your progress!"
+              defaultMessage="İlerlemeni kaydet!"
             />
           </h4>
           <p className="text-sm text-yellow-700 mb-3">
             <FormattedMessage
               id="saveProgress.description"
-              defaultMessage="You have {xp} XP and {count, plural, one {# lesson} other {# lessons}} completed. Create an account to avoid losing your progress."
+              defaultMessage="{xp} XP'in var ve {count, plural, one {# ders} other {# ders}} tamamladın. İlerlemeni kaybetmemek için hesap oluştur."
               values={{ xp, count: completedLessons }}
             />
           </p>
@@ -71,7 +71,7 @@ export function SaveProgressAlert() {
             >
               <FormattedMessage
                 id="saveProgress.cta"
-                defaultMessage="Create an account"
+                defaultMessage="Hesap Oluştur"
               />
             </Button>
 
@@ -83,7 +83,7 @@ export function SaveProgressAlert() {
             >
               <FormattedMessage
                 id="saveProgress.later"
-                defaultMessage="Later"
+                defaultMessage="Daha Sonra"
               />
             </Button>
           </div>

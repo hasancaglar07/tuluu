@@ -16,7 +16,7 @@ export default function NewSEOEntryPage() {
     description: "",
     ogImage: "",
     canonicalUrl: "",
-    locale: "en",
+    locale: "tr",
     robots: "index,follow",
     structuredData: "",
   };

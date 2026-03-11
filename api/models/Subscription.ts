@@ -152,7 +152,7 @@ SubscriptionSchema.methods.canBeReactivated = function (): boolean {
 
 SubscriptionSchema.methods.getDisplayAmount = function (): string {
   const amount = this.amount / 100;
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("tr-TR", {
     style: "currency",
     currency: this.currency,
   }).format(amount);

@@ -4,15 +4,13 @@ import Container from "@/components/custom/container";
 import Loading from "@/components/custom/loading";
 import { useAppDispatch } from "@/store";
 import { fetchLessons } from "@/store/lessonsSlice";
-import { fetchUserProgress } from "@/store/progressSlice";
-import { fetchSettings } from "@/store/settingsSlice";
 import { fetchUserData } from "@/store/userSlice";
 import type { Language, LanguageCategory } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { apiClient } from "@/lib/api-client";
 import useSWR from "swr";
@@ -20,19 +18,9 @@ import CategoryBadge from "@/components/custom/category-badge";
 import { i18n } from "@/i18n-config";
 
 // SWR fetcher function
-const fetchLanguages = async (
-  getToken: () => Promise<string | null>,
-  locale: string
-): Promise<Language[]> => {
-  const token = await getToken();
+const fetchLanguages = async (locale: string): Promise<Language[]> => {
   const response = await apiClient.get(
-    `/api/public/lessons?action=learn&locale=${locale}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    `/api/public/lessons?action=learn&locale=${locale}&detail=summary`
   );
 
   return response.data.languages || [];
@@ -89,6 +77,8 @@ export default function LanguagesToLearn({
   const [viewMode, setViewMode] = useState<"categories" | "programs">(
     normalizedCategory !== "all" ? "programs" : "categories"
   );
+  const hasPrefetchedRoutes = useRef(false);
+  const hasWarmedDashboardApis = useRef(false);
 
   const router = useLocalizedRouter();
   const dispatch = useAppDispatch();
@@ -101,8 +91,69 @@ export default function LanguagesToLearn({
     mutate,
   } = useSWR(
     currentLocale ? ["/api/public/lessons", currentLocale] : null,
-    () => fetchLanguages(getToken, currentLocale)
+    () => fetchLanguages(currentLocale),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+      dedupingInterval: 60_000,
+    }
   );
+
+  useEffect(() => {
+    if (hasPrefetchedRoutes.current) {
+      return;
+    }
+
+    hasPrefetchedRoutes.current = true;
+    router.prefetch("/dashboard");
+    router.prefetch("/stories");
+    router.prefetch("/leaderboard");
+    router.prefetch("/quests");
+    router.prefetch("/shop");
+  }, [router]);
+
+  useEffect(() => {
+    if (!userId || hasWarmedDashboardApis.current) {
+      return;
+    }
+
+    hasWarmedDashboardApis.current = true;
+    let cancelled = false;
+
+    const warmDashboardApis = async () => {
+      const token = await getToken();
+      if (!token || cancelled) {
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      await Promise.allSettled([
+        apiClient.get(`/api/users/${userId}`, {
+          headers,
+          params: { fast: 1 },
+        }),
+        apiClient.get(`/api/users/${userId}/quests`, {
+          headers,
+          params: { type: "daily" },
+        }),
+        apiClient.get(`/api/leaderboards`, {
+          headers,
+          params: { timeFilter: "allTime", limit: "50" },
+        }),
+        apiClient.get(`/api/shop`, { headers }),
+      ]);
+    };
+
+    void warmDashboardApis();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken, userId]);
 
   useEffect(() => {
     setSelectedCategory(normalizedCategory);
@@ -179,6 +230,10 @@ export default function LanguagesToLearn({
       const programs = groupedLanguages[category] || [];
 
       const lessonTotal = programs.reduce((lessonAcc, language) => {
+        if (typeof language.stats?.lessons === "number") {
+          return lessonAcc + language.stats.lessons;
+        }
+
         if (!language.chapters || language.chapters.length === 0) {
           return lessonAcc;
         }
@@ -228,7 +283,7 @@ export default function LanguagesToLearn({
     if (category === "all") {
       return intl.formatMessage({
         id: "category.all",
-        defaultMessage: "All",
+        defaultMessage: "Tümü",
       });
     }
 
@@ -285,7 +340,7 @@ export default function LanguagesToLearn({
             <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-600">
               {intl.formatMessage({
                 id: "miniGame.story",
-                defaultMessage: "Story Time",
+                defaultMessage: "Hikâye Zamanı",
               })}
             </span>
           )}
@@ -324,7 +379,7 @@ export default function LanguagesToLearn({
               {intl.formatMessage(
                 {
                   id: "learn.ageGroup",
-                  defaultMessage: "Age Group: {value}",
+                  defaultMessage: "Yaş Grubu: {value}",
                 },
                 { value: getAgeGroupLabel(themeMetadata.ageGroup) }
               )}
@@ -339,7 +394,7 @@ export default function LanguagesToLearn({
                 {intl.formatMessage(
                   {
                     id: "learn.localeAvailability",
-                    defaultMessage: "Available in {locale}",
+                    defaultMessage: "{locale} dilinde mevcut",
                   },
                   { locale: language.locale.toUpperCase() }
                 )}
@@ -349,7 +404,7 @@ export default function LanguagesToLearn({
               <span className="text-xs font-semibold text-emerald-600">
                 {intl.formatMessage({
                   id: "learn.islamicContent",
-                  defaultMessage: "Includes Islamic storytelling",
+                  defaultMessage: "İslami hikâye anlatımı içerir",
                 })}
               </span>
             )}
@@ -428,10 +483,10 @@ export default function LanguagesToLearn({
       );
 
       if (userId && token) {
-        await dispatch(fetchUserData({ userId, token }));
-        await dispatch(fetchLessons({ languageId, token }));
-        await dispatch(fetchUserProgress({ languageId, token }));
-        await dispatch(fetchSettings({ token }));
+        void Promise.allSettled([
+          dispatch(fetchUserData({ userId, token })),
+          dispatch(fetchLessons({ languageId, token })),
+        ]);
       }
 
       if (isStoryLibrary) {
@@ -467,7 +522,7 @@ export default function LanguagesToLearn({
             {intl.formatMessage({
               id: "learn.subtitle",
               defaultMessage:
-                "Choose a programme to nurture gratitude, kindness and resilience through stories, games and mindful practices.",
+                "Hikâyeler, oyunlar ve bilinçli pratiklerle şükür, nezaket ve dayanıklılığı geliştirecek bir program seç.",
             })}
           </p>
 
@@ -476,7 +531,7 @@ export default function LanguagesToLearn({
               <p className="text-red-500">
                 {intl.formatMessage({
                   id: "learn.error",
-                  defaultMessage: "Error fetching languages. Please try again.",
+                  defaultMessage: "Diller alınırken hata oluştu. Lütfen tekrar deneyin.",
                 })}
               </p>
               <button
@@ -485,7 +540,7 @@ export default function LanguagesToLearn({
               >
                 {intl.formatMessage({
                   id: "learn.retry",
-                  defaultMessage: "Retry",
+                  defaultMessage: "Tekrar Dene",
                 })}
               </button>
             </div>
@@ -517,7 +572,7 @@ export default function LanguagesToLearn({
                             {intl.formatMessage(
                               {
                                 id: "learn.category.programCount",
-                                defaultMessage: "{count} programme",
+                                defaultMessage: "{count} program",
                               },
                               { count: summary.programCount }
                             )}
@@ -526,7 +581,7 @@ export default function LanguagesToLearn({
                             {intl.formatMessage(
                               {
                                 id: "learn.category.lessonCount",
-                                defaultMessage: "{count} lessons",
+                                defaultMessage: "{count} ders",
                               },
                               { count: summary.lessonCount }
                             )}
@@ -546,7 +601,7 @@ export default function LanguagesToLearn({
                       ←{" "}
                       {intl.formatMessage({
                         id: "learn.backToCategories",
-                        defaultMessage: "Back to categories",
+                        defaultMessage: "Kategorilere Dön",
                       })}
                     </button>
                     {showFilters && (
@@ -596,7 +651,7 @@ export default function LanguagesToLearn({
               <h4 className="text-lg font-medium text-gray-700 mb-2">
                 {intl.formatMessage({
                   id: "learn.empty.title",
-                  defaultMessage: "No Languages Available",
+                  defaultMessage: "Kullanılabilir Dil Yok",
                 })}
               </h4>
 
@@ -604,7 +659,7 @@ export default function LanguagesToLearn({
                 {intl.formatMessage({
                   id: "learn.empty",
                   defaultMessage:
-                    "There is no language to learn right now. Please come back later.",
+                    "Şu anda öğrenebileceğin bir dil bulunmuyor. Lütfen daha sonra tekrar gel.",
                 })}
               </p>
             </div>

@@ -20,10 +20,10 @@ export default async function page({
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Page - Title here`,
-    description: `Page - Description here`,
+    title: "Ders Egzersiz Yönetimi - TULU",
+    description: "Ders içindeki egzersizleri düzenleyin, sıralayın ve önizleyin.",
     icons: {
-      icon: `path to asset file`,
+      icon: "/favicon.ico",
     },
   };
 }

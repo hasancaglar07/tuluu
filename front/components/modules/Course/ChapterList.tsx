@@ -61,7 +61,7 @@ export const ChapterList = ({
               <h4>
                 <FormattedMessage
                   id="dashboard.chapter.title"
-                  defaultMessage="Chapter {order}: {title}"
+                  defaultMessage="Bölüm {order}: {title}"
                   values={{ order: chapter.order, title: chapter.title }}
                 />
               </h4>
@@ -76,7 +76,7 @@ export const ChapterList = ({
                     <p>
                       <FormattedMessage
                         id="dashboard.chapter.premiumLocked"
-                        defaultMessage="Premium content - Subscribe to unlock"
+                        defaultMessage="Premium içerik - Kilidi açmak için abone ol"
                       />
                     </p>
                   </TooltipContent>
@@ -91,7 +91,7 @@ export const ChapterList = ({
                   <Badge className="bg-primary-500">
                     <FormattedMessage
                       id="dashboard.chapter.completed"
-                      defaultMessage="COMPLETED"
+                      defaultMessage="TAMAMLANDI"
                     />
                   </Badge>
                 </m.div>

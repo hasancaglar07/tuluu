@@ -7,6 +7,8 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 
+const SHOULD_LOG_CORS = process.env.CORS_DEBUG === "true";
+
 /**
  * CORS configuration interface
  */
@@ -153,7 +155,7 @@ function handlePreflightRequest(
   const requestMethod = request.headers.get("access-control-request-method");
   const requestHeaders = request.headers.get("access-control-request-headers");
 
-  if (process.env.NODE_ENV === "development") {
+  if (SHOULD_LOG_CORS) {
     console.log("🔍 CORS Preflight Request:", {
       origin,
       requestMethod,
@@ -182,7 +184,7 @@ function handlePreflightRequest(
   // Set CORS headers
   setCORSHeaders(response, origin, config);
 
-  if (process.env.NODE_ENV === "development") {
+  if (SHOULD_LOG_CORS) {
     console.log("CORS Preflight: Request approved");
   }
   return response;
@@ -199,7 +201,7 @@ export function withCORSProtection(
   const origin = request.headers.get("origin");
   const method = request.method;
 
-  if (process.env.NODE_ENV === "development") {
+  if (SHOULD_LOG_CORS) {
     console.log("🔍 CORS Check:", {
       method,
       origin,
@@ -303,7 +305,7 @@ export function logCORSConfig(): void {
   const config = getCORSConfig();
   const validation = validateCORSConfig();
 
-  if (process.env.NODE_ENV === "development") {
+  if (SHOULD_LOG_CORS) {
     console.log("CORS Configuration:", {
       environment: process.env.NODE_ENV,
       allowedOrigins: config.allowedOrigins,

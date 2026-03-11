@@ -25,7 +25,7 @@ export function DangerZone({
     <Card>
       <CardHeader>
         <CardTitle>
-          <FormattedMessage id="dangerZone.title" defaultMessage="Danger zone" />
+          <FormattedMessage id="dangerZone.title" defaultMessage="Tehlikeli Bölge" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -34,7 +34,7 @@ export function DangerZone({
             <div role="button" className="flex items-center gap-2">
               <LogOut className="h-4 w-4 text-gray-500" />
               <span>
-                <FormattedMessage id="dangerZone.logout" defaultMessage="Log out" />
+                <FormattedMessage id="dangerZone.logout" defaultMessage="Çıkış Yap" />
               </span>
             </div>
             <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -49,7 +49,7 @@ export function DangerZone({
             <div className="flex items-center gap-2">
               <Trash2 className="h-4 w-4" />
               <span>
-                <FormattedMessage id="dangerZone.deleteAccount" defaultMessage="Delete my account" />
+                <FormattedMessage id="dangerZone.deleteAccount" defaultMessage="Hesabımı Sil" />
               </span>
             </div>
             <ChevronRight className="h-4 w-4" />

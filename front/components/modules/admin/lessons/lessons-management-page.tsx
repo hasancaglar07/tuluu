@@ -10,8 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BookOpenCheck,
+  ArrowRight,
   Globe,
   Layers,
+  ListChecks,
+  Sparkles,
 } from "lucide-react";
 import {
   Card,
@@ -243,7 +246,7 @@ export default function LessonsManagementPage() {
         toast.error(
           intl.formatMessage({
             id: "admin.lessons.error.invalidData",
-            defaultMessage: "Invalid data format received from server",
+            defaultMessage: "Sunucudan geçersiz veri biçimi alındı",
           })
         );
       }
@@ -252,7 +255,7 @@ export default function LessonsManagementPage() {
       toast.error(
         intl.formatMessage({
           id: "admin.lessons.error.fetchFailed",
-          defaultMessage: "Failed to fetch lessons data",
+          defaultMessage: "Ders verileri alınamadı",
         })
       );
     } finally {
@@ -331,7 +334,7 @@ export default function LessonsManagementPage() {
             intl.formatMessage({
               id: "admin.lessons.error.languageExists",
               defaultMessage:
-                "This programme already exists for the selected site language.",
+                "Seçilen site dili için bu program zaten mevcut.",
             })
           );
           return;
@@ -344,7 +347,7 @@ export default function LessonsManagementPage() {
       toast.error(
         intl.formatMessage({
           id: "admin.lessons.error.unknown",
-          defaultMessage: "An unknown error occurred",
+          defaultMessage: "Bilinmeyen bir hata oluştu",
         })
       );
     }
@@ -360,34 +363,45 @@ export default function LessonsManagementPage() {
       <Loading isLoading={isLoading} />
       <div className="mx-auto w-full max-w-[1500px] space-y-6">
         {/* Page Header */}
-        <div className="rounded-xl border bg-card p-4 shadow-sm sm:p-6">
+        <div className="rounded-xl border bg-gradient-to-b from-card to-card/95 p-4 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">
-              <FormattedMessage
-                id="admin.lessons.title"
-                defaultMessage="Program Yönetimi"
-              />
-            </h1>
-            <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              <FormattedMessage
-                id="admin.lessons.subtitle"
-                defaultMessage="Basit ve yönetilebilir akış: Program → Bölüm → Ünite → Ders"
-              />
-            </p>
-          </div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                <FormattedMessage
+                  id="admin.lessons.title"
+                  defaultMessage="Program Yönetimi"
+                />
+              </h1>
+              <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
+                <FormattedMessage
+                  id="admin.lessons.subtitle"
+                  defaultMessage="Basit ve yönetilebilir akış: Program → Bölüm → Ünite → Ders"
+                />
+              </p>
+            </div>
 
             <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
-            <Button
-              className="w-full sm:w-auto"
-              onClick={() => setIsLanguageDialogOpen(true)}
-            >
-              <Globe className="mr-2 h-4 w-4" />
-              <FormattedMessage
-                id="admin.lessons.addLanguage"
-                defaultMessage="Program Ekle"
-              />
-            </Button>
+              <Button
+                className="w-full sm:w-auto"
+                variant="outline"
+                onClick={() => setActiveTab("tree")}
+              >
+                <Layers className="mr-2 h-4 w-4" />
+                <FormattedMessage
+                  id="admin.lessons.gotoTree"
+                  defaultMessage="Yetenek Ağacında Yönet"
+                />
+              </Button>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => setIsLanguageDialogOpen(true)}
+              >
+                <Globe className="mr-2 h-4 w-4" />
+                <FormattedMessage
+                  id="admin.lessons.addLanguage"
+                  defaultMessage="Program Ekle"
+                />
+              </Button>
             </div>
           </div>
         </div>
@@ -450,7 +464,7 @@ export default function LessonsManagementPage() {
           </Card>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -523,6 +537,56 @@ export default function LessonsManagementPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Card className="overflow-hidden border-dashed">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                <FormattedMessage
+                  id="admin.lessons.quickGuide"
+                  defaultMessage="Hızlı Yönetim Akışı"
+                />
+              </CardTitle>
+              <CardDescription>
+                <FormattedMessage
+                  id="admin.lessons.quickGuide.subtitle"
+                  defaultMessage="Yeni bir içerik seti oluştururken bu sırayı takip edin."
+                />
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="text-sm font-medium">1. Program oluştur</p>
+                <p className="text-xs text-muted-foreground">
+                  Kategori, hedef yaş ve temel dil seçerek başlangıç yapın.
+                </p>
+              </div>
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="text-sm font-medium">2. Bölüm ve Ünite ekle</p>
+                <p className="text-xs text-muted-foreground">
+                  İçeriği mantıksal gruplara bölüp öğrenme adımlarını netleştirin.
+                </p>
+              </div>
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="text-sm font-medium">3. Dersleri ve egzersizleri tamamla</p>
+                <p className="text-xs text-muted-foreground">
+                  Ders başına hedef XP belirleyin, ardından egzersizleri sıralayın.
+                </p>
+              </div>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => setActiveTab("lessons")}
+              >
+                <ListChecks className="mr-2 h-4 w-4" />
+                <FormattedMessage
+                  id="admin.lessons.gotoLessonsTab"
+                  defaultMessage="Ders Sekmesine Geç"
+                />
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Tabs Interface */}
@@ -532,7 +596,7 @@ export default function LessonsManagementPage() {
           onValueChange={setActiveTab}
           className="space-y-4"
         >
-          <TabsList className="flex h-auto w-full flex-nowrap gap-1 overflow-x-auto p-1">
+          <TabsList className="flex h-auto w-full flex-nowrap gap-1 overflow-x-auto rounded-xl border bg-muted/30 p-1">
             <TabsTrigger className="whitespace-nowrap" value="tree">
               <FormattedMessage
                 id="admin.lessons.tabs.skillTree"
@@ -789,7 +853,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.lessonDeleted",
-                    defaultMessage: "Lesson deleted successfully",
+                    defaultMessage: "Ders başarıyla silindi",
                   })
                 );
               }}
@@ -841,7 +905,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.languageCreated",
-                    defaultMessage: "Language created successfully",
+                    defaultMessage: "Program başarıyla oluşturuldu",
                   })
                 );
               }
@@ -903,7 +967,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.languageUpdated",
-                    defaultMessage: "Language updated successfully",
+                    defaultMessage: "Program başarıyla güncellendi",
                   })
                 );
               }
@@ -974,7 +1038,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.chapterCreated",
-                    defaultMessage: "Chapter created successfully",
+                    defaultMessage: "Bölüm başarıyla oluşturuldu",
                   })
                 );
               }
@@ -1067,7 +1131,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.unitCreated",
-                    defaultMessage: "Unit created successfully",
+                    defaultMessage: "Ünite başarıyla oluşturuldu",
                   })
                 );
               }
@@ -1182,7 +1246,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.lessonCreated",
-                    defaultMessage: "Lesson created successfully",
+                    defaultMessage: "Ders başarıyla oluşturuldu",
                   })
                 );
               }
@@ -1339,7 +1403,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.exerciseCreated",
-                    defaultMessage: "Exercise created successfully",
+                    defaultMessage: "Egzersiz başarıyla oluşturuldu",
                   })
                 );
               }
@@ -1406,7 +1470,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.chapterUpdated",
-                    defaultMessage: "Chapter updated successfully",
+                    defaultMessage: "Bölüm başarıyla güncellendi",
                   })
                 );
               }
@@ -1481,7 +1545,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.unitUpdated",
-                    defaultMessage: "Unit updated successfully",
+                    defaultMessage: "Ünite başarıyla güncellendi",
                   })
                 );
               }
@@ -1575,7 +1639,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.lessonUpdated",
-                    defaultMessage: "Lesson updated successfully",
+                    defaultMessage: "Ders başarıyla güncellendi",
                   })
                 );
               }
@@ -1600,13 +1664,13 @@ export default function LessonsManagementPage() {
           }}
           title={intl.formatMessage({
             id: "admin.lessons.delete.language.title",
-            defaultMessage: "Disable Program",
+            defaultMessage: "Programı Pasife Al",
           })}
           description={intl.formatMessage(
             {
               id: "admin.lessons.delete.language.description",
               defaultMessage:
-                "Are you sure you want to disable the program '{name}'? Learners will no longer see it in listings.",
+                "'{name}' programını pasife almak istediğinize emin misiniz? Öğrenciler listelerde artık göremez.",
             },
             { name: languageToDelete?.name }
           )}
@@ -1648,7 +1712,7 @@ export default function LessonsManagementPage() {
                 toast.success(
                   intl.formatMessage({
                     id: "admin.lessons.success.languageDeleted",
-                    defaultMessage: "Program disabled successfully",
+                    defaultMessage: "Program başarıyla pasife alındı",
                   })
                 );
               }
@@ -1669,13 +1733,13 @@ export default function LessonsManagementPage() {
           onClose={() => setIsDeleteChapterDialogOpen(false)}
           title={intl.formatMessage({
             id: "admin.lessons.delete.chapter.title",
-            defaultMessage: "Delete Chapter",
+            defaultMessage: "Bölümü Sil",
           })}
           description={intl.formatMessage(
             {
               id: "admin.lessons.delete.chapter.description",
               defaultMessage:
-                "Are you sure you want to delete the chapter '{name}'? This will also delete all units and lessons within it.",
+                "'{name}' bölümünü silmek istediğinize emin misiniz? İçindeki tüm ünite ve dersler de silinecek.",
             },
             { name: chapterToDelete?.title }
           )}
@@ -1710,7 +1774,7 @@ export default function LessonsManagementPage() {
                   toast.success(
                     intl.formatMessage({
                       id: "admin.lessons.success.chapterDeleted",
-                      defaultMessage: "Chapter deleted successfully",
+                      defaultMessage: "Bölüm başarıyla silindi",
                     })
                   );
                 }
@@ -1732,13 +1796,13 @@ export default function LessonsManagementPage() {
           onClose={() => setIsDeleteUnitDialogOpen(false)}
           title={intl.formatMessage({
             id: "admin.lessons.delete.unit.title",
-            defaultMessage: "Delete Unit",
+            defaultMessage: "Üniteyi Sil",
           })}
           description={intl.formatMessage(
             {
               id: "admin.lessons.delete.unit.description",
               defaultMessage:
-                "Are you sure you want to delete the unit '{name}'? This will also delete all lessons within it.",
+                "'{name}' ünitesini silmek istediğinize emin misiniz? İçindeki tüm dersler de silinecek.",
             },
             { name: unitToDelete?.title }
           )}
@@ -1780,7 +1844,7 @@ export default function LessonsManagementPage() {
                   toast.success(
                     intl.formatMessage({
                       id: "admin.lessons.success.unitDeleted",
-                      defaultMessage: "Unit deleted successfully",
+                      defaultMessage: "Ünite başarıyla silindi",
                     })
                   );
                 }

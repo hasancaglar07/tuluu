@@ -95,14 +95,14 @@ export function LanguageSelector({
       <Label className="flex items-center text-sm text-muted-foreground">
         <FormattedMessage
           id="admin.lessons.selectLanguage"
-          defaultMessage="Select Language:"
+          defaultMessage="Program Seç:"
         />
       </Label>
       <div className="space-y-2">
         <Label className="text-xs text-muted-foreground">
           <FormattedMessage
             id="admin.lessons.topCategory"
-            defaultMessage="Top Category"
+            defaultMessage="Ana Kategori"
           />
         </Label>
         <div className="flex flex-wrap gap-2">
@@ -116,7 +116,7 @@ export function LanguageSelector({
               {category === "all"
                 ? intl.formatMessage({
                     id: "category.all",
-                    defaultMessage: "All",
+                    defaultMessage: "Tümü",
                   })
                 : intl.formatMessage({
                     id: `category.${category}`,
@@ -141,7 +141,7 @@ export function LanguageSelector({
                 {intl.formatMessage(
                   {
                     id: "learn.category.programCount",
-                    defaultMessage: "{count} programme",
+                    defaultMessage: "{count} program",
                   },
                   { count: items.length }
                 )}

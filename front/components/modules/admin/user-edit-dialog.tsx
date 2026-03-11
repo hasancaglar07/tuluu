@@ -42,10 +42,10 @@ export default function UserEditDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you would send this data to your API
-    console.log("Updated user data:", formData);
+    console.log("Güncellenen kullanıcı verisi:", formData);
 
     // Show success message and close dialog
-    alert("User information updated successfully!");
+    alert("Kullanıcı bilgileri başarıyla güncellendi!");
     onOpenChange(false);
   };
 
@@ -53,9 +53,9 @@ export default function UserEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit User Profile</DialogTitle>
+          <DialogTitle>Kullanıcı Profilini Düzenle</DialogTitle>
           <DialogDescription>
-            Update user information. Click save when you&apos;re done.
+            Kullanıcı bilgilerini güncelleyin. İşiniz bittiğinde kaydedin.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -71,7 +71,7 @@ export default function UserEditDialog({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <Label htmlFor="avatar">Profile Image URL</Label>
+                <Label htmlFor="avatar">Profil Görseli URL</Label>
                 <Input
                   id="avatar"
                   name="avatar"
@@ -84,7 +84,7 @@ export default function UserEditDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Ad Soyad</Label>
                 <Input
                   id="name"
                   name="name"
@@ -94,7 +94,7 @@ export default function UserEditDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-posta</Label>
                 <Input
                   id="email"
                   name="email"
@@ -107,7 +107,7 @@ export default function UserEditDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio">Biyografi</Label>
               <Textarea
                 id="bio"
                 name="bio"
@@ -119,7 +119,7 @@ export default function UserEditDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">Dil</Label>
                 <Input
                   id="language"
                   name="language"
@@ -128,7 +128,7 @@ export default function UserEditDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">Ülke</Label>
                 <Input
                   id="country"
                   name="country"
@@ -139,7 +139,7 @@ export default function UserEditDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timezone">Timezone</Label>
+              <Label htmlFor="timezone">Saat Dilimi</Label>
               <Input
                 id="timezone"
                 name="timezone"
@@ -150,7 +150,7 @@ export default function UserEditDialog({
           </div>
 
           <div className="grid gap-4 border rounded-lg p-4 bg-muted/20">
-            <h3 className="text-sm font-semibold text-muted-foreground">Parental Controls</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground">Ebeveyn Kontrolleri</h3>
             <div className="flex items-center space-x-2">
               <Switch
                 id="parental-enabled"
@@ -166,11 +166,11 @@ export default function UserEditDialog({
                   }))
                 }
               />
-              <Label htmlFor="parental-enabled">Require guardian approval</Label>
+              <Label htmlFor="parental-enabled">Veli onayı gereksin</Label>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="guardianContact">Guardian contact email</Label>
+              <Label htmlFor="guardianContact">Veli iletişim e-postası</Label>
               <Input
                 id="guardianContact"
                 value={formData.parentalControls?.guardianContact ?? ""}
@@ -189,7 +189,7 @@ export default function UserEditDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="minutesAllowed">Daily limit (minutes)</Label>
+                <Label htmlFor="minutesAllowed">Günlük limit (dakika)</Label>
                 <Input
                   id="minutesAllowed"
                   type="number"
@@ -209,7 +209,7 @@ export default function UserEditDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="minutesUsed">Minutes used today</Label>
+                <Label htmlFor="minutesUsed">Bugün kullanılan dakika</Label>
                 <Input
                   id="minutesUsed"
                   type="number"
@@ -231,7 +231,7 @@ export default function UserEditDialog({
             </div>
             {formData.dailyLimits?.lastResetAt && (
               <p className="text-xs text-muted-foreground">
-                Last reset: {new Date(formData.dailyLimits.lastResetAt).toLocaleString()}
+                Son sıfırlama: {new Date(formData.dailyLimits.lastResetAt).toLocaleString()}
               </p>
             )}
           </div>
@@ -242,9 +242,9 @@ export default function UserEditDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit">Değişiklikleri Kaydet</Button>
           </DialogFooter>
         </form>
       </DialogContent>

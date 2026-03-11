@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
 import type { Unit, Lesson } from "@/types/lessons";
+import { Badge } from "@/components/ui/badge";
 
 interface UnitCardProps {
   unit: Unit;
@@ -102,7 +103,7 @@ export function UnitCard({
               <FilePlus className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addLesson"
-                defaultMessage="Add Lesson"
+                defaultMessage="Ders Ekle"
               />
             </Button>
 
@@ -117,14 +118,14 @@ export function UnitCard({
                   <Edit className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.editUnit"
-                    defaultMessage="Edit Unit"
+                    defaultMessage="Üniteyi Düzenle"
                   />
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600" onClick={onDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.deleteUnit"
-                    defaultMessage="Delete Unit"
+                    defaultMessage="Üniteyi Sil"
                   />
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -132,6 +133,12 @@ export function UnitCard({
           </div>
         </div>
         <CardDescription className="line-clamp-2">{unit.description}</CardDescription>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline">{unit.lessons.length} ders</Badge>
+          <Badge variant={unit.isActive ? "default" : "secondary"}>
+            {unit.isActive ? "Aktif" : "Pasif"}
+          </Badge>
+        </div>
       </CardHeader>
 
       {/* Expanded Unit Content - Lessons */}
@@ -143,14 +150,14 @@ export function UnitCard({
                 <p className="text-sm text-slate-500 mb-2">
                   <FormattedMessage
                     id="admin.lessons.noLessons"
-                    defaultMessage="No lessons in this unit yet."
+                    defaultMessage="Bu ünitede henüz ders yok."
                   />
                 </p>
                 <Button variant="outline" onClick={onAddLesson}>
                   <Plus className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.addLesson"
-                    defaultMessage="Add Lesson"
+                    defaultMessage="Ders Ekle"
                   />
                 </Button>
               </div>
@@ -228,7 +235,7 @@ export function UnitCard({
                           <Edit className="mr-2 h-4 w-4" />
                           <FormattedMessage
                             id="admin.lessons.editLesson"
-                            defaultMessage="Edit Lesson"
+                            defaultMessage="Dersi Düzenle"
                           />
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -238,7 +245,7 @@ export function UnitCard({
                           <Trash2 className="mr-2 h-4 w-4" />
                           <FormattedMessage
                             id="admin.lessons.deleteLesson"
-                            defaultMessage="Delete Lesson"
+                            defaultMessage="Dersi Sil"
                           />
                         </DropdownMenuItem>
                       </DropdownMenuContent>

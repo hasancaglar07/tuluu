@@ -61,11 +61,7 @@ import { upload as uploadBlob } from "@vercel/blob/client";
 
 // Languages for exercises
 const exerciseLanguages = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "French" },
-  { value: "es", label: "Spanish" },
-  { value: "de", label: "German" },
-  { value: "it", label: "Italian" },
+  { value: "tr", label: "Turkish" },
 ];
 
 const moralValueOptions = [
@@ -133,8 +129,8 @@ const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
     type: "translate",
     instruction: "",
     sourceText: "",
-    sourceLanguage: "en",
-    targetLanguage: "fr",
+    sourceLanguage: "tr",
+    targetLanguage: "tr",
     correctAnswer: [""],
     options: ["", "", "", "", ""],
     isNewWord: false,
@@ -162,8 +158,8 @@ const [newExercise, setNewExercise] = useState({
     type: "translate",
     instruction: "",
     sourceText: "",
-    sourceLanguage: "en",
-    targetLanguage: "fr",
+    sourceLanguage: "tr",
+    targetLanguage: "tr",
     correctAnswer: [""],
     options: ["", "", "", "", ""],
     isNewWord: false,
@@ -354,8 +350,8 @@ const { getToken } = useAuth();
           type: "translate",
           instruction: "",
           sourceText: "",
-          sourceLanguage: "en",
-          targetLanguage: "fr",
+          sourceLanguage: "tr",
+          targetLanguage: "tr",
           correctAnswer: [""],
           options: ["", "", "", "", ""],
           isNewWord: false,
@@ -482,8 +478,8 @@ const { getToken } = useAuth();
           type: "translate",
           instruction: "",
           sourceText: "",
-          sourceLanguage: "en",
-          targetLanguage: "fr",
+          sourceLanguage: "tr",
+          targetLanguage: "tr",
           correctAnswer: [""],
           options: ["", "", "", "", ""],
           isNewWord: false,
@@ -2439,7 +2435,7 @@ const { getToken } = useAuth();
                   Source Language
                 </Label>
                 <Select
-                  value={editingExercise?.sourceLanguage || "en"}
+                  value={editingExercise?.sourceLanguage || "tr"}
                   onValueChange={(value) =>
                     setEditingExercise({
                       ...editingExercise,
@@ -2872,8 +2868,8 @@ const { getToken } = useAuth();
                   type: "translate",
                   instruction: "",
                   sourceText: "",
-                  sourceLanguage: "en",
-                  targetLanguage: "fr",
+                  sourceLanguage: "tr",
+                  targetLanguage: "tr",
                   correctAnswer: [""],
                   options: ["", "", "", "", ""],
                   isNewWord: false,

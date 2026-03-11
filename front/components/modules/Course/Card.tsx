@@ -51,10 +51,12 @@ const MINI_GAME_ICON_MAP: Record<string, LucideIcon> = {
   breathing: Wind,
 };
 
-const toTitleCase = (value: string) =>
-  value
+const toTitleCase = (value?: string) => {
+  if (!value) return "";
+  return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 /**
  * Card component for displaying lesson items in the game view

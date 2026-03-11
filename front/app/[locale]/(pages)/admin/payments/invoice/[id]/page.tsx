@@ -13,10 +13,10 @@ export default async function page({
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Page - Title here`,
-    description: `Page - Description here`,
+    title: "Fatura Detayı - TULU",
+    description: "Ödeme faturasının detaylarını görüntüleyin ve yönetin.",
     icons: {
-      icon: `path to asset file`,
+      icon: "/favicon.ico",
     },
   };
 }

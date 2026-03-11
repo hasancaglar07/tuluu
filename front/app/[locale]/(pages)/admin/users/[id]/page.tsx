@@ -74,29 +74,30 @@ import { apiClient } from "@/lib/api-client";
 import { AppUser } from "@/types";
 
 // Function to safely get nested values
-const getNestedValue = (
-  obj: any,
+const getNestedValue = <T,>(
+  obj: Record<string, unknown> | null | undefined,
   path: string,
-  defaultValue: any = undefined
-) => {
+  defaultValue: T
+): T => {
   const keys = path.split(".");
-  let result = obj;
+  let result: unknown = obj;
 
   for (const key of keys) {
-    if (result === undefined || result === null) {
+    if (typeof result !== "object" || result === null || !(key in result)) {
       return defaultValue;
     }
-    result = result[key];
+
+    result = (result as Record<string, unknown>)[key];
   }
 
-  return result !== undefined && result !== null ? result : defaultValue;
+  return result !== undefined && result !== null ? (result as T) : defaultValue;
 };
 
 // Function to format date
 const formatDate = (dateString: string | Date): string => {
-  if (!dateString) return "N/A";
+  if (!dateString) return "Yok";
 
-  return format(new Date(dateString), "MMM d, yyyy 'at' h:mm a");
+  return format(new Date(dateString), "dd.MM.yyyy HH:mm");
 };
 
 // Function to get status badge color
@@ -224,32 +225,138 @@ export default function UserDetailPage() {
 
   // Fetch user data
   useEffect(() => {
+    let cancelled = false;
+
     const fetchUser = async () => {
-      setLoading(true);
-      setError(null);
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
+
       const token = await getToken();
+
       try {
         const response = await apiClient.get(`/api/admin/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUser(response.data);
+
+        if (!cancelled) {
+          setUser(response.data);
+        }
       } catch (err) {
-        console.error("Error fetching user:", err);
-        setError(intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" }));
-        toast.error(intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" }));
+        console.error("Kullanıcı verisi alınırken hata:", err);
+
+        if (!cancelled) {
+          setError(
+            intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" })
+          );
+          toast.error(
+            intl.formatMessage({ id: "admin.userDetail.errors.fetchFailed" })
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchUser();
-  }, [userId, refreshKey]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, refreshKey, getToken, intl]);
 
   // Handle refresh
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
+  };
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "free":
+        return intl.formatMessage({ id: "admin.users.filters.free" });
+      case "paid":
+        return intl.formatMessage({ id: "admin.users.filters.paid" });
+      case "admin":
+        return intl.formatMessage({ id: "admin.users.filters.admin" });
+      default:
+        return role;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return intl.formatMessage({ id: "admin.users.filters.active" });
+      case "inactive":
+        return intl.formatMessage({ id: "admin.users.filters.inactive" });
+      case "banned":
+        return intl.formatMessage({ id: "admin.users.filters.banned" });
+      case "suspended":
+        return intl.formatMessage({ id: "admin.users.filters.suspended" });
+      default:
+        return status;
+    }
+  };
+
+  const getSubscriptionLabel = (subscription: string) => {
+    switch (subscription) {
+      case "free":
+        return intl.formatMessage({ id: "admin.users.filters.free" });
+      case "premium":
+        return intl.formatMessage({ id: "admin.users.filters.premium" });
+      default:
+        return subscription;
+    }
+  };
+
+  const getReportPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case "low":
+        return "Düşük";
+      case "medium":
+        return "Orta";
+      case "high":
+        return "Yüksek";
+      case "critical":
+        return "Kritik";
+      default:
+        return priority;
+    }
+  };
+
+  const getReportStatusLabel = (status: string) => {
+    switch (status) {
+      case "open":
+        return "Açık";
+      case "in_progress":
+        return "İşlemde";
+      case "resolved":
+        return "Çözüldü";
+      case "closed":
+        return "Kapalı";
+      default:
+        return status.replace("_", " ");
+    }
+  };
+
+  const getReportTypeLabel = (type: string) => {
+    switch (type) {
+      case "bug":
+        return "Hata";
+      case "content_issue":
+        return "İçerik Sorunu";
+      case "user_report":
+        return "Kullanıcı Raporu";
+      case "payment_issue":
+        return "Ödeme Sorunu";
+      default:
+        return type.replace("_", " ");
+    }
   };
 
   // Loading state
@@ -361,8 +468,8 @@ export default function UserDetailPage() {
   }
 
   // Get user data with fallbacks
-  const userName = getNestedValue(user, "publicMetadata.name", "Unknown User");
-  const userEmail = user.email || "No email";
+  const userName = getNestedValue(user, "publicMetadata.name", "Bilinmeyen Kullanıcı");
+  const userEmail = user.email || "E-posta yok";
   const userRole = getNestedValue(user, "privateMetadata.role", "free");
   const userStatus = getNestedValue(user, "privateMetadata.status", "inactive");
   const userSubscription = getNestedValue(
@@ -379,9 +486,9 @@ export default function UserDetailPage() {
   const userLanguage = getNestedValue(
     user,
     "publicMetadata.language",
-    "English"
+    "Türkçe"
   );
-  const userCountry = getNestedValue(user, "publicMetadata.country", "Unknown");
+  const userCountry = getNestedValue(user, "publicMetadata.country", "Bilinmiyor");
   const userTimezone = getNestedValue(user, "publicMetadata.timezone", "UTC");
   const userJoinDate = user.createdAt || new Date().toISOString();
   const userLastActive = user.lastSignInAt || user.updatedAt || userJoinDate;
@@ -435,7 +542,7 @@ export default function UserDetailPage() {
             variant="outline"
             size="icon"
             onClick={handleRefresh}
-            title="Refresh"
+            title={intl.formatMessage({ id: "admin.userDetail.actions.refresh" })}
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -495,12 +602,14 @@ export default function UserDetailPage() {
                 <p className="text-sm text-gray-500">{userEmail}</p>
               </div>
               <div className="flex flex-wrap justify-center gap-2">
-                <Badge className={getRoleColor(userRole)}>{userRole}</Badge>
+                <Badge className={getRoleColor(userRole)}>
+                  {getRoleLabel(userRole)}
+                </Badge>
                 <Badge className={getStatusColor(userStatus)}>
-                  {userStatus}
+                  {getStatusLabel(userStatus)}
                 </Badge>
                 <Badge className={getSubscriptionColor(userSubscription)}>
-                  {userSubscription}
+                  {getSubscriptionLabel(userSubscription)}
                 </Badge>
               </div>
             </div>
@@ -810,9 +919,9 @@ export default function UserDetailPage() {
                             {activity.gemsEarned && (
                               <div className="flex items-center space-x-1">
                                 <Gem className="h-4 w-4 text-blue-500" />
-                                <span className="text-sm">
-                                  +{activity.gemsEarned} Gems
-                                </span>
+                            <span className="text-sm">
+                              +{activity.gemsEarned} Elmas
+                            </span>
                               </div>
                             )}
                           </div>
@@ -897,15 +1006,15 @@ export default function UserDetailPage() {
                           <Badge
                             className={getReportPriorityColor(report.priority)}
                           >
-                            {report.priority}
+                            {getReportPriorityLabel(report.priority)}
                           </Badge>
                           <Badge
                             className={getReportStatusColor(report.status)}
                           >
-                            {report.status.replace("_", " ")}
+                            {getReportStatusLabel(report.status)}
                           </Badge>
                           <span className="text-sm font-medium">
-                            {report.type.replace("_", " ")}
+                            {getReportTypeLabel(report.type)}
                           </span>
                         </div>
                         <p className="text-xs text-gray-500">
@@ -1063,7 +1172,7 @@ export default function UserDetailPage() {
                   </p>
                 </div>
                 <Badge className={getStatusColor(userStatus)}>
-                  {userStatus}
+                  {getStatusLabel(userStatus)}
                 </Badge>
               </div>
               <Separator />
@@ -1108,7 +1217,7 @@ export default function UserDetailPage() {
                           toast.success(intl.formatMessage({ id: "admin.userDetail.security.deleteSuccess" }));
                           router.push("/admin/users");
                         } catch (err) {
-                          console.error("Error deleting user:", err);
+                          console.error("Kullanıcı silme hatası:", err);
                           toast.error(intl.formatMessage({ id: "admin.userDetail.security.deleteFailed" }));
                         }
                       }

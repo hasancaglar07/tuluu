@@ -7,6 +7,37 @@ export const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-05-28.basil",
 });
 
+const STRIPE_STATS_CACHE_TTL_MS = 60 * 1000;
+const STRIPE_REVENUE_CHART_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type StripeStats = {
+  totalRevenue: number;
+  activeSubscriptions: number;
+  failedPayments: number;
+  refundRate: number;
+};
+
+type StripeStatsCacheValue = {
+  expiresAt: number;
+  payload: StripeStats;
+};
+
+type StripeRevenuePoint = {
+  month: string;
+  revenue: number;
+  subscriptions: number;
+};
+
+type StripeRevenueCacheValue = {
+  expiresAt: number;
+  payload: StripeRevenuePoint[];
+};
+
+const globalForStripeCaches = globalThis as typeof globalThis & {
+  _stripeStatsCache?: StripeStatsCacheValue;
+  _stripeRevenueChartCache?: StripeRevenueCacheValue;
+};
+
 // Helper to check if Stripe is properly configured
 function ensureStripeConfigured() {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -17,49 +48,61 @@ function ensureStripeConfigured() {
 export async function getStripeStats() {
   ensureStripeConfigured();
   try {
-    // Get total revenue from successful charges
-    const charges = await stripe.charges.list({
-      limit: 100,
-      created: {
-        gte: Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60, // Last 30 days
-      },
-    });
+    const now = Date.now();
+    const cachedStats = globalForStripeCaches._stripeStatsCache;
+    if (cachedStats && cachedStats.expiresAt > now) {
+      return cachedStats.payload;
+    }
+
+    const thirtyDaysAgoUnix = Math.floor(now / 1000) - 30 * 24 * 60 * 60;
+
+    const [charges, subscriptions, refunds] = await Promise.all([
+      stripe.charges.list({
+        limit: 100,
+        created: {
+          gte: thirtyDaysAgoUnix, // Last 30 days
+        },
+      }),
+      stripe.subscriptions.list({
+        status: "active",
+        limit: 100,
+      }),
+      stripe.refunds.list({
+        limit: 100,
+        created: {
+          gte: thirtyDaysAgoUnix,
+        },
+      }),
+    ]);
 
     const totalRevenue =
       charges.data
         .filter((charge) => charge.status === "succeeded")
         .reduce((sum, charge) => sum + charge.amount, 0) / 100; // Convert from cents
 
-    // Get active subscriptions
-    const subscriptions = await stripe.subscriptions.list({
-      status: "active",
-      limit: 100,
-    });
-
     // Get failed payments
     const failedCharges = charges.data.filter(
       (charge) => charge.status === "failed"
     );
-
-    // Calculate refund rate
-    const refunds = await stripe.refunds.list({
-      limit: 100,
-      created: {
-        gte: Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60,
-      },
-    });
 
     const totalRefunded =
       refunds.data.reduce((sum, refund) => sum + refund.amount, 0) / 100;
     const refundRate =
       totalRevenue > 0 ? (totalRefunded / totalRevenue) * 100 : 0;
 
-    return {
+    const payload: StripeStats = {
       totalRevenue,
       activeSubscriptions: subscriptions.data.length,
       failedPayments: failedCharges.length,
       refundRate: Math.round(refundRate * 100) / 100,
     };
+
+    globalForStripeCaches._stripeStatsCache = {
+      expiresAt: now + STRIPE_STATS_CACHE_TTL_MS,
+      payload,
+    };
+
+    return payload;
   } catch (error) {
     console.error("Error fetching Stripe stats:", error);
     throw error;
@@ -69,35 +112,63 @@ export async function getStripeStats() {
 export async function getStripeRevenueChart() {
   ensureStripeConfigured();
   try {
-    const months = [];
     const now = new Date();
+    const cacheNow = Date.now();
+    const cachedChart = globalForStripeCaches._stripeRevenueChartCache;
+    if (cachedChart && cachedChart.expiresAt > cacheNow) {
+      return cachedChart.payload;
+    }
+
+    const monthsMeta: Array<{
+      month: string;
+      startUnix: number;
+      endUnix: number;
+    }> = [];
 
     for (let i = 11; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const nextDate = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-
-      const charges = await stripe.charges.list({
-        created: {
-          gte: Math.floor(date.getTime() / 1000),
-          lt: Math.floor(nextDate.getTime() / 1000),
-        },
-        limit: 100,
+      monthsMeta.push({
+        month: date.toLocaleDateString("tr-TR", {
+          month: "short",
+          year: "numeric",
+        }),
+        startUnix: Math.floor(date.getTime() / 1000),
+        endUnix: Math.floor(nextDate.getTime() / 1000),
       });
+    }
+
+    const chargesByMonth = await Promise.all(
+      monthsMeta.map((monthMeta) =>
+        stripe.charges.list({
+          created: {
+            gte: monthMeta.startUnix,
+            lt: monthMeta.endUnix,
+          },
+          limit: 100,
+        })
+      )
+    );
+
+    const months: StripeRevenuePoint[] = monthsMeta.map((monthMeta, index) => {
+      const charges = chargesByMonth[index];
 
       const revenue =
         charges.data
           .filter((charge) => charge.status === "succeeded")
           .reduce((sum, charge) => sum + charge.amount, 0) / 100;
 
-      months.push({
-        month: date.toLocaleDateString("en-US", {
-          month: "short",
-          year: "numeric",
-        }),
+      return {
+        month: monthMeta.month,
         revenue,
         subscriptions: charges.data.length,
-      });
-    }
+      };
+    });
+
+    globalForStripeCaches._stripeRevenueChartCache = {
+      expiresAt: cacheNow + STRIPE_REVENUE_CHART_CACHE_TTL_MS,
+      payload: months,
+    };
 
     return months;
   } catch (error) {

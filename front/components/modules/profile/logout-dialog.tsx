@@ -44,21 +44,21 @@ export function LogoutDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <FormattedMessage id="logout.title" defaultMessage="Log out" />
+            <FormattedMessage id="logout.title" defaultMessage="Çıkış Yap" />
           </DialogTitle>
           <DialogDescription>
             <FormattedMessage
               id="logout.description"
-              defaultMessage="Are you sure you want to log out? You can log back in at any time."
+              defaultMessage="Çıkış yapmak istediğine emin misin? İstediğin zaman tekrar giriş yapabilirsin."
             />
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            <FormattedMessage id="logout.cancel" defaultMessage="Cancel" />
+            <FormattedMessage id="logout.cancel" defaultMessage="Vazgeç" />
           </Button>
           <Button variant="default" disabled={isLoading} onClick={onLogout}>
-            <FormattedMessage id="logout.confirm" defaultMessage="Log out" />
+            <FormattedMessage id="logout.confirm" defaultMessage="Çıkış Yap" />
             {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
           </Button>
         </DialogFooter>

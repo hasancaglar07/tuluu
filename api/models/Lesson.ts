@@ -195,6 +195,8 @@ const LessonSchema = new Schema(
 
 // 2. Add Indexes
 // LessonSchema.index({ id: 1, unitId: 1, chapterId: 1, languageId: 1 });
+LessonSchema.index({ unitId: 1, isActive: 1, order: 1 });
+LessonSchema.index({ languageId: 1, isActive: 1, order: 1 });
 
 // 3. Add Statics
 LessonSchema.statics.findByLanguage = function (languageId: string) {

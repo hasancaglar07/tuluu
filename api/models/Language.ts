@@ -9,7 +9,7 @@ import mongoose, {
 /**
  * 1. Define Schema
  */
-const SUPPORTED_LOCALES = ["en", "fr", "ar", "hi", "zh", "es", "tr"];
+const SUPPORTED_LOCALES = ["tr"];
 
 const LanguageSchema = new Schema(
   {
@@ -108,6 +108,7 @@ const LanguageSchema = new Schema(
 // Unique composite index
 LanguageSchema.index({ name: 1, baseLanguage: 1 }, { unique: true });
 LanguageSchema.index({ category: 1, "themeMetadata.ageGroup": 1 });
+LanguageSchema.index({ isActive: 1, locale: 1, category: 1 });
 
 /**
  * 2. Types

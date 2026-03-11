@@ -101,12 +101,12 @@ export default function Profile() {
     toast.success(
       intl.formatMessage({
         id: "toast.logout.success",
-        defaultMessage: "You logged out",
+        defaultMessage: "Çıkış yaptın",
       }),
       {
         description: intl.formatMessage({
           id: "toast.logout.description",
-          defaultMessage: "Catch you later, alligator! 🐶​",
+          defaultMessage: "Tekrar görüşmek üzere!",
         }),
         className: "bg-warning-500",
         closeButton: true,
@@ -122,16 +122,16 @@ export default function Profile() {
 
   // Handle account deletion
   const handleDeleteAccount = () => {
-    if (deleteConfirmation === "DELETE") {
+    if (deleteConfirmation === "SIL") {
       toast.warning(
         intl.formatMessage({
           id: "toast.delete.warning",
-          defaultMessage: "Account deleted",
+          defaultMessage: "Hesap silindi",
         }),
         {
           description: intl.formatMessage({
             id: "toast.delete.description",
-            defaultMessage: "Your journey ends here... but we'll miss you! 💔",
+            defaultMessage: "Yolculuğun burada sona erdi. Seni özleyeceğiz.",
           }),
         }
       );
@@ -168,7 +168,7 @@ export default function Profile() {
             <ArrowLeft className="h-6 w-6" />
           </Button>
           <h1 className="text-xl font-bold">
-            <FormattedMessage id="profile.title" defaultMessage="Profile" />
+            <FormattedMessage id="profile.title" defaultMessage="Profil" />
           </h1>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function Profile() {
                 src="/placeholder.svg?height=80&width=80"
                 width={80}
                 height={80}
-                alt="Profile"
+                alt="Profil"
                 className="rounded-full"
               />
               <button className="absolute bottom-0 right-0 bg-gray-100 p-1 rounded-full border border-gray-200">
@@ -193,7 +193,7 @@ export default function Profile() {
 
             <div>
               <h2 className="font-bold text-xl">
-                {user?.username || intl.formatMessage({ id: "profile.user.default", defaultMessage: "User" })}
+                {user?.username || intl.formatMessage({ id: "profile.user.default", defaultMessage: "Kullanıcı" })}
               </h2>
               <p className="text-gray-600">
                 {primaryEmail || "user@example.com"}
@@ -208,7 +208,7 @@ export default function Profile() {
                   <span className="font-medium">
                     <FormattedMessage
                       id="profile.streak.days"
-                      defaultMessage="{days} days"
+                      defaultMessage="{days} gün"
                       values={{ days: userData.streak }}
                     />
                   </span>
@@ -218,7 +218,7 @@ export default function Profile() {
                   <span className="font-medium">
                     <FormattedMessage
                       id="profile.hearts.count"
-                      defaultMessage="{hearts} hearts"
+                      defaultMessage="{hearts} kalp"
                       values={{ hearts: userData.hearts }}
                     />
                   </span>
@@ -233,7 +233,7 @@ export default function Profile() {
               className="p-4 border border-gray-200 rounded-xl bg-blue-50"
             >
               <h3 className="font-bold mb-1">
-                <FormattedMessage id="profile.stats.level" defaultMessage="Level" />
+                <FormattedMessage id="profile.stats.level" defaultMessage="Seviye" />
               </h3>
               <div className="text-2xl font-bold text-blue-600">
                 {Math.floor(userData.xp / 1000) + 1}
@@ -245,7 +245,7 @@ export default function Profile() {
               className="p-4 border border-gray-200 rounded-xl bg-green-50"
             >
               <h3 className="font-bold mb-1">
-                <FormattedMessage id="profile.stats.completed" defaultMessage="Completed Lessons" />
+                <FormattedMessage id="profile.stats.completed" defaultMessage="Tamamlanan Dersler" />
               </h3>
               <div className="text-2xl font-bold text-green-600">
                 {Math.floor(userData.xp / 100)}
@@ -271,7 +271,7 @@ export default function Profile() {
             <div className="flex items-center gap-2 mb-4">
               <Bell className="h-5 w-5 text-blue-500" />
               <h2 className="font-bold text-lg">
-                <FormattedMessage id="settings.notifications.title" defaultMessage="Notifications" />
+                <FormattedMessage id="settings.notifications.title" defaultMessage="Bildirimler" />
               </h2>
             </div>
 
@@ -279,10 +279,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.notifications.daily.title" defaultMessage="Daily Reminder" />
+                    <FormattedMessage id="settings.notifications.daily.title" defaultMessage="Günlük Hatırlatma" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.notifications.daily.description" defaultMessage="Receive a reminder to practice each day" />
+                    <FormattedMessage id="settings.notifications.daily.description" defaultMessage="Her gün pratik yapman için hatırlatma al" />
                   </p>
                 </div>
                 <Switch
@@ -296,10 +296,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.notifications.weekly.title" defaultMessage="Weekly Progress" />
+                    <FormattedMessage id="settings.notifications.weekly.title" defaultMessage="Haftalık İlerleme" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.notifications.weekly.description" defaultMessage="Receive a summary of your progress each week" />
+                    <FormattedMessage id="settings.notifications.weekly.description" defaultMessage="Her hafta ilerleme özetini al" />
                   </p>
                 </div>
                 <Switch
@@ -313,10 +313,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.notifications.features.title" defaultMessage="New Features" />
+                    <FormattedMessage id="settings.notifications.features.title" defaultMessage="Yeni Özellikler" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.notifications.features.description" defaultMessage="Be informed about new features" />
+                    <FormattedMessage id="settings.notifications.features.description" defaultMessage="Yeni özelliklerden haberdar ol" />
                   </p>
                 </div>
                 <Switch
@@ -330,10 +330,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.notifications.friends.title" defaultMessage="Friend Activity" />
+                    <FormattedMessage id="settings.notifications.friends.title" defaultMessage="Arkadaş Etkinliği" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.notifications.friends.description" defaultMessage="Receive notifications about your friends' activity" />
+                    <FormattedMessage id="settings.notifications.friends.description" defaultMessage="Arkadaşlarının etkinlikleri hakkında bildirim al" />
                   </p>
                 </div>
                 <Switch
@@ -353,7 +353,7 @@ export default function Profile() {
             <div className="flex items-center gap-2 mb-4">
               <Settings className="h-5 w-5 text-green-500" />
               <h2 className="font-bold text-lg">
-                <FormattedMessage id="settings.accessibility.title" defaultMessage="Accessibility" />
+                <FormattedMessage id="settings.accessibility.title" defaultMessage="Erişilebilirlik" />
               </h2>
             </div>
 
@@ -361,10 +361,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.accessibility.contrast.title" defaultMessage="High Contrast" />
+                    <FormattedMessage id="settings.accessibility.contrast.title" defaultMessage="Yüksek Kontrast" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.accessibility.contrast.description" defaultMessage="Increases contrast for better readability" />
+                    <FormattedMessage id="settings.accessibility.contrast.description" defaultMessage="Daha iyi okunabilirlik için kontrastı artırır" />
                   </p>
                 </div>
                 <Switch
@@ -378,10 +378,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.accessibility.text.title" defaultMessage="Larger Text" />
+                    <FormattedMessage id="settings.accessibility.text.title" defaultMessage="Büyük Metin" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.accessibility.text.description" defaultMessage="Increases text size throughout the app" />
+                    <FormattedMessage id="settings.accessibility.text.description" defaultMessage="Uygulama genelinde yazı boyutunu artırır" />
                   </p>
                 </div>
                 <Switch
@@ -395,10 +395,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.accessibility.animations.title" defaultMessage="Reduce Animations" />
+                    <FormattedMessage id="settings.accessibility.animations.title" defaultMessage="Animasyonları Azalt" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.accessibility.animations.description" defaultMessage="Reduces or disables animations" />
+                    <FormattedMessage id="settings.accessibility.animations.description" defaultMessage="Animasyonları azaltır veya kapatır" />
                   </p>
                 </div>
                 <Switch
@@ -412,10 +412,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.accessibility.screen.title" defaultMessage="Screen Reader Compatibility" />
+                    <FormattedMessage id="settings.accessibility.screen.title" defaultMessage="Ekran Okuyucu Uyumluluğu" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.accessibility.screen.description" defaultMessage="Optimizes the app for screen readers" />
+                    <FormattedMessage id="settings.accessibility.screen.description" defaultMessage="Uygulamayı ekran okuyucular için optimize eder" />
                   </p>
                 </div>
                 <Switch
@@ -435,7 +435,7 @@ export default function Profile() {
             <div className="flex items-center gap-2 mb-4">
               <Globe className="h-5 w-5 text-purple-500" />
               <h2 className="font-bold text-lg">
-                <FormattedMessage id="settings.preferences.title" defaultMessage="Preferences" />
+                <FormattedMessage id="settings.preferences.title" defaultMessage="Tercihler" />
               </h2>
             </div>
 
@@ -443,10 +443,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.preferences.dark.title" defaultMessage="Dark Mode" />
+                    <FormattedMessage id="settings.preferences.dark.title" defaultMessage="Karanlık Mod" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.preferences.dark.description" defaultMessage="Use dark theme" />
+                    <FormattedMessage id="settings.preferences.dark.description" defaultMessage="Koyu temayı kullan" />
                   </p>
                 </div>
                 <Switch
@@ -460,10 +460,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.preferences.sound.title" defaultMessage="Sound Effects" />
+                    <FormattedMessage id="settings.preferences.sound.title" defaultMessage="Ses Efektleri" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.preferences.sound.description" defaultMessage="Enable sound effects" />
+                    <FormattedMessage id="settings.preferences.sound.description" defaultMessage="Ses efektlerini aç" />
                   </p>
                 </div>
                 <Switch
@@ -477,10 +477,10 @@ export default function Profile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium">
-                    <FormattedMessage id="settings.preferences.voice.title" defaultMessage="Voice Over" />
+                    <FormattedMessage id="settings.preferences.voice.title" defaultMessage="Sesli Okuma" />
                   </h3>
                   <p className="text-sm text-gray-500">
-                    <FormattedMessage id="settings.preferences.voice.description" defaultMessage="Enable audio reading of phrases" />
+                    <FormattedMessage id="settings.preferences.voice.description" defaultMessage="İfadelerin sesli okunmasını aç" />
                   </p>
                 </div>
                 <Switch
@@ -500,7 +500,7 @@ export default function Profile() {
             <div className="flex items-center gap-2 mb-4">
               <User className="h-5 w-5 text-red-500" />
               <h2 className="font-bold text-lg">
-                <FormattedMessage id="settings.danger.title" defaultMessage="Danger zone" />
+                <FormattedMessage id="settings.danger.title" defaultMessage="Tehlikeli Bölge" />
               </h2>
             </div>
 
@@ -514,7 +514,7 @@ export default function Profile() {
                 <div role="button" className="flex items-center gap-2">
                   <LogOut className="h-4 w-4 text-gray-500" />
                   <span>
-                    <FormattedMessage id="settings.logout.button" defaultMessage="Log Out" />
+                    <FormattedMessage id="settings.logout.button" defaultMessage="Çıkış Yap" />
                   </span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -529,7 +529,7 @@ export default function Profile() {
                 <div className="flex items-center gap-2">
                   <Trash2 className="h-4 w-4" />
                   <span>
-                    <FormattedMessage id="settings.delete.button" defaultMessage="Delete Account" />
+                    <FormattedMessage id="settings.delete.button" defaultMessage="Hesabı Sil" />
                   </span>
                 </div>
                 <ChevronRight className="h-4 w-4" />
@@ -544,10 +544,10 @@ export default function Profile() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              <FormattedMessage id="dialog.logout.title" defaultMessage="Log Out" />
+              <FormattedMessage id="dialog.logout.title" defaultMessage="Çıkış Yap" />
             </DialogTitle>
             <DialogDescription>
-              <FormattedMessage id="dialog.logout.description" defaultMessage="Are you sure you want to log out? You can log back in at any time." />
+              <FormattedMessage id="dialog.logout.description" defaultMessage="Çıkış yapmak istediğine emin misin? İstediğin zaman tekrar giriş yapabilirsin." />
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -555,14 +555,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setShowLogoutDialog(false)}
             >
-              <FormattedMessage id="dialog.logout.cancel" defaultMessage="Cancel" />
+              <FormattedMessage id="dialog.logout.cancel" defaultMessage="Vazgeç" />
             </Button>
             <Button
               variant="default"
               disabled={isLoading}
               onClick={handleLogout}
             >
-              <FormattedMessage id="dialog.logout.confirm" defaultMessage="Log Out" />
+              <FormattedMessage id="dialog.logout.confirm" defaultMessage="Çıkış Yap" />
               {isLoading && <Loader2 className="animate-spin" />}
             </Button>
           </DialogFooter>
@@ -574,23 +574,23 @@ export default function Profile() {
         <DialogContent className="w-full">
           <DialogHeader>
             <DialogTitle className="text-red-500">
-              <FormattedMessage id="dialog.delete.title" defaultMessage="Delete Account" />
+              <FormattedMessage id="dialog.delete.title" defaultMessage="Hesabı Sil" />
             </DialogTitle>
             <DialogDescription>
-              <FormattedMessage id="dialog.delete.description" defaultMessage="This action is irreversible. All your data, including your progress, will be permanently deleted." />
+              <FormattedMessage id="dialog.delete.description" defaultMessage="Bu işlem geri alınamaz. İlerlemen dahil tüm verilerin kalıcı olarak silinir." />
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
             <p className="text-sm text-gray-500 mb-2">
-              <FormattedMessage id="dialog.delete.confirmation" defaultMessage="To confirm, please type 'DELETE' below:" />
+              <FormattedMessage id="dialog.delete.confirmation" defaultMessage="Onaylamak için aşağıya 'SIL' yaz:" />
             </p>
             <input
               type="text"
               value={deleteConfirmation}
               onChange={(e) => setDeleteConfirmation(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder={intl.formatMessage({ id: "dialog.delete.placeholder", defaultMessage: "DELETE" })}
+              placeholder={intl.formatMessage({ id: "dialog.delete.placeholder", defaultMessage: "SIL" })}
             />
           </div>
 
@@ -599,14 +599,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
             >
-              <FormattedMessage id="dialog.delete.cancel" defaultMessage="Cancel" />
+              <FormattedMessage id="dialog.delete.cancel" defaultMessage="Vazgeç" />
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteAccount}
-              disabled={deleteConfirmation !== "DELETE"}
+              disabled={deleteConfirmation !== "SIL"}
             >
-              <FormattedMessage id="dialog.delete.confirm" defaultMessage="Delete Permanently" />
+              <FormattedMessage id="dialog.delete.confirm" defaultMessage="Kalıcı Olarak Sil" />
             </Button>
           </DialogFooter>
         </DialogContent>

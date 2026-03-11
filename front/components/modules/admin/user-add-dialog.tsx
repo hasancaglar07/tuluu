@@ -46,7 +46,7 @@ export default function UserAddDialog({
     subscription: "free",
     avatar: "",
     bio: "",
-    language: "English",
+    language: "Turkish",
     country: "",
     timezone: "",
     sendWelcomeEmail: true,
@@ -136,15 +136,15 @@ export default function UserAddDialog({
               },
             }
           );
-          toast.success("Welcome email sent successfully");
+          toast.success("Hoş geldin e-postası başarıyla gönderildi");
         } catch (emailError) {
-          console.error("Error sending welcome email:", emailError);
-          toast.error("Failed to send welcome email, but user was created");
+          console.error("Hoş geldin e-postası gönderme hatası:", emailError);
+          toast.error("Kullanıcı oluşturuldu ancak hoş geldin e-postası gönderilemedi");
         }
       }
 
       // Show success message
-      toast.success("User added successfully!");
+      toast.success("Kullanıcı başarıyla eklendi!");
 
       // Call the onUserAdded callback if provided
       if (onUserAdded && response.data) {
@@ -160,15 +160,15 @@ export default function UserAddDialog({
         subscription: "free",
         avatar: "",
         bio: "",
-        language: "English",
+        language: "Turkish",
         country: "",
         timezone: "",
         sendWelcomeEmail: true,
       });
       setPassword("");
     } catch (error) {
-      console.error("Error adding user:", error);
-      toast.error("Failed to add user. Please try again.");
+      console.error("Kullanıcı ekleme hatası:", error);
+      toast.error("Kullanıcı eklenemedi. Lütfen tekrar deneyin.");
     } finally {
       setIsLoading(false);
     }
@@ -178,9 +178,9 @@ export default function UserAddDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>Yeni Kullanıcı Ekle</DialogTitle>
           <DialogDescription>
-            Create a new user account. Fill in the details below.
+            Yeni bir kullanıcı hesabı oluşturun. Aşağıdaki alanları doldurun.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -189,14 +189,14 @@ export default function UserAddDialog({
               <Avatar className="h-16 w-16">
                 <AvatarImage
                   src={formData.avatar || "/placeholder.svg?height=64&width=64"}
-                  alt="Avatar"
+                  alt="Profil görseli"
                 />
                 <AvatarFallback>
                   {formData.name ? formData.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <Label htmlFor="avatar">Profile Image URL</Label>
+                <Label htmlFor="avatar">Profil Görseli URL</Label>
                 <Input
                   id="avatar"
                   name="avatar"
@@ -210,7 +210,7 @@ export default function UserAddDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Ad Soyad</Label>
                 <Input
                   id="name"
                   name="name"
@@ -220,7 +220,7 @@ export default function UserAddDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-posta</Label>
                 <Input
                   id="email"
                   name="email"
@@ -234,31 +234,29 @@ export default function UserAddDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="password">
-                  Password (Auto-generated if empty)
-                </Label>
+                <Label htmlFor="password">Şifre (boş bırakılırsa otomatik oluşturulur)</Label>
                 <Input
                   id="password"
                   name="password"
                   type="text"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Leave empty for auto-generated password"
+                  placeholder="Otomatik şifre için boş bırakın"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role">Rol</Label>
                 <Select
                   value={formData.role}
                   onValueChange={(value) => handleSelectChange("role", value)}
                 >
                   <SelectTrigger id="role">
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder="Rol seçin" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="free">Free User</SelectItem>
-                    <SelectItem value="paid">Paid User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="free">Ücretsiz Kullanıcı</SelectItem>
+                    <SelectItem value="paid">Ücretli Kullanıcı</SelectItem>
+                    <SelectItem value="admin">Yönetici</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -266,7 +264,7 @@ export default function UserAddDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="subscription">Subscription</Label>
+                <Label htmlFor="subscription">Abonelik</Label>
                 <Select
                   value={formData.subscription}
                   onValueChange={(value) =>
@@ -274,16 +272,16 @@ export default function UserAddDialog({
                   }
                 >
                   <SelectTrigger id="subscription">
-                    <SelectValue placeholder="Select subscription" />
+                    <SelectValue placeholder="Abonelik seçin" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="free">Free</SelectItem>
+                    <SelectItem value="free">Ücretsiz</SelectItem>
                     <SelectItem value="premium">Premium</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">Dil</Label>
                 <Select
                   value={formData.language}
                   onValueChange={(value) =>
@@ -291,60 +289,61 @@ export default function UserAddDialog({
                   }
                 >
                   <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Dil seçin" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="Spanish">Spanish</SelectItem>
-                    <SelectItem value="French">French</SelectItem>
-                    <SelectItem value="German">German</SelectItem>
-                    <SelectItem value="Chinese">Chinese</SelectItem>
-                    <SelectItem value="Japanese">Japanese</SelectItem>
+                    <SelectItem value="Turkish">Türkçe</SelectItem>
+                    <SelectItem value="English">İngilizce</SelectItem>
+                    <SelectItem value="Spanish">İspanyolca</SelectItem>
+                    <SelectItem value="French">Fransızca</SelectItem>
+                    <SelectItem value="German">Almanca</SelectItem>
+                    <SelectItem value="Chinese">Çince</SelectItem>
+                    <SelectItem value="Japanese">Japonca</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio">Biyografi</Label>
               <Textarea
                 id="bio"
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows={3}
-                placeholder="User bio (optional)"
+                placeholder="Kullanıcı biyografisi (isteğe bağlı)"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">Ülke</Label>
                 <Input
                   id="country"
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  placeholder="Country (optional)"
+                  placeholder="Ülke (isteğe bağlı)"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
+                <Label htmlFor="timezone">Saat Dilimi</Label>
                 <Input
                   id="timezone"
                   name="timezone"
                   value={formData.timezone}
                   onChange={handleChange}
-                  placeholder="e.g. America/New_York (optional)"
+                  placeholder="örn. Europe/Istanbul (isteğe bağlı)"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="sendWelcomeEmail">Send Welcome Email</Label>
+                <Label htmlFor="sendWelcomeEmail">Hoş Geldin E-postası Gönder</Label>
                 <p className="text-sm text-muted-foreground">
-                  Send an email with login instructions
+                  Giriş bilgilerini içeren bir e-posta gönder
                 </p>
               </div>
               <Switch
@@ -363,16 +362,16 @@ export default function UserAddDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              Vazgeç
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Adding User...
+                  Kullanıcı Ekleniyor...
                 </>
               ) : (
-                "Add User"
+                "Kullanıcı Ekle"
               )}
             </Button>
           </DialogFooter>

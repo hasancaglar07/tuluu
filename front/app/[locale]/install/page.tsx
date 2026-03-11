@@ -18,11 +18,11 @@ import AdminRoleCreation from "./components/admin-role-creation";
 import InstallationComplete from "./components/installation-complete";
 
 const STEPS = [
-  { id: "dependencies", title: "Check Dependencies", icon: CheckCircle },
-  { id: "environment", title: "Configure Environment", icon: Settings },
-  { id: "clerk-setup", title: "Create an Account", icon: UserPlus },
-  { id: "admin-role", title: "Create Admin Role", icon: Shield },
-  { id: "complete", title: "Installation Complete", icon: Globe },
+  { id: "dependencies", title: "Bağımlılıkları Kontrol Et", icon: CheckCircle },
+  { id: "environment", title: "Ortamı Yapılandır", icon: Settings },
+  { id: "clerk-setup", title: "Hesap Oluştur", icon: UserPlus },
+  { id: "admin-role", title: "Yönetici Rolü Oluştur", icon: Shield },
+  { id: "complete", title: "Kurulum Tamamlandı", icon: Globe },
 ];
 
 export default function InstallWizard() {
@@ -106,10 +106,10 @@ export default function InstallWizard() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Project Installation Wizard
+            Proje Kurulum Sihirbazı
           </h1>
           <p className="text-gray-600">
-            Configure your monorepo project in a few simple steps
+            Monorepo projenizi birkaç adımda yapılandırın
           </p>
         </div>
 
@@ -118,10 +118,10 @@ export default function InstallWizard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-gray-700">
-                Step {currentStep + 1} of {STEPS.length}
+                Adım {currentStep + 1} / {STEPS.length}
               </span>
               <span className="text-sm text-gray-500">
-                {Math.round(progress)}% Complete
+                %{Math.round(progress)} Tamamlandı
               </span>
             </div>
             <Progress value={progress} className="mb-4" />
@@ -173,7 +173,7 @@ export default function InstallWizard() {
             <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Processing...</span>
+                <span>İşleniyor...</span>
               </div>
             </div>
           )}

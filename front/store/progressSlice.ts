@@ -6,7 +6,7 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { IRootState } from ".";
+import type { IRootState } from ".";
 import { apiClient } from "@/lib/api-client";
 
 export type ValuePoints = {
@@ -85,6 +85,89 @@ const createInitialProgressState = (): ProgressState => ({
   dailyLimits: createDefaultDailyLimits(),
   parentalControls: createDefaultParentalControls(),
 });
+
+type LessonsFulfilledPayload = {
+  chapters?: Chapter[];
+  currentChapter?: Chapter | null;
+  currentUnit?: Unit | null;
+  currentLesson?: Lesson | null;
+  completedLessons?: unknown[];
+  completedUnits?: unknown[];
+  completedChapters?: unknown[];
+  lastCompletedLesson?: string | null;
+  valuePoints?: Partial<ValuePoints>;
+  dailyLimits?: Partial<DailyLimits>;
+  parentalControls?: Partial<ParentalControls>;
+};
+
+const extractId = (
+  value: unknown,
+  preferredKey: "lessonId" | "unitId" | "chapterId"
+): string | null => {
+  if (typeof value === "string" && value.length > 0) {
+    return value;
+  }
+
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const preferred = record[preferredKey];
+  if (typeof preferred === "string" && preferred.length > 0) {
+    return preferred;
+  }
+
+  const fallbackId = record._id;
+  if (typeof fallbackId === "string" && fallbackId.length > 0) {
+    return fallbackId;
+  }
+
+  return null;
+};
+
+const normalizeIds = (
+  items: unknown[] | undefined,
+  preferredKey: "lessonId" | "unitId" | "chapterId"
+) => {
+  return (items ?? [])
+    .map((item) => extractId(item, preferredKey))
+    .filter((id): id is string => Boolean(id));
+};
+
+const deriveCompletedIdsFromChapters = (chapters?: Chapter[]) => {
+  const completedLessonIds: string[] = [];
+  const completedUnitIds: string[] = [];
+  const completedChapterIds: string[] = [];
+
+  (chapters ?? []).forEach((chapter) => {
+    if (chapter.isCompleted) {
+      completedChapterIds.push(chapter._id);
+    }
+
+    (chapter.units ?? []).forEach((unit) => {
+      if (unit.isCompleted) {
+        completedUnitIds.push(unit._id);
+      }
+
+      (unit.lessons ?? []).forEach((lesson) => {
+        if ((lesson as Lesson).isCompleted) {
+          completedLessonIds.push(lesson._id);
+        }
+      });
+    });
+  });
+
+  return {
+    completedLessonIds,
+    completedUnitIds,
+    completedChapterIds,
+  };
+};
+
+const toEntityRefs = <T extends { _id: string }>(ids: string[]): T[] => {
+  return ids.map((id) => ({ _id: id } as T));
+};
 
 // Initial state for progress
 const initialState: ProgressState = createInitialProgressState();
@@ -305,7 +388,74 @@ export const progressSlice = createSlice({
           // fallback error message from error object
           state.error = action.error.message ?? "Unknown error";
         }
-      });
+      })
+      .addMatcher(
+        (
+          action
+        ): action is PayloadAction<LessonsFulfilledPayload> =>
+          action.type === "lesson/fetchLessons/fulfilled",
+        (state, action) => {
+          const payload = action.payload ?? {};
+          const chapterDerived = deriveCompletedIdsFromChapters(payload.chapters);
+
+          const completedLessonIds =
+            normalizeIds(payload.completedLessons, "lessonId").length > 0
+              ? normalizeIds(payload.completedLessons, "lessonId")
+              : chapterDerived.completedLessonIds;
+          const completedUnitIds =
+            normalizeIds(payload.completedUnits, "unitId").length > 0
+              ? normalizeIds(payload.completedUnits, "unitId")
+              : chapterDerived.completedUnitIds;
+          const completedChapterIds =
+            normalizeIds(payload.completedChapters, "chapterId").length > 0
+              ? normalizeIds(payload.completedChapters, "chapterId")
+              : chapterDerived.completedChapterIds;
+
+          state.completedLessons = toEntityRefs<Lesson>(completedLessonIds);
+          state.completedUnits = toEntityRefs<Unit>(completedUnitIds);
+          state.completedChapters = toEntityRefs<Chapter>(completedChapterIds);
+
+          if ("currentLesson" in payload) {
+            state.currentLesson = payload.currentLesson ?? null;
+          }
+          if ("currentUnit" in payload) {
+            state.currentUnit = payload.currentUnit ?? null;
+          }
+          if ("currentChapter" in payload) {
+            state.currentChapter = payload.currentChapter ?? null;
+          }
+          if (payload.currentUnit?.color) {
+            state.unitColor = payload.currentUnit.color;
+          }
+
+          state.lastCompletedLesson =
+            payload.lastCompletedLesson ??
+            completedLessonIds[completedLessonIds.length - 1] ??
+            null;
+
+          if (payload.valuePoints) {
+            state.valuePoints = {
+              ...createDefaultValuePoints(),
+              ...payload.valuePoints,
+            };
+          }
+          if (payload.dailyLimits) {
+            state.dailyLimits = {
+              ...createDefaultDailyLimits(),
+              ...payload.dailyLimits,
+            };
+          }
+          if (payload.parentalControls) {
+            state.parentalControls = {
+              ...createDefaultParentalControls(),
+              ...payload.parentalControls,
+            };
+          }
+
+          state.loading = false;
+          state.error = null;
+        }
+      );
   },
 });
 

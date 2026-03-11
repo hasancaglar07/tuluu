@@ -96,20 +96,20 @@ export function NextChapter({
     if (isLoading) {
       return intl.formatMessage({
         id: "dashboard.nextChapter.loading",
-        defaultMessage: "Loading...",
+        defaultMessage: "Yükleniyor...",
       });
     }
 
     if (isLocked) {
       return intl.formatMessage({
         id: "dashboard.nextChapter.unlock",
-        defaultMessage: "Unlock Chapter",
+        defaultMessage: "Bölüm Kilidini Aç",
       });
     }
 
     return intl.formatMessage({
       id: "dashboard.nextChapter.advance",
-      defaultMessage: "Start Chapter",
+      defaultMessage: "Bölümü Başlat",
     });
   };
 
@@ -150,7 +150,7 @@ export function NextChapter({
                 <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
                   <FormattedMessage
                     id="dashboard.nextChapter.label"
-                    defaultMessage="Next Chapter"
+                    defaultMessage="Sonraki Bölüm"
                   />
                 </p>
                 {isPremium && (
@@ -178,7 +178,7 @@ export function NextChapter({
                     <span>📚</span>
                     <FormattedMessage
                       id="dashboard.nextChapter.lessons"
-                      defaultMessage="{count} lessons"
+                      defaultMessage="{count} ders"
                       values={{ count: lessonCount }}
                     />
                   </div>
@@ -202,7 +202,13 @@ export function NextChapter({
                   >
                     <FormattedMessage
                       id={`dashboard.nextChapter.difficulty.${difficulty}`}
-                      defaultMessage={difficulty}
+                      defaultMessage={
+                        difficulty === "beginner"
+                          ? "Başlangıç"
+                          : difficulty === "intermediate"
+                          ? "Orta"
+                          : "İleri"
+                      }
                     />
                   </Badge>
                 )}
@@ -229,7 +235,7 @@ export function NextChapter({
               <p className="text-xs text-muted-foreground mt-2">
                 <FormattedMessage
                   id="dashboard.nextChapter.lockMessage"
-                  defaultMessage="Complete the current chapter to unlock"
+                  defaultMessage="Kilidi açmak için mevcut bölümü tamamla"
                 />
               </p>
             )}

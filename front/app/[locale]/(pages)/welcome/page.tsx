@@ -11,8 +11,8 @@ export default function page() {
 
 // Nextjs dynamic metadata
 export const metadata: Metadata = {
-  title: "Welcome Bobo",
-  description: "An enjoyable way to learn a new language",
+  title: "TULU - Hoş Geldin",
+  description: "TULU ile dil öğrenmeyi eğlenceli ve etkili hale getirin.",
   icons: {
     icon: "/images/logo_icon.png",
     shortcut: "/favicon.ico",

@@ -112,20 +112,17 @@ export default function LessonRefactored({
     if (!currentExercise?.sourceText) return;
 
     const token = await getToken();
-    const voiceIdEn = process.env.ELEVENLABS_VOICE_ID_EN;
-    const voiceIdFr = process.env.ELEVENLABS_VOICE_ID_FR;
-    const voiceIdHi = process.env.ELEVENLABS_VOICE_ID_HI;
+    const voiceIdTr =
+      process.env.ELEVENLABS_VOICE_ID_TR || process.env.ELEVENLABS_VOICE_ID;
 
     const VOICE_MAP = {
-      en: voiceIdEn,
-      fr: voiceIdFr,
-      hi: voiceIdHi,
+      tr: voiceIdTr,
     };
 
     type SupportedLang = keyof typeof VOICE_MAP;
-    const lang = currentExercise.sourceLanguage as string;
+    const lang = (currentExercise.sourceLanguage as string).toLowerCase();
 
-    if (!Object.keys(VOICE_MAP).includes(lang)) {
+    if (!Object.keys(VOICE_MAP).includes(lang) || !VOICE_MAP[lang as SupportedLang]) {
       console.error("Unsupported language:", lang);
       return;
     }

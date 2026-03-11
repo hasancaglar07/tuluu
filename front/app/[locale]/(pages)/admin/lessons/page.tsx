@@ -4,17 +4,17 @@ import React from "react";
 // Nextjs ISR caching strategy
 export const revalidate = false;
 
-export default function page() {
+export default function Page() {
   return <LessonsManagementPage />;
 }
 
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Lessons - TULU`,
-    description: `Page - Description here`,
+    title: "Ders Yönetimi - TULU",
+    description: "Program, bölüm, ünite ve ders içeriklerini tek panelden yönetin.",
     icons: {
-      icon: `path to asset file`,
+      icon: "/favicon.ico",
     },
   };
 }

@@ -27,19 +27,19 @@ export function AccessibilitySettings({
     <Card>
       <CardHeader>
         <CardTitle>
-          <FormattedMessage id="accessibility.title" defaultMessage="Accessibility" />
+          <FormattedMessage id="accessibility.title" defaultMessage="Erişilebilirlik" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="accessibility.highContrast" defaultMessage="High Contrast" />
+              <FormattedMessage id="accessibility.highContrast" defaultMessage="Yüksek Kontrast" />
             </h6>
             <p className="text-sm text-gray-500">
               <FormattedMessage
                 id="accessibility.highContrast.description"
-                defaultMessage="Increases contrast for better readability"
+                defaultMessage="Daha iyi okunabilirlik için kontrastı artırır"
               />
             </p>
           </div>
@@ -49,12 +49,12 @@ export function AccessibilitySettings({
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="accessibility.largeText" defaultMessage="Larger Text" />
+              <FormattedMessage id="accessibility.largeText" defaultMessage="Büyük Metin" />
             </h6>
             <p className="text-sm text-gray-500">
               <FormattedMessage
                 id="accessibility.largeText.description"
-                defaultMessage="Increases text size throughout the app"
+                defaultMessage="Uygulama genelinde yazı boyutunu artırır"
               />
             </p>
           </div>
@@ -64,12 +64,12 @@ export function AccessibilitySettings({
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="accessibility.reducem" defaultMessage="Reduce Animations" />
+              <FormattedMessage id="accessibility.reducem" defaultMessage="Animasyonları Azalt" />
             </h6>
             <p className="text-sm text-gray-500">
               <FormattedMessage
                 id="accessibility.reducem.description"
-                defaultMessage="Reduces or disables animations"
+                defaultMessage="Animasyonları azaltır veya kapatır"
               />
             </p>
           </div>
@@ -79,12 +79,12 @@ export function AccessibilitySettings({
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="accessibility.screenReader" defaultMessage="Screen Reader Compatibility" />
+              <FormattedMessage id="accessibility.screenReader" defaultMessage="Ekran Okuyucu Uyumluluğu" />
             </h6>
             <p className="text-sm text-gray-500">
               <FormattedMessage
                 id="accessibility.screenReader.description"
-                defaultMessage="Optimizes the app for screen readers"
+                defaultMessage="Uygulamayı ekran okuyucular için optimize eder"
               />
             </p>
           </div>

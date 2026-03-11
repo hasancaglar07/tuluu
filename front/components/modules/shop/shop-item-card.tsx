@@ -78,7 +78,7 @@ export function ShopItemCard({
     switch (item.category) {
       case "hearts":
         return (
-          <FormattedMessage id="shop.category.hearts" defaultMessage="Hearts" />
+          <FormattedMessage id="shop.category.hearts" defaultMessage="Kalpler" />
         );
       case "premium":
         return (
@@ -89,11 +89,11 @@ export function ShopItemCard({
         );
       case "boosts":
         return (
-          <FormattedMessage id="shop.category.boosts" defaultMessage="Boosts" />
+          <FormattedMessage id="shop.category.boosts" defaultMessage="Güçlendiriciler" />
         );
       case "gems":
         return (
-          <FormattedMessage id="shop.category.gems" defaultMessage="Buy Gems" />
+          <FormattedMessage id="shop.category.gems" defaultMessage="Elmas Satın Al" />
         );
     }
   };
@@ -112,13 +112,13 @@ export function ShopItemCard({
   // Get button text
   const getButtonText = () => {
     if (item.category === "gems") {
-      return <FormattedMessage id="shop.button.buy" defaultMessage="Buy" />;
+      return <FormattedMessage id="shop.button.buy" defaultMessage="Satın Al" />;
     } else if (item.category === "premium") {
       return (
-        <FormattedMessage id="shop.button.upgrade" defaultMessage="Upgrade" />
+        <FormattedMessage id="shop.button.upgrade" defaultMessage="Yükselt" />
       );
     } else {
-      return <FormattedMessage id="shop.button.buy" defaultMessage="Buy" />;
+      return <FormattedMessage id="shop.button.buy" defaultMessage="Satın Al" />;
     }
   };
 
@@ -146,7 +146,7 @@ export function ShopItemCard({
             <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
               <FormattedMessage
                 id="shop.badge.popular"
-                defaultMessage="Popular"
+                defaultMessage="Popüler"
               />
             </div>
           )}
@@ -180,10 +180,10 @@ export function ShopItemCard({
                   <Gem className="h-4 w-4 text-yellow-500" />
                   <span className="font-bold">
                     <FormattedMessage
-                      id="shop.price.gems"
-                      defaultMessage="{price} Gems"
-                      values={{ price: item.price.toLocaleString() }}
-                    />
+                    id="shop.price.gems"
+                    defaultMessage="{price} Elmas"
+                    values={{ price: item.price.toLocaleString() }}
+                  />
                   </span>
                 </>
               ) : (

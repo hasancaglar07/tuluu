@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="tr">
       <body className={`${fredoka.className} ${firacode.variable} antialiased`}>
         {children}
       </body>

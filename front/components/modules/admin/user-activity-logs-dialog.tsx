@@ -77,7 +77,7 @@ export default function UserActivityLogsDialog({
   // Function to format date
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), "MMM d, yyyy 'at' h:mm a");
+      return format(new Date(dateString), "dd.MM.yyyy HH:mm");
     } catch (error) {
       return dateString;
     }
@@ -135,24 +135,24 @@ export default function UserActivityLogsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <History className="h-5 w-5" />
-            User Activity Logs
+            Kullanıcı Aktivite Kayıtları
           </DialogTitle>
           <DialogDescription>
-            View login history and activity for user {user.name}.
+            {user.name} kullanıcısının giriş geçmişini ve etkinliklerini görüntüleyin.
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="logins">Login History</TabsTrigger>
-            <TabsTrigger value="activity">User Activity</TabsTrigger>
+            <TabsTrigger value="logins">Giriş Geçmişi</TabsTrigger>
+            <TabsTrigger value="activity">Kullanıcı Aktivitesi</TabsTrigger>
           </TabsList>
 
           <div className="flex items-center space-x-2 mt-4">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder="Ara..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -162,25 +162,25 @@ export default function UserActivityLogsDialog({
             {activeTab === "logins" && (
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder="Durum" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="success">Successful</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
+                  <SelectItem value="all">Tüm Durumlar</SelectItem>
+                  <SelectItem value="success">Başarılı</SelectItem>
+                  <SelectItem value="failed">Başarısız</SelectItem>
                 </SelectContent>
               </Select>
             )}
 
             <Select value={dateFilter} onValueChange={setDateFilter}>
               <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Date" />
+                <SelectValue placeholder="Tarih" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Time</SelectItem>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="all">Tüm Zamanlar</SelectItem>
+                <SelectItem value="today">Bugün</SelectItem>
+                <SelectItem value="week">Bu Hafta</SelectItem>
+                <SelectItem value="month">Bu Ay</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -208,13 +208,13 @@ export default function UserActivityLogsDialog({
                       <div className="flex items-center space-x-2">
                         <p className="font-medium">
                           {login.success
-                            ? "Successful Login"
-                            : "Failed Login Attempt"}
+                            ? "Başarılı Giriş"
+                            : "Başarısız Giriş Denemesi"}
                         </p>
                         {login.success ? (
-                          <Badge className="bg-green-500">Success</Badge>
+                          <Badge className="bg-green-500">Başarılı</Badge>
                         ) : (
-                          <Badge className="bg-red-500">Failed</Badge>
+                          <Badge className="bg-red-500">Başarısız</Badge>
                         )}
                       </div>
                       <p className="text-sm text-gray-500">
@@ -233,7 +233,7 @@ export default function UserActivityLogsDialog({
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-gray-400" />
                         <p className="text-sm">
-                          {login.location || "Unknown location"}
+                          {login.location || "Bilinmeyen konum"}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -247,9 +247,9 @@ export default function UserActivityLogsDialog({
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium">No Login History</h3>
+                <h3 className="text-lg font-medium">Giriş Geçmişi Yok</h3>
                 <p className="text-sm text-gray-500">
-                  No login records match your search criteria.
+                  Arama kriterlerinize uyan giriş kaydı bulunamadı.
                 </p>
               </div>
             )}
@@ -289,7 +289,7 @@ export default function UserActivityLogsDialog({
                           <div className="flex items-center space-x-1">
                             <ShoppingCart className="h-4 w-4 text-blue-500" />
                             <span className="text-sm">
-                              +{activity.gemsEarned} Gems
+                              +{activity.gemsEarned} Elmas
                             </span>
                           </div>
                         )}
@@ -301,9 +301,9 @@ export default function UserActivityLogsDialog({
             ) : (
               <div className="text-center py-8">
                 <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium">No Activity Found</h3>
+                <h3 className="text-lg font-medium">Aktivite Bulunamadı</h3>
                 <p className="text-sm text-gray-500">
-                  No activity records match your search criteria.
+                  Arama kriterlerinize uyan aktivite kaydı bulunamadı.
                 </p>
               </div>
             )}

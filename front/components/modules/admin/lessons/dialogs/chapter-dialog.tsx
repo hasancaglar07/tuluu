@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Dialog,
@@ -14,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
+import { CircleDot, Loader2 } from "lucide-react";
 import type { Language } from "@/types/lessons";
 import { UploadField } from "@/components/ui/upload-field";
 
@@ -63,13 +64,23 @@ export function ChapterDialog({
   isEdit,
 }: ChapterDialogProps) {
   const intl = useIntl();
+  const [errors, setErrors] = useState<{ title?: string }>({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setErrors({});
+  }, [isOpen, isEdit]);
 
   /**
    * Handles form submission with validation
    */
   const handleSubmit = async () => {
-    // Basic validation
+    const nextErrors: { title?: string } = {};
     if (!newChapter.title.trim()) {
+      nextErrors.title = "Bölüm başlığı zorunludur.";
+    }
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
       return;
     }
     await onSubmit();
@@ -83,25 +94,30 @@ export function ChapterDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editChapter"
-                defaultMessage="Edit Chapter"
+                defaultMessage="Bölümü Düzenle"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addNewChapter"
-                defaultMessage="Add New Chapter"
+                defaultMessage="Yeni Bölüm Ekle"
               />
             )}
           </DialogTitle>
           <DialogDescription>
-            <FormattedMessage
-              id="admin.lessons.chapterDialogDescription"
-              defaultMessage="Create a new chapter for {languageName}."
-              values={{
-                languageName: currentLanguage?.name || "selected language",
+              <FormattedMessage
+                id="admin.lessons.chapterDialogDescription"
+                defaultMessage="{languageName} için yeni bir bölüm oluşturun."
+                values={{
+                languageName: currentLanguage?.name || "seçili program",
               }}
             />
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <CircleDot className="h-3.5 w-3.5" />
+          <span>Başlık zorunludur. Premium ve varsayılan açık ayarlarını isteğe göre belirleyin.</span>
+        </div>
 
         <div className="space-y-4 py-2">
           <div className="space-y-4 rounded-lg border bg-muted/20 p-4">
@@ -111,27 +127,34 @@ export function ChapterDialog({
               <Label htmlFor="chapter-title">
                 <FormattedMessage
                   id="admin.lessons.title"
-                  defaultMessage="Title"
+                  defaultMessage="Başlık"
                 />
               </Label>
               <Input
                 id="chapter-title"
+                className={errors.title ? "border-red-500 focus-visible:ring-red-500" : undefined}
                 value={newChapter.title}
-                onChange={(e) =>
-                  setNewChapter({ ...newChapter, title: e.target.value })
-                }
+                onChange={(e) => {
+                  setNewChapter({ ...newChapter, title: e.target.value });
+                  if (errors.title) {
+                    setErrors((prev) => ({ ...prev, title: undefined }));
+                  }
+                }}
                 placeholder={intl.formatMessage({
                   id: "admin.lessons.placeholder.chapterTitle",
                   defaultMessage: "örn. Temel Kavramlar"
                 })}
               />
+              {errors.title ? (
+                <p className="text-xs text-red-600">{errors.title}</p>
+              ) : null}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="chapter-description">
                 <FormattedMessage
                   id="admin.lessons.description"
-                  defaultMessage="Description"
+                  defaultMessage="Açıklama"
                 />
               </Label>
               <Textarea
@@ -152,7 +175,7 @@ export function ChapterDialog({
 
             <UploadField
               id="chapter-image"
-              label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Image URL" })}
+              label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Görsel URL" })}
               value={newChapter.imageUrl}
               onChange={(url) => setNewChapter({ ...newChapter, imageUrl: url })}
               accept="image/*"
@@ -167,7 +190,7 @@ export function ChapterDialog({
                 <Label htmlFor="chapter-order">
                   <FormattedMessage
                     id="admin.lessons.order"
-                    defaultMessage="Order"
+                    defaultMessage="Sıra"
                   />
                 </Label>
                 <Input
@@ -192,7 +215,7 @@ export function ChapterDialog({
                   <Label htmlFor="chapter-premium">
                     <FormattedMessage
                       id="admin.lessons.premiumContent"
-                      defaultMessage="Premium Content"
+                      defaultMessage="Premium İçerik"
                     />
                   </Label>
                 </div>
@@ -207,7 +230,7 @@ export function ChapterDialog({
                   <Label htmlFor="chapter-expanded">
                     <FormattedMessage
                       id="admin.lessons.expandedByDefault"
-                      defaultMessage="Expanded by Default"
+                      defaultMessage="Varsayılan Olarak Açık"
                     />
                   </Label>
                 </div>
@@ -220,24 +243,24 @@ export function ChapterDialog({
           <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
             className="w-full sm:w-auto"
             onClick={handleSubmit}
-            disabled={!newChapter.title || !currentLanguage || isLoading}
+            disabled={!newChapter.title.trim() || !currentLanguage || isLoading}
           >
             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.saveChanges"
-                defaultMessage="Save Changes"
+                defaultMessage="Değişiklikleri Kaydet"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addChapter"
-                defaultMessage="Add Chapter"
+                defaultMessage="Bölümü Kaydet"
               />
             )}
           </Button>

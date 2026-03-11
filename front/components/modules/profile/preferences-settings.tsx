@@ -26,17 +26,17 @@ export function PreferencesSettings({
     <Card>
       <CardHeader>
         <CardTitle>
-          <FormattedMessage id="preferences.title" defaultMessage="Preferences" />
+          <FormattedMessage id="preferences.title" defaultMessage="Tercihler" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="preferences.darkMode" defaultMessage="Dark Mode" />
+              <FormattedMessage id="preferences.darkMode" defaultMessage="Karanlık Mod" />
             </h6>
             <p className="text-sm text-gray-500">
-              <FormattedMessage id="preferences.darkMode.description" defaultMessage="Use dark theme" />
+              <FormattedMessage id="preferences.darkMode.description" defaultMessage="Koyu temayı kullan" />
             </p>
           </div>
           <Switch checked={settings.darkMode} onCheckedChange={() => toggleSetting("darkMode")} />
@@ -45,10 +45,10 @@ export function PreferencesSettings({
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="preferences.soundEffects" defaultMessage="Sound Effects" />
+              <FormattedMessage id="preferences.soundEffects" defaultMessage="Ses Efektleri" />
             </h6>
             <p className="text-sm text-gray-500">
-              <FormattedMessage id="preferences.soundEffects.description" defaultMessage="Enable sound effects" />
+              <FormattedMessage id="preferences.soundEffects.description" defaultMessage="Ses efektlerini aç" />
             </p>
           </div>
           <Switch checked={settings.soundEffects} onCheckedChange={() => toggleSetting("soundEffects")} />
@@ -57,12 +57,12 @@ export function PreferencesSettings({
         <div className="flex justify-between items-center">
           <div>
             <h6 className="font-medium">
-              <FormattedMessage id="preferences.voiceOver" defaultMessage="Voice Over" />
+              <FormattedMessage id="preferences.voiceOver" defaultMessage="Sesli Okuma" />
             </h6>
             <p className="text-sm text-gray-500">
               <FormattedMessage
                 id="preferences.voiceOver.description"
-                defaultMessage="Enable audio reading of phrases"
+                defaultMessage="İfadelerin sesli okunmasını aç"
               />
             </p>
           </div>

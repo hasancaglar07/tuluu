@@ -412,19 +412,19 @@ export default function Lesson({ id }: { id: string }) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h3 className="mb-4">
-            <FormattedMessage
-              id="lesson.notFoundTitle"
-              defaultMessage="Lesson Not Found"
-            />
+              <FormattedMessage
+                id="lesson.notFoundTitle"
+                defaultMessage="Ders Bulunamadı"
+              />
           </h3>
           <button
             onClick={() => router.push("/")}
             className="px-4 py-2 bg-[#58cc02] text-white rounded-xl font-bold"
           >
-            <FormattedMessage
-              id="button.backToDashboard"
-              defaultMessage="Back to Dashboard"
-            />
+              <FormattedMessage
+                id="button.backToDashboard"
+                defaultMessage="Panele Dön"
+              />
           </button>
         </div>
       </div>
@@ -433,7 +433,7 @@ export default function Lesson({ id }: { id: string }) {
 
   // Render lesson interface
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-screen h-[100dvh] bg-white flex flex-col overflow-hidden">
       {/* Header with progress and hearts */}
       {lessonContent.exercises.length > 0 && !lessonState.showResults && (
         <LessonHeader
@@ -445,70 +445,72 @@ export default function Lesson({ id }: { id: string }) {
 
       {/* Main lesson content */}
       {lessonContent.exercises.length > 0 ? (
-        <main className="flex-1 flex flex-col items-center justify-center p-4 max-w-3xl mx-auto w-full h-full">
-          <AnimatePresence mode="wait">
-            {!lessonState.showResults && currentExercise ? (
-              <div className="w-full flex flex-col items-center">
-                {/* Education vs classic exercise */}
-                {isEducation ? (
-                  <EducationDisplay exercise={currentExercise as any} />
-                ) : (
-                  <>
-                    {/* Exercise display with character */}
-                    <ExerciseDisplay
-                      exercise={currentExercise}
-                      characterState={lessonState.characterState}
-                      isSpeaking={isSpeaking}
-                      onPlayAudio={() => playAudio(currentExercise)}
-                      showStreakTracker={lessonState.showStreakTracker}
-                      showResults={lessonState.showResults}
-                    />
-
-                    {/* Answer selection area */}
-                    <AnswerArea
-                      selectedWords={lessonState.selectedWords}
-                      selectedWordIndexes={lessonState.selectedWordIndexes}
-                      isCorrect={lessonState.isCorrect}
-                      onWordSelect={handleWordSelect}
-                    />
-
-                    {/* Word options */}
-                    <WordOptions
-                      options={currentExercise?.options || []}
-                      selectedWordIndexes={lessonState.selectedWordIndexes}
-                      isCorrect={lessonState.isCorrect}
-                      onWordSelect={handleWordSelect}
-                    />
-                  </>
-                )}
-
-                {/* Streak tracker display */}
-                {lessonState.showStreakTracker &&
-                  !lessonState.showResults &&
-                  lessonState.completedExerciseIds.length ===
-                    lessonContent.exercises.length &&
-                  (lessonState.streakCount ? (
-                    <div className="mt-8">
-                      <StreakTracker
-                        streakCount={lessonState.streakCount}
-                        weekProgress={lessonState.weekProgress}
-                      />
-                    </div>
+        <main className="flex-1 overflow-y-auto w-full">
+          <div className="flex flex-col items-center justify-center p-4 max-w-3xl mx-auto w-full min-h-full">
+            <AnimatePresence mode="wait">
+              {!lessonState.showResults && currentExercise ? (
+                <div className="w-full flex flex-col items-center">
+                  {/* Education vs classic exercise */}
+                  {isEducation ? (
+                    <EducationDisplay exercise={currentExercise as any} />
                   ) : (
-                    <ContinueLearningEncouragement />
-                  ))}
-              </div>
-            ) : (
-              /* Results screen */
-              <LessonResults
-                hearts={lessonState.hearts}
-                earnedXp={lessonState.earnedXp}
-                lessonId={lessonContent.lessonId}
-                onContinue={returnToDashboard}
-                onRetry={returnToShop}
-              />
-            )}
-          </AnimatePresence>
+                    <>
+                      {/* Exercise display with character */}
+                      <ExerciseDisplay
+                        exercise={currentExercise}
+                        characterState={lessonState.characterState}
+                        isSpeaking={isSpeaking}
+                        onPlayAudio={() => playAudio(currentExercise)}
+                        showStreakTracker={lessonState.showStreakTracker}
+                        showResults={lessonState.showResults}
+                      />
+
+                      {/* Answer selection area */}
+                      <AnswerArea
+                        selectedWords={lessonState.selectedWords}
+                        selectedWordIndexes={lessonState.selectedWordIndexes}
+                        isCorrect={lessonState.isCorrect}
+                        onWordSelect={handleWordSelect}
+                      />
+
+                      {/* Word options */}
+                      <WordOptions
+                        options={currentExercise?.options || []}
+                        selectedWordIndexes={lessonState.selectedWordIndexes}
+                        isCorrect={lessonState.isCorrect}
+                        onWordSelect={handleWordSelect}
+                      />
+                    </>
+                  )}
+
+                  {/* Streak tracker display */}
+                  {lessonState.showStreakTracker &&
+                    !lessonState.showResults &&
+                    lessonState.completedExerciseIds.length ===
+                      lessonContent.exercises.length &&
+                    (lessonState.streakCount ? (
+                      <div className="mt-8">
+                        <StreakTracker
+                          streakCount={lessonState.streakCount}
+                          weekProgress={lessonState.weekProgress}
+                        />
+                      </div>
+                    ) : (
+                      <ContinueLearningEncouragement />
+                    ))}
+                </div>
+              ) : (
+                /* Results screen */
+                <LessonResults
+                  hearts={lessonState.hearts}
+                  earnedXp={lessonState.earnedXp}
+                  lessonId={lessonContent.lessonId}
+                  onContinue={returnToDashboard}
+                  onRetry={returnToShop}
+                />
+              )}
+            </AnimatePresence>
+          </div>
         </main>
       ) : (
         /* No exercises fallback */
@@ -516,7 +518,7 @@ export default function Lesson({ id }: { id: string }) {
       )}
 
       {/* Footer with action buttons */}
-      {lessonContent.exercises.length > 0 && currentExercise && (
+      {lessonContent.exercises.length > 0 && currentExercise && !lessonState.showResults && (
         <LessonFooter
           isCorrect={isEducation ? true : lessonState.isCorrect}
           showNextButton={isEducation ? true : lessonState.showNextButton}

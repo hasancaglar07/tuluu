@@ -1,14 +1,34 @@
 import { type NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db/connect";
 import { auth } from "@clerk/nextjs/server";
-import Language, { LanguageDocument } from "@/models/Language";
-import Chapter, { ChapterDocument } from "@/models/Chapter";
-import Unit, { UnitDocument } from "@/models/Unit";
-import Lesson, { LessonDocument } from "@/models/Lesson";
+import Language from "@/models/Language";
+import Chapter from "@/models/Chapter";
+import Unit from "@/models/Unit";
+import Lesson from "@/models/Lesson";
 import Exercise from "@/models/Exercise";
 import { authGuard } from "@/lib/utils";
 import { LessonSchema } from "@/lib/validations/lesson";
 import { MongoServerError } from "mongodb";
+
+const ADMIN_LESSONS_AGGREGATE_CACHE_TTL_MS = 20 * 1000;
+
+type AdminLessonsAggregatePayload = {
+  languages: Array<Record<string, unknown>>;
+};
+
+type AdminLessonsAggregateCacheValue = {
+  expiresAt: number;
+  payload: AdminLessonsAggregatePayload;
+};
+
+const globalForAdminLessonsAggregateCache = globalThis as typeof globalThis & {
+  _adminLessonsAggregateCache?: Map<string, AdminLessonsAggregateCacheValue>;
+};
+
+const adminLessonsAggregateCache =
+  globalForAdminLessonsAggregateCache._adminLessonsAggregateCache ?? new Map();
+globalForAdminLessonsAggregateCache._adminLessonsAggregateCache =
+  adminLessonsAggregateCache;
 
 /**
  * @swagger
@@ -137,6 +157,12 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     if (action === "aggregate") {
+      const now = Date.now();
+      const cachedAggregate = adminLessonsAggregateCache.get("aggregate");
+      if (cachedAggregate && cachedAggregate.expiresAt > now) {
+        return NextResponse.json(cachedAggregate.payload, { status: 200 });
+      }
+
       const normalizeThemeMetadata = (metadata?: {
         islamicContent?: boolean;
         ageGroup?: string;
@@ -151,184 +177,222 @@ export async function GET(req: NextRequest) {
         difficultyLevel: metadata?.difficultyLevel ?? "beginner",
       });
 
-      // Fetch only active programs so disabled entries do not return after deletion
-      const languages = await Language.find({ isActive: true }).sort({
-        createdAt: 1,
-      });
+      type AggregatedExercise = {
+        _id: string;
+        lessonId: string;
+        type: string;
+        componentType: string;
+        moralValue: string;
+        valuePoints: number;
+        questionPreview: string;
+        instruction: string;
+        sourceText: string;
+        sourceLanguage: string;
+        targetLanguage: string;
+        correctAnswer: string[];
+        options: string[];
+        isNewWord: boolean;
+        audioUrl: string;
+        neutralAnswerImage: string;
+        badAnswerImage: string;
+        correctAnswerImage: string;
+        order: number;
+        educationContent: unknown;
+        mediaPack: unknown;
+        hoverHint: unknown;
+        answerAudioUrl: string;
+        ttsVoiceId: string;
+        autoRevealMilliseconds: number | null;
+      };
 
-      // Create the result structure
-      const result = {
-        languages: await Promise.all(
-          languages.map(async (language: LanguageDocument) => {
-            // Fetch chapters for this language
-            const chapters = await Chapter.find({ languageId: language.id }).sort(
-              { order: 1 }
-            );
+      const languages = await Language.find({ isActive: true })
+        .sort({ createdAt: 1 })
+        .lean();
+      const languageIds = languages.map((language) => String(language._id));
 
-            return {
-              _id: language.id,
-              name: language.name,
-              nativeName: language.nativeName,
-              flag: language.flag,
-              baseLanguage: language.baseLanguage,
-              imageUrl: language.imageUrl || "",
-              locale: language.locale,
-              isActive: language.isActive,
-              category: language.category ?? "language_learning",
-              themeMetadata: normalizeThemeMetadata(
-                language.themeMetadata as
-                  | {
-                      islamicContent?: boolean;
-                      ageGroup?: string;
-                      moralValues?: string[];
-                      educationalFocus?: string | null;
-                      difficultyLevel?: string;
-                    }
-                  | undefined
-              ),
-              chapters: await Promise.all(
-                chapters.map(async (chapter: ChapterDocument) => {
-                  // Fetch units for this chapter
-                  const units = await Unit.find({
-                    languageId: language.id,
-                    chapterId: chapter.id,
-                  }).sort({ order: 1 });
+      if (languageIds.length === 0) {
+        const emptyPayload: AdminLessonsAggregatePayload = { languages: [] };
+        adminLessonsAggregateCache.set("aggregate", {
+          expiresAt: now + ADMIN_LESSONS_AGGREGATE_CACHE_TTL_MS,
+          payload: emptyPayload,
+        });
+        return NextResponse.json(emptyPayload, { status: 200 });
+      }
+
+      const [chapters, units, lessons, exercises] = await Promise.all([
+        Chapter.find({ languageId: { $in: languageIds } })
+          .sort({ order: 1 })
+          .lean(),
+        Unit.find({ languageId: { $in: languageIds } })
+          .sort({ order: 1 })
+          .lean(),
+        Lesson.find({ languageId: { $in: languageIds } })
+          .sort({ order: 1 })
+          .lean(),
+        Exercise.find({
+          languageId: { $in: languageIds },
+          isActive: true,
+        })
+          .sort({ order: 1 })
+          .lean(),
+      ]);
+
+      const chaptersByLanguageId = new Map<string, typeof chapters>();
+      const unitsByChapterId = new Map<string, typeof units>();
+      const lessonsByUnitId = new Map<string, typeof lessons>();
+      const exercisesByLessonId = new Map<string, AggregatedExercise[]>();
+
+      for (const chapter of chapters) {
+        const key = String(chapter.languageId);
+        const chapterList = chaptersByLanguageId.get(key) ?? [];
+        chapterList.push(chapter);
+        chaptersByLanguageId.set(key, chapterList);
+      }
+
+      for (const unit of units) {
+        const key = String(unit.chapterId);
+        const unitList = unitsByChapterId.get(key) ?? [];
+        unitList.push(unit);
+        unitsByChapterId.set(key, unitList);
+      }
+
+      for (const lesson of lessons) {
+        const key = String(lesson.unitId);
+        const lessonList = lessonsByUnitId.get(key) ?? [];
+        lessonList.push(lesson);
+        lessonsByUnitId.set(key, lessonList);
+      }
+
+      for (const exercise of exercises) {
+        const lessonKey = String(exercise.lessonId);
+        const exerciseList = exercisesByLessonId.get(lessonKey) ?? [];
+        exerciseList.push({
+          _id: String(exercise._id),
+          lessonId: String(exercise.lessonId ?? ""),
+          type: exercise.type,
+          componentType: (exercise as any).componentType || "multiple_choice",
+          moralValue: (exercise as any).moralValue || "kindness",
+          valuePoints: (exercise as any).valuePoints || 0,
+          questionPreview: (exercise as any).questionPreview || "",
+          instruction: exercise.instruction,
+          sourceText: exercise.sourceText,
+          sourceLanguage: exercise.sourceLanguage,
+          targetLanguage: exercise.targetLanguage,
+          correctAnswer: exercise.correctAnswer ?? [],
+          options: exercise.options ?? [],
+          isNewWord: exercise.isNewWord,
+          audioUrl: exercise.audioUrl,
+          neutralAnswerImage: exercise.neutralAnswerImage,
+          badAnswerImage: exercise.badAnswerImage,
+          correctAnswerImage: exercise.correctAnswerImage,
+          order: exercise.order,
+          educationContent: exercise.educationContent ?? null,
+          mediaPack: exercise.mediaPack ?? null,
+          hoverHint: exercise.hoverHint ?? null,
+          answerAudioUrl: exercise.answerAudioUrl ?? "",
+          ttsVoiceId: exercise.ttsVoiceId ?? "",
+          autoRevealMilliseconds: exercise.autoRevealMilliseconds ?? null,
+        });
+        exercisesByLessonId.set(lessonKey, exerciseList);
+      }
+
+      const payload: AdminLessonsAggregatePayload = {
+        languages: languages.map((language) => {
+          const languageId = String(language._id);
+          const chapterList = chaptersByLanguageId.get(languageId) ?? [];
+
+          return {
+            _id: languageId,
+            name: language.name,
+            nativeName: language.nativeName,
+            flag: language.flag,
+            baseLanguage: language.baseLanguage,
+            imageUrl: language.imageUrl || "",
+            locale: language.locale,
+            isActive: language.isActive,
+            category: language.category ?? "language_learning",
+            themeMetadata: normalizeThemeMetadata(
+              language.themeMetadata as
+                | {
+                    islamicContent?: boolean;
+                    ageGroup?: string;
+                    moralValues?: string[];
+                    educationalFocus?: string | null;
+                    difficultyLevel?: string;
+                  }
+                | undefined
+            ),
+            chapters: chapterList.map((chapter) => {
+              const chapterIdKey = String(chapter._id);
+              const unitList = unitsByChapterId.get(chapterIdKey) ?? [];
+
+              return {
+                _id: chapterIdKey,
+                title: chapter.title,
+                description: chapter.description,
+                isPremium: chapter.isPremium,
+                isExpanded: true,
+                imageUrl: chapter.imageUrl || "",
+                isActive: chapter.isActive ?? true,
+                order: chapter.order ?? 0,
+                contentType: chapter.contentType ?? "lesson",
+                moralLesson: chapter.moralLesson ?? null,
+                miniGame: chapter.miniGame ?? null,
+                units: unitList.map((unit) => {
+                  const unitIdKey = String(unit._id);
+                  const lessonList = lessonsByUnitId.get(unitIdKey) ?? [];
 
                   return {
-                    _id: chapter.id,
-                    title: chapter.title,
-                    description: chapter.description,
-                    isPremium: chapter.isPremium,
-                    isExpanded: true, // Default to expanded in the UI
-                    imageUrl: chapter.imageUrl || "",
-                    isActive: chapter.isActive ?? true,
-                    order: chapter.order ?? 0,
-                    contentType: chapter.contentType ?? "lesson",
-                    moralLesson: chapter.moralLesson ?? null,
-                    miniGame: chapter.miniGame ?? null,
-                    units: await Promise.all(
-                      units.map(async (unit: UnitDocument) => {
-                        // Fetch lessons for this unit
-                        const lessons = await Lesson.find({
-                          languageId: language.id,
-                          chapterId: chapter.id,
-                          unitId: unit.id,
-                        }).sort({ order: 1 });
-
-                        const exercises = await Exercise.find({
-                          languageId: language.id,
-                          chapterId: chapter.id,
-                          unitId: unit.id,
-                          isActive: true,
-                        }).sort({ order: 1 });
-
-                        type AggregatedExercise = {
-                          _id: string;
-                          lessonId: string;
-                          type: string;
-                          instruction: string;
-                          sourceText: string;
-                          sourceLanguage: string;
-                          targetLanguage: string;
-                          correctAnswer: string[];
-                          options: string[];
-                          isNewWord: boolean;
-                          audioUrl: string;
-                          neutralAnswerImage: string;
-                          badAnswerImage: string;
-                          correctAnswerImage: string;
-                          order: number;
-                          educationContent: unknown;
-                          mediaPack: unknown;
-                          hoverHint: unknown;
-                          answerAudioUrl: string;
-                          ttsVoiceId: string;
-                          autoRevealMilliseconds: number | null;
-                        };
-
-                        const exercisesByLessonId = exercises.reduce<
-                          Record<string, AggregatedExercise[]>
-                        >((acc, exercise) => {
-                          const lessonKey = String(exercise.lessonId);
-                          if (!acc[lessonKey]) {
-                            acc[lessonKey] = [];
-                          }
-                          acc[lessonKey].push({
-                            _id: exercise.id,
-                            lessonId: exercise.lessonId,
-                            type: exercise.type,
-                            componentType: (exercise as any).componentType || "multiple_choice",
-                            moralValue: (exercise as any).moralValue || "kindness",
-                            valuePoints: (exercise as any).valuePoints || 0,
-                            questionPreview: (exercise as any).questionPreview || "",
-                            instruction: exercise.instruction,
-                            sourceText: exercise.sourceText,
-                            sourceLanguage: exercise.sourceLanguage,
-                            targetLanguage: exercise.targetLanguage,
-                            correctAnswer: exercise.correctAnswer ?? [],
-                            options: exercise.options ?? [],
-                            isNewWord: exercise.isNewWord,
-                            audioUrl: exercise.audioUrl,
-                            neutralAnswerImage: exercise.neutralAnswerImage,
-                            badAnswerImage: exercise.badAnswerImage,
-                            correctAnswerImage: exercise.correctAnswerImage,
-                            order: exercise.order,
-                            educationContent: exercise.educationContent ?? null,
-                            mediaPack: exercise.mediaPack ?? null,
-                            hoverHint: exercise.hoverHint ?? null,
-                            answerAudioUrl: exercise.answerAudioUrl ?? "",
-                            ttsVoiceId: exercise.ttsVoiceId ?? "",
-                            autoRevealMilliseconds:
-                              exercise.autoRevealMilliseconds ?? null,
-                          });
-                          return acc;
-                        }, {});
-
-                        return {
-                          _id: unit.id,
-                          title: unit.title,
-                          description: unit.description,
-                          isPremium: unit.isPremium,
-                          isExpanded: true, // Default to expanded in the UI
-                          imageUrl: unit.imageUrl || "",
-                          order: unit.order,
-                          color: unit.color,
-                          isActive: unit.isActive ?? true,
-                          lessons: lessons.map((lesson: LessonDocument) => ({
-                            _id: lesson.id,
-                            title: lesson.title,
-                            description: lesson.description,
-                            isPremium: lesson.isPremium,
-                            isActive: lesson.isActive,
-                            isTest: lesson.isTest,
-                            order: lesson.order,
-                            xpReward: lesson.xpReward,
-                            teachingPhase: (lesson as any).teachingPhase || "teach",
-                            moralValue: (lesson as any).moralValue || "kindness",
-                            valuePointsReward: (lesson as any).valuePointsReward || 0,
-                            pedagogyFocus: (lesson as any).pedagogyFocus || "",
-                            moralStory: (lesson as any).moralStory || null,
-                            imageUrl: lesson.imageUrl || "",
-                            languageId: lesson.languageId,
-                            chapterId: lesson.chapterId,
-                            unitId: lesson.unitId,
-                            moralLesson: (lesson as any).moralLesson || null,
-                            miniGame: (lesson as any).miniGame || null,
-                            storyPages: lesson.storyPages || [],
-                            storyMetadata: lesson.storyMetadata || null,
-                            exercises: exercisesByLessonId[lesson.id] ?? [],
-                          })),
-                        };
-                      })
-                    ),
+                    _id: unitIdKey,
+                    title: unit.title,
+                    description: unit.description,
+                    isPremium: unit.isPremium,
+                    isExpanded: true,
+                    imageUrl: unit.imageUrl || "",
+                    order: unit.order,
+                    color: unit.color,
+                    isActive: unit.isActive ?? true,
+                    lessons: lessonList.map((lesson) => {
+                      const lessonIdKey = String(lesson._id);
+                      return {
+                        _id: lessonIdKey,
+                        title: lesson.title,
+                        description: lesson.description,
+                        isPremium: lesson.isPremium,
+                        isActive: lesson.isActive,
+                        isTest: lesson.isTest,
+                        order: lesson.order,
+                        xpReward: lesson.xpReward,
+                        teachingPhase: (lesson as any).teachingPhase || "teach",
+                        moralValue: (lesson as any).moralValue || "kindness",
+                        valuePointsReward: (lesson as any).valuePointsReward || 0,
+                        pedagogyFocus: (lesson as any).pedagogyFocus || "",
+                        moralStory: (lesson as any).moralStory || null,
+                        imageUrl: lesson.imageUrl || "",
+                        languageId: lesson.languageId,
+                        chapterId: lesson.chapterId,
+                        unitId: lesson.unitId,
+                        moralLesson: (lesson as any).moralLesson || null,
+                        miniGame: (lesson as any).miniGame || null,
+                        storyPages: lesson.storyPages || [],
+                        storyMetadata: lesson.storyMetadata || null,
+                        exercises: exercisesByLessonId.get(lessonIdKey) ?? [],
+                      };
+                    }),
                   };
-                })
-              ),
-            };
-          })
-        ),
+                }),
+              };
+            }),
+          };
+        }),
       };
-      return NextResponse.json(result, { status: 200 });
+
+      adminLessonsAggregateCache.set("aggregate", {
+        expiresAt: now + ADMIN_LESSONS_AGGREGATE_CACHE_TTL_MS,
+        payload,
+      });
+
+      return NextResponse.json(payload, { status: 200 });
     }
     const query: {
       unitId?: string;

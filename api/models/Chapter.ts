@@ -102,6 +102,7 @@ const ChapterSchema = new Schema(
 
 // 2. Add Indexes
 ChapterSchema.index({ languageId: 1 });
+ChapterSchema.index({ languageId: 1, order: 1, isActive: 1 });
 
 // 3. Define Types from Schema
 export type ChapterType = InferSchemaType<typeof ChapterSchema>;

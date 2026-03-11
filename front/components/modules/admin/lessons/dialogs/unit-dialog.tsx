@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Dialog,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { CircleDot, Loader2 } from "lucide-react";
 import type { Language } from "@/types/lessons";
 import { UploadField } from "@/components/ui/upload-field";
 
@@ -72,15 +73,32 @@ export function UnitDialog({
   isEdit,
 }: UnitDialogProps) {
   const intl = useIntl();
+  const [errors, setErrors] = useState<{
+    chapterId?: string;
+    title?: string;
+  }>({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setErrors({});
+  }, [isOpen, isEdit]);
 
   /**
    * Handles form submission with validation
    */
   const handleSubmit = async () => {
-    // Basic validation
+    const nextErrors: { chapterId?: string; title?: string } = {};
     if (!newUnit.chapterId || !newUnit.title.trim()) {
+      if (!newUnit.chapterId) {
+        nextErrors.chapterId = "Bölüm seçimi zorunludur.";
+      }
+      if (!newUnit.title.trim()) {
+        nextErrors.title = "Ünite başlığı zorunludur.";
+      }
+      setErrors(nextErrors);
       return;
     }
+    setErrors({});
     await onSubmit();
   };
 
@@ -92,22 +110,27 @@ export function UnitDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editUnit"
-                defaultMessage="Edit Unit"
+                defaultMessage="Üniteyi Düzenle"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addNewUnit"
-                defaultMessage="Add New Unit"
+                defaultMessage="Yeni Ünite Ekle"
               />
             )}
           </DialogTitle>
           <DialogDescription>
             <FormattedMessage
               id="admin.lessons.unitDialogDescription"
-              defaultMessage="Create a new unit within a chapter."
+              defaultMessage="Seçtiğiniz bölüm içinde yeni bir ünite oluşturun."
             />
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <CircleDot className="h-3.5 w-3.5" />
+          <span>Önce bölüm seçin, sonra ünite başlığı ve sırasını belirleyin. Aktif olmayan üniteler öğrenciye görünmez.</span>
+        </div>
 
         <div className="space-y-4 py-2">
           <div className="space-y-4 rounded-lg border bg-muted/20 p-4">
@@ -116,16 +139,24 @@ export function UnitDialog({
               <Label htmlFor="unit-chapter">
                 <FormattedMessage
                   id="admin.lessons.chapter"
-                  defaultMessage="Chapter"
+                  defaultMessage="Bölüm"
                 />
               </Label>
               <Select
                 value={newUnit.chapterId.toString()}
                 onValueChange={(value) =>
-                  setNewUnit({ ...newUnit, chapterId: value })
+                  {
+                    setNewUnit({ ...newUnit, chapterId: value });
+                    if (errors.chapterId) {
+                      setErrors((prev) => ({ ...prev, chapterId: undefined }));
+                    }
+                  }
                 }
               >
-                <SelectTrigger id="unit-chapter">
+                <SelectTrigger
+                  id="unit-chapter"
+                  className={errors.chapterId ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                >
                   <SelectValue placeholder={intl.formatMessage({
                     id: "admin.lessons.placeholder.chapter",
                     defaultMessage: "Bölüm seç"
@@ -141,37 +172,47 @@ export function UnitDialog({
                         {chapter.title}
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
-            </div>
+                  </SelectContent>
+                </Select>
+                {errors.chapterId ? (
+                  <p className="text-xs text-red-600">{errors.chapterId}</p>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="unit-title">
-                <FormattedMessage
-                  id="admin.lessons.title"
-                  defaultMessage="Title"
+              <div className="grid gap-2">
+                <Label htmlFor="unit-title">
+                  <FormattedMessage
+                    id="admin.lessons.title"
+                    defaultMessage="Başlık"
+                  />
+                </Label>
+                <Input
+                  id="unit-title"
+                  className={errors.title ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                  value={newUnit.title}
+                  onChange={(e) => {
+                    setNewUnit({ ...newUnit, title: e.target.value });
+                    if (errors.title) {
+                      setErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
+                  placeholder={intl.formatMessage({
+                    id: "admin.lessons.placeholder.unitTitle",
+                    defaultMessage: "örn. Selamlaşmalar"
+                  })}
                 />
-              </Label>
-              <Input
-                id="unit-title"
-                value={newUnit.title}
-                onChange={(e) =>
-                  setNewUnit({ ...newUnit, title: e.target.value })
-                }
-                placeholder={intl.formatMessage({
-                  id: "admin.lessons.placeholder.unitTitle",
-                  defaultMessage: "örn. Selamlaşmalar"
-                })}
-              />
-            </div>
+                {errors.title ? (
+                  <p className="text-xs text-red-600">{errors.title}</p>
+                ) : null}
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="unit-description">
-                <FormattedMessage
-                  id="admin.lessons.description"
-                  defaultMessage="Description"
-                />
-              </Label>
+              <div className="grid gap-2">
+                <Label htmlFor="unit-description">
+                  <FormattedMessage
+                    id="admin.lessons.description"
+                    defaultMessage="Açıklama"
+                  />
+                </Label>
               <Textarea
                 id="unit-description"
                 value={newUnit.description}
@@ -187,7 +228,7 @@ export function UnitDialog({
 
             <UploadField
               id="unit-image"
-              label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Image URL" })}
+              label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Görsel URL" })}
               value={newUnit.imageUrl}
               onChange={(url) => setNewUnit({ ...newUnit, imageUrl: url })}
               accept="image/*"
@@ -202,7 +243,7 @@ export function UnitDialog({
                 <Label htmlFor="unit-order">
                   <FormattedMessage
                     id="admin.lessons.order"
-                    defaultMessage="Order"
+                    defaultMessage="Sıra"
                   />
                 </Label>
                 <Input
@@ -227,7 +268,7 @@ export function UnitDialog({
                   <Label htmlFor="unit-premium">
                     <FormattedMessage
                       id="admin.lessons.premiumContent"
-                      defaultMessage="Premium Content"
+                      defaultMessage="Premium İçerik"
                     />
                   </Label>
                 </div>
@@ -242,14 +283,14 @@ export function UnitDialog({
                   <Label htmlFor="unit-active">
                     <FormattedMessage
                       id="admin.lessons.active"
-                      defaultMessage="Active"
+                      defaultMessage="Aktif"
                     />
                   </Label>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   <FormattedMessage
                     id="admin.lessons.inactiveUnitNote"
-                    defaultMessage="Inactive units won't be visible to users."
+                    defaultMessage="Pasif üniteler öğrencilere gösterilmez."
                   />
                 </p>
                 <div className="flex items-center space-x-2">
@@ -263,7 +304,7 @@ export function UnitDialog({
                   <Label htmlFor="unit-expanded">
                     <FormattedMessage
                       id="admin.lessons.expandedByDefault"
-                      defaultMessage="Expanded by Default"
+                      defaultMessage="Varsayılan Olarak Açık"
                     />
                   </Label>
                 </div>
@@ -276,24 +317,24 @@ export function UnitDialog({
           <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
             className="w-full sm:w-auto"
             onClick={handleSubmit}
-            disabled={!newUnit.chapterId || !newUnit.title || isLoading}
+            disabled={!newUnit.chapterId || !newUnit.title.trim() || isLoading}
           >
             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.saveChanges"
-                defaultMessage="Save Changes"
+                defaultMessage="Değişiklikleri Kaydet"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addUnit"
-                defaultMessage="Add Unit"
+                defaultMessage="Üniteyi Kaydet"
               />
             )}
           </Button>

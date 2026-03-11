@@ -57,12 +57,12 @@ export default function MobileHeaderDashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <section className="md:hidden" aria-label="Mobile dashboard header">
+    <section className="md:hidden" aria-label="Mobil panel üstbilgisi">
       <Container>
         {/* Header container with logo and menu button */}
         <div className="flex items-center justify-between border-b p-4 border-gray-200">
           {/* Logo */}
-          <Logo aria-label="App logo" />
+          <Logo aria-label="Uygulama logosu" />
 
           {/* Mobile menu sheet */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -71,7 +71,7 @@ export default function MobileHeaderDashboard() {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Open navigation menu"
+                aria-label="Gezinme menüsünü aç"
                 aria-expanded={isMobileMenuOpen}
               >
                 <Menu className="h-6 w-6" />
@@ -82,16 +82,16 @@ export default function MobileHeaderDashboard() {
             <SheetContent
               side="left"
               className="w-[320px] p-0 [&_#closeButton]:hidden"
-              aria-label="Navigation menu panel"
+              aria-label="Gezinme menüsü paneli"
             >
               {/* Hidden title for screen readers */}
               <VisuallyHidden>
-                <DialogTitle>Navigation Menu</DialogTitle>
+                <DialogTitle>Gezinme Menüsü</DialogTitle>
               </VisuallyHidden>
 
               {/* Logo at the top of menu */}
               <div className="p-4 border-b border-gray-200">
-                <Logo aria-label="App logo" />
+                <Logo aria-label="Uygulama logosu" />
               </div>
 
               {/* Navigation links */}

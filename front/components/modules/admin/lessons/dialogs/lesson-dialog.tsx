@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Dialog,
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { CircleDot, Loader2 } from "lucide-react";
 import type { Language } from "@/types/lessons";
 import type { MoralValue } from "@/types";
 import { UploadField } from "@/components/ui/upload-field";
@@ -98,15 +98,40 @@ export function LessonDialog({
 }: LessonDialogProps) {
   const intl = useIntl();
   const [simpleMode, setSimpleMode] = useState(true);
+  const [errors, setErrors] = useState<{
+    chapterId?: string;
+    unitId?: string;
+    title?: string;
+  }>({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setErrors({});
+  }, [isOpen, isEdit]);
   
   /**
    * Handles form submission with validation
    */
   const handleSubmit = async () => {
-    // Basic validation
+    const nextErrors: {
+      chapterId?: string;
+      unitId?: string;
+      title?: string;
+    } = {};
     if (!newLesson.chapterId || !newLesson.unitId || !newLesson.title.trim()) {
+      if (!newLesson.chapterId) {
+        nextErrors.chapterId = "Bölüm seçimi zorunludur.";
+      }
+      if (!newLesson.unitId) {
+        nextErrors.unitId = "Ünite seçimi zorunludur.";
+      }
+      if (!newLesson.title.trim()) {
+        nextErrors.title = "Ders başlığı zorunludur.";
+      }
+      setErrors(nextErrors);
       return;
     }
+    setErrors({});
     await onSubmit();
   };
 
@@ -118,22 +143,27 @@ export function LessonDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editLesson"
-                defaultMessage="Edit Lesson"
+                defaultMessage="Dersi Düzenle"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addNewLesson"
-                defaultMessage="Add New Lesson"
+                defaultMessage="Yeni Ders Ekle"
               />
             )}
           </DialogTitle>
           <DialogDescription>
             <FormattedMessage
               id="admin.lessons.lessonDialogDescription"
-              defaultMessage="Create a new lesson within a unit."
+              defaultMessage="Seçtiğiniz ünite için yeni bir ders oluşturun."
             />
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <CircleDot className="h-3.5 w-3.5" />
+          <span>Bölüm, ünite ve ders başlığı zorunludur. Hızlı modla temel alanları, gelişmiş modla pedagojik ayarları düzenleyin.</span>
+        </div>
 
         <div className="flex items-center justify-between rounded-lg border bg-muted/20 px-3 py-2 text-sm">
           <span>{simpleMode ? "Hızlı Mod" : "Gelişmiş Mod"}</span>
@@ -153,20 +183,32 @@ export function LessonDialog({
             <Label htmlFor="lesson-chapter">
               <FormattedMessage
                 id="admin.lessons.chapter"
-                defaultMessage="Chapter"
+                defaultMessage="Bölüm"
               />
             </Label>
             <Select
               value={newLesson.chapterId.toString()}
               onValueChange={(value) =>
-                setNewLesson({
-                  ...newLesson,
-                  chapterId: value,
-                  unitId: "", // Reset unit when chapter changes
-                })
+                {
+                  setNewLesson({
+                    ...newLesson,
+                    chapterId: value,
+                    unitId: "", // Reset unit when chapter changes
+                  });
+                  if (errors.chapterId || errors.unitId) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      chapterId: undefined,
+                      unitId: undefined,
+                    }));
+                  }
+                }
               }
             >
-              <SelectTrigger id="lesson-chapter">
+              <SelectTrigger
+                id="lesson-chapter"
+                className={errors.chapterId ? "border-red-500 focus-visible:ring-red-500" : undefined}
+              >
                 <SelectValue placeholder={intl.formatMessage({
                   id: "admin.lessons.placeholder.chapter",
                   defaultMessage: "Bölüm seç"
@@ -184,21 +226,32 @@ export function LessonDialog({
                   ))}
               </SelectContent>
             </Select>
+            {errors.chapterId ? (
+              <p className="text-xs text-red-600">{errors.chapterId}</p>
+            ) : null}
           </div>
 
           {/* Unit Selection */}
           <div className="grid gap-2">
             <Label htmlFor="lesson-unit">
-              <FormattedMessage id="admin.lessons.unit" defaultMessage="Unit" />
+              <FormattedMessage id="admin.lessons.unit" defaultMessage="Ünite" />
             </Label>
             <Select
               value={newLesson.unitId.toString()}
               onValueChange={(value) =>
-                setNewLesson({ ...newLesson, unitId: value })
+                {
+                  setNewLesson({ ...newLesson, unitId: value });
+                  if (errors.unitId) {
+                    setErrors((prev) => ({ ...prev, unitId: undefined }));
+                  }
+                }
               }
               disabled={!newLesson.chapterId}
             >
-              <SelectTrigger id="lesson-unit">
+              <SelectTrigger
+                id="lesson-unit"
+                className={errors.unitId ? "border-red-500 focus-visible:ring-red-500" : undefined}
+              >
                 <SelectValue placeholder={intl.formatMessage({
                   id: "admin.lessons.placeholder.unit",
                   defaultMessage: "Ünite seç"
@@ -216,6 +269,9 @@ export function LessonDialog({
                     ))}
               </SelectContent>
             </Select>
+            {errors.unitId ? (
+              <p className="text-xs text-red-600">{errors.unitId}</p>
+            ) : null}
           </div>
 
           {/* Lesson Title */}
@@ -223,20 +279,27 @@ export function LessonDialog({
             <Label htmlFor="lesson-title">
               <FormattedMessage
                 id="admin.lessons.title"
-                defaultMessage="Title"
+                defaultMessage="Başlık"
               />
             </Label>
             <Input
               id="lesson-title"
+              className={errors.title ? "border-red-500 focus-visible:ring-red-500" : undefined}
               value={newLesson.title}
-              onChange={(e) =>
-                setNewLesson({ ...newLesson, title: e.target.value })
-              }
+              onChange={(e) => {
+                setNewLesson({ ...newLesson, title: e.target.value });
+                if (errors.title) {
+                  setErrors((prev) => ({ ...prev, title: undefined }));
+                }
+              }}
               placeholder={intl.formatMessage({
                 id: "admin.lessons.placeholder.lessonTitle",
                 defaultMessage: "örn. Temel İfadeler"
               })}
             />
+            {errors.title ? (
+              <p className="text-xs text-red-600">{errors.title}</p>
+            ) : null}
           </div>
 
           {/* Lesson Description */}
@@ -244,7 +307,7 @@ export function LessonDialog({
             <Label htmlFor="lesson-description">
               <FormattedMessage
                 id="admin.lessons.description"
-                defaultMessage="Description"
+                defaultMessage="Açıklama"
               />
             </Label>
             <Textarea
@@ -325,7 +388,7 @@ export function LessonDialog({
           {/* Image Upload */}
           <UploadField
             id="lesson-image"
-            label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Image URL" })}
+            label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Görsel URL" })}
             value={newLesson.imageUrl}
             onChange={(url) => setNewLesson({ ...newLesson, imageUrl: url })}
             accept="image/*"
@@ -338,7 +401,7 @@ export function LessonDialog({
             <Label htmlFor="lesson-xp">
               <FormattedMessage
                 id="admin.lessons.xpReward"
-                defaultMessage="XP Reward"
+                defaultMessage="XP Ödülü"
               />
             </Label>
             <Input
@@ -454,7 +517,7 @@ export function LessonDialog({
             <Label htmlFor="lesson-order">
               <FormattedMessage
                 id="admin.lessons.order"
-                defaultMessage="Order"
+                defaultMessage="Sıra"
               />
             </Label>
             <Input
@@ -468,61 +531,63 @@ export function LessonDialog({
             />
           </div>
 
-          {/* Premium Content Toggle */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="lesson-premium"
-              checked={newLesson.isPremium}
-              onCheckedChange={(checked) =>
-                setNewLesson({ ...newLesson, isPremium: checked })
-              }
-            />
-            <Label htmlFor="lesson-premium">
-              <FormattedMessage
-                id="admin.lessons.premiumContent"
-                defaultMessage="Premium Content"
+          <div className="space-y-3 rounded-lg border p-3">
+            {/* Premium Content Toggle */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="lesson-premium"
+                checked={newLesson.isPremium}
+                onCheckedChange={(checked) =>
+                  setNewLesson({ ...newLesson, isPremium: checked })
+                }
               />
-            </Label>
-          </div>
+              <Label htmlFor="lesson-premium">
+                <FormattedMessage
+                  id="admin.lessons.premiumContent"
+                  defaultMessage="Premium İçerik"
+                />
+              </Label>
+            </div>
 
-          {/* Active Toggle */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="lesson-active"
-              checked={newLesson.isActive}
-              onCheckedChange={(checked) =>
-                setNewLesson({ ...newLesson, isActive: checked })
-              }
-            />
-            <Label htmlFor="lesson-active">
-              <FormattedMessage
-                id="admin.lessons.active"
-                defaultMessage="Active"
+            {/* Active Toggle */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="lesson-active"
+                checked={newLesson.isActive}
+                onCheckedChange={(checked) =>
+                  setNewLesson({ ...newLesson, isActive: checked })
+                }
               />
-            </Label>
-          </div>
+              <Label htmlFor="lesson-active">
+                <FormattedMessage
+                  id="admin.lessons.active"
+                  defaultMessage="Aktif"
+                />
+              </Label>
+            </div>
 
-          {/* Test Lesson Toggle */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="lesson-test"
-              checked={newLesson.isTest}
-              onCheckedChange={(checked) =>
-                setNewLesson({ ...newLesson, isTest: checked })
-              }
-            />
-            <Label htmlFor="lesson-test">
-              <FormattedMessage
-                id="admin.lessons.entryTest"
-                defaultMessage="Entry Test"
+            {/* Test Lesson Toggle */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="lesson-test"
+                checked={newLesson.isTest}
+                onCheckedChange={(checked) =>
+                  setNewLesson({ ...newLesson, isTest: checked })
+                }
               />
-            </Label>
-            <p className="text-xs text-muted-foreground ml-2">
-              <FormattedMessage
-                id="admin.lessons.entryTestNote"
-                defaultMessage="Use to test user knowledge when they did not complete last unit"
-              />
-            </p>
+              <Label htmlFor="lesson-test">
+                <FormattedMessage
+                  id="admin.lessons.entryTest"
+                  defaultMessage="Seviye Tespit Testi"
+                />
+              </Label>
+              <p className="text-xs text-muted-foreground ml-2">
+                <FormattedMessage
+                  id="admin.lessons.entryTestNote"
+                  defaultMessage="Önceki ünite tamamlanmadığında öğrencinin seviyesini ölçmek için kullanın."
+                />
+              </p>
+            </div>
           </div>
         </div>
 
@@ -530,7 +595,7 @@ export function LessonDialog({
           <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
@@ -547,12 +612,12 @@ export function LessonDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.saveChanges"
-                defaultMessage="Save Changes"
+                defaultMessage="Değişiklikleri Kaydet"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addLesson"
-                defaultMessage="Add Lesson"
+                defaultMessage="Dersi Kaydet"
               />
             )}
           </Button>

@@ -23,13 +23,13 @@ export function QuestStats({
           <h2 className="font-bold text-lg">
             <FormattedMessage
               id="quest.stats.title"
-              defaultMessage="Your Stats"
+              defaultMessage="İstatistiklerin"
             />
           </h2>
           <p className="text-gray-600">
             <FormattedMessage
               id="quest.stats.completed"
-              defaultMessage="Quests completed this month: {count}"
+              defaultMessage="Bu ay tamamlanan görev: {count}"
               values={{ count: completedCount }}
             />
           </p>
@@ -40,7 +40,7 @@ export function QuestStats({
             <span>🔥</span>{" "}
             <FormattedMessage
               id="quest.stats.streak"
-              defaultMessage="{days} days"
+              defaultMessage="{days} gün"
               values={{ days: streak }}
             />
           </div>

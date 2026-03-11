@@ -11,8 +11,8 @@ export default function page() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: "TULU - Profile",
-    description: "An enjoyable way to learn a new language",
+    title: "Profil - TULU",
+    description: "Profil bilgilerinizi ve uygulama ayarlarınızı yönetin.",
     icons: {
       icon: "/images/logo_icon.png",
       shortcut: "/favicon.ico",

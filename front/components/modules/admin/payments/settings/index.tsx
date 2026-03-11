@@ -104,7 +104,7 @@ export function PaymentSettingsManagementPage() {
             }
           })
         } else {
-          toast.error(message || 'An unknown error occurred.')
+          toast.error(message || 'Bilinmeyen bir hata oluştu.')
         }
       } finally {
         setLoading(false)
@@ -156,7 +156,7 @@ export function PaymentSettingsManagementPage() {
           }
         )
 
-        toast.success('Payment settings saved successfully.')
+        toast.success('Ödeme ayarları başarıyla kaydedildi.')
       } catch (err) {
         const error = err as AxiosError<{
           message?: string
@@ -173,7 +173,7 @@ export function PaymentSettingsManagementPage() {
             }
           })
         } else {
-          toast.error(message || 'An unknown error occurred.')
+          toast.error(message || 'Bilinmeyen bir hata oluştu.')
         }
       } finally {
         setLoading(false)

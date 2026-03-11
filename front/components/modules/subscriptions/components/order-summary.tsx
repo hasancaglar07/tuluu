@@ -16,19 +16,19 @@ export function OrderSummary({ plan }: OrderSummaryProps) {
       ? plan.promotionalPrice
       : plan.price;
 
-  // Helper function to convert billing cycle to English text
+  // Fatura döngüsünü kullanıcı dostu metne çevir
   const getBillingCycleText = (cycle: string) => {
     switch (cycle) {
       case "monthly":
-        return "per month";
+        return "aylık";
       case "quarterly":
-        return "per quarter";
+        return "3 aylık";
       case "yearly":
-        return "per year";
+        return "yıllık";
       case "lifetime":
-        return "lifetime";
+        return "ömür boyu";
       default:
-        return `per ${cycle}`;
+        return `${cycle} başına`;
     }
   };
 
@@ -37,7 +37,7 @@ export function OrderSummary({ plan }: OrderSummaryProps) {
       <h2 className="font-bold text-xl mb-4">
         <FormattedMessage
           id="orderSummary.title"
-          defaultMessage="Order Summary"
+          defaultMessage="Sipariş Özeti"
         />
       </h2>
 
@@ -56,7 +56,7 @@ export function OrderSummary({ plan }: OrderSummaryProps) {
             <p className="text-green-600 text-sm font-medium">
               <FormattedMessage
                 id="orderSummary.freeTrial"
-                defaultMessage="{days}-day free trial included"
+                defaultMessage="{days} günlük ücretsiz deneme dahil"
                 values={{ days: plan.trialPeriodDays }}
               />
             </p>
@@ -64,7 +64,7 @@ export function OrderSummary({ plan }: OrderSummaryProps) {
             <p className="text-gray-600 text-sm">
               <FormattedMessage
                 id="orderSummary.noFreeTrial"
-                defaultMessage="No free trial available"
+                defaultMessage="Ücretsiz deneme yok"
               />
             </p>
           )}
@@ -94,7 +94,7 @@ export function OrderSummary({ plan }: OrderSummaryProps) {
       {/* Total price */}
       <div className="flex justify-between font-bold">
         <span>
-          <FormattedMessage id="orderSummary.total" defaultMessage="Total" />
+          <FormattedMessage id="orderSummary.total" defaultMessage="Toplam" />
         </span>
         <span>${finalPrice.toFixed(2)} USD</span>
       </div>

@@ -7,10 +7,10 @@ import { Sparkles, Rocket, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const encouragingMessages = [
-  "You're crushing it! 🚀",
-  "Keep the momentum going! ✨",
-  "Your brain is leveling up! 🧠",
-  "Almost fluent! Keep going! 🌟",
+  "Harika gidiyorsun! 🚀",
+  "Temponu koru! ✨",
+  "Beynin seviye atlıyor! 🧠",
+  "Akıcılığa çok az kaldı, devam et! 🌟",
 ];
 
 const sparkleVariants = {
@@ -84,7 +84,7 @@ const ContinueLearningEncouragement = () => {
       </AnimatePresence>
 
       <p className="text-gray-600 text-lg mb-6">
-        Every step you take brings you closer to mastery. Keep the fire alive!
+        Attığın her adım seni ustalığa yaklaştırır. Ateşi canlı tut!
         🔥
       </p>
 
@@ -93,7 +93,7 @@ const ContinueLearningEncouragement = () => {
         className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:brightness-110 hover:scale-105 transition-all duration-300 rounded-full px-6 py-3 text-lg font-semibold"
       >
         <Rocket className="mr-2 w-5 h-5" />
-        Go to Dashboard
+        Panele Git
       </Button>
     </m.div>
   );

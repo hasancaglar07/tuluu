@@ -24,6 +24,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { UnitCard } from "./unit-card";
 import type { Chapter, Unit, Lesson } from "@/types/lessons";
 
@@ -96,18 +97,18 @@ export function ChapterCard({
 
           {/* Chapter Actions */}
           <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
-            <Button
-              className="w-full sm:w-auto"
-              variant="outline"
-              size="sm"
-              onClick={onAddUnit}
-            >
-              <FolderPlus className="mr-2 h-4 w-4" />
-              <FormattedMessage
-                id="admin.lessons.addUnit"
-                defaultMessage="Add Unit"
-              />
-            </Button>
+              <Button
+                className="w-full sm:w-auto"
+                variant="outline"
+                size="sm"
+                onClick={onAddUnit}
+              >
+                <FolderPlus className="mr-2 h-4 w-4" />
+                <FormattedMessage
+                  id="admin.lessons.addUnit"
+                  defaultMessage="Ünite Ekle"
+                />
+              </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -120,14 +121,14 @@ export function ChapterCard({
                   <Edit className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.editChapter"
-                    defaultMessage="Edit Chapter"
+                    defaultMessage="Bölümü Düzenle"
                   />
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600" onClick={onDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.deleteChapter"
-                    defaultMessage="Delete Chapter"
+                    defaultMessage="Bölümü Sil"
                   />
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -135,6 +136,12 @@ export function ChapterCard({
           </div>
         </div>
         <CardDescription className="line-clamp-2">{chapter.description}</CardDescription>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline">{chapter.units.length} ünite</Badge>
+          <Badge variant={chapter.isPremium ? "secondary" : "outline"}>
+            {chapter.isPremium ? "Premium" : "Ücretsiz"}
+          </Badge>
+        </div>
       </CardHeader>
 
       {/* Expanded Chapter Content - Units */}
@@ -146,14 +153,14 @@ export function ChapterCard({
                 <p className="text-sm text-slate-500 mb-2">
                   <FormattedMessage
                     id="admin.lessons.noUnits"
-                    defaultMessage="No units in this chapter yet."
+                    defaultMessage="Bu bölümde henüz ünite yok."
                   />
                 </p>
                 <Button variant="outline" onClick={onAddUnit}>
                   <Plus className="mr-2 h-4 w-4" />
                   <FormattedMessage
                     id="admin.lessons.addUnit"
-                    defaultMessage="Add Unit"
+                    defaultMessage="Ünite Ekle"
                   />
                 </Button>
               </div>

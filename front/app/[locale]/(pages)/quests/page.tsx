@@ -11,8 +11,8 @@ export default function page() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: "TULU - Quests",
-    description: "An enjoyable way to learn a new language",
+    title: "Görevler - TULU",
+    description: "Günlük ve haftalık görevleri tamamlayarak ödül kazan.",
     icons: {
       icon: "/images/logo_icon.png",
       shortcut: "/favicon.ico",

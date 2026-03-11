@@ -46,7 +46,7 @@ export default function UserBanDialog({
     e.preventDefault();
 
     // In a real app, you would send this data to your API
-    console.log("Account action:", {
+    console.log("Hesap işlemi:", {
       userId: user.id,
       action,
       duration: action === "activate" ? null : Number.parseInt(duration),
@@ -55,9 +55,9 @@ export default function UserBanDialog({
 
     // Show success message and close dialog
     alert(
-      `User account ${
-        action === "activate" ? "activated" : action + "ed"
-      } successfully!`
+      `Kullanıcı hesabı ${
+        action === "activate" ? "etkinleştirildi" : action === "ban" ? "yasaklandı" : "askıya alındı"
+      }!`
     );
     onOpenChange(false);
   };
@@ -68,12 +68,12 @@ export default function UserBanDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Ban className="h-5 w-5 text-red-500" />
-            {user.status === "active" ? "Restrict Account" : "Activate Account"}
+            {user.status === "active" ? "Hesabı Kısıtla" : "Hesabı Etkinleştir"}
           </DialogTitle>
           <DialogDescription>
             {user.status === "active"
-              ? "Suspend or ban this user's account."
-              : "Reactivate this user's account."}
+              ? "Bu kullanıcının hesabını askıya alın veya yasaklayın."
+              : "Bu kullanıcının hesabını yeniden etkinleştirin."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -81,7 +81,7 @@ export default function UserBanDialog({
             {user.status === "active" ? (
               <>
                 <div className="space-y-2">
-                  <Label>Action</Label>
+                  <Label>İşlem</Label>
                   <RadioGroup
                     value={action}
                     onValueChange={setAction}
@@ -90,13 +90,13 @@ export default function UserBanDialog({
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="suspend" id="suspend" />
                       <Label htmlFor="suspend" className="font-normal">
-                        Suspend temporarily
+                        Geçici olarak askıya al
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="ban" id="ban" />
                       <Label htmlFor="ban" className="font-normal">
-                        Ban permanently
+                        Kalıcı olarak yasakla
                       </Label>
                     </div>
                   </RadioGroup>
@@ -104,17 +104,17 @@ export default function UserBanDialog({
 
                 {action === "suspend" && (
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Duration</Label>
+                    <Label htmlFor="duration">Süre</Label>
                     <Select value={duration} onValueChange={setDuration}>
                       <SelectTrigger id="duration">
-                        <SelectValue placeholder="Select duration" />
+                        <SelectValue placeholder="Süre seçin" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">1 day</SelectItem>
-                        <SelectItem value="3">3 days</SelectItem>
-                        <SelectItem value="7">7 days</SelectItem>
-                        <SelectItem value="14">14 days</SelectItem>
-                        <SelectItem value="30">30 days</SelectItem>
+                        <SelectItem value="1">1 gün</SelectItem>
+                        <SelectItem value="3">3 gün</SelectItem>
+                        <SelectItem value="7">7 gün</SelectItem>
+                        <SelectItem value="14">14 gün</SelectItem>
+                        <SelectItem value="30">30 gün</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -128,12 +128,12 @@ export default function UserBanDialog({
                   </div>
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-green-800">
-                      Reactivating account
+                      Hesap yeniden etkinleştiriliyor
                     </h3>
                     <div className="mt-2 text-sm text-green-700">
                       <p>
-                        You are about to reactivate this user&apos;s account.
-                        They will regain access to all features.
+                        Bu kullanıcının hesabını yeniden etkinleştirmek üzeresiniz.
+                        Tüm özelliklere tekrar erişebilecek.
                       </p>
                     </div>
                   </div>
@@ -142,15 +142,15 @@ export default function UserBanDialog({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="reason">Reason</Label>
+              <Label htmlFor="reason">Gerekçe</Label>
               <Textarea
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder={
                   user.status === "active"
-                    ? "Explain why you're restricting this account"
-                    : "Explain why you're reactivating this account"
+                    ? "Bu hesabı neden kısıtladığınızı açıklayın"
+                    : "Bu hesabı neden yeniden etkinleştirdiğinizi açıklayın"
                 }
                 rows={3}
                 required
@@ -164,7 +164,7 @@ export default function UserBanDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
             <Button
               type="submit"
@@ -172,9 +172,9 @@ export default function UserBanDialog({
             >
               {user.status === "active"
                 ? action === "ban"
-                  ? "Ban Account"
-                  : "Suspend Account"
-                : "Activate Account"}
+                  ? "Hesabı Yasakla"
+                  : "Hesabı Askıya Al"
+                : "Hesabı Etkinleştir"}
             </Button>
           </DialogFooter>
         </form>

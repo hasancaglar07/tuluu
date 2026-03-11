@@ -24,6 +24,41 @@ type QuestConditionProgress = {
   metadata: Record<string, unknown>;
 };
 
+const USER_QUESTS_CACHE_TTL_MS = 120 * 1000;
+
+type UserQuestsCacheValue = {
+  expiresAt: number;
+  payload: {
+    success: boolean;
+    data: {
+      quests: any[];
+      stats: {
+        completedThisMonth: number;
+        totalAssigned: number;
+        totalAvailable: number;
+        xp: number;
+        streak: number;
+      };
+    };
+  };
+};
+
+const globalForUserQuestsCache = globalThis as typeof globalThis & {
+  _userQuestsCache?: Map<string, UserQuestsCacheValue>;
+};
+
+const userQuestsCache = globalForUserQuestsCache._userQuestsCache ?? new Map();
+globalForUserQuestsCache._userQuestsCache = userQuestsCache;
+
+const invalidateUserQuestsCache = (userDocumentId: string) => {
+  const prefix = `${userDocumentId}|`;
+  for (const key of userQuestsCache.keys()) {
+    if (key.startsWith(prefix)) {
+      userQuestsCache.delete(key);
+    }
+  }
+};
+
 /**
  * @swagger
  * /api/users/{id}/quests:
@@ -1082,7 +1117,9 @@ export async function GET(
 
     // Find user by clerkId. If the requesting user is fetching their own data,
     // automatically create a profile record to avoid 404s on first login.
-    let user = await User.findByClerkId(id);
+    let user = await User.findOne({ clerkId: id })
+      .select("_id xp streak hearts clerkId")
+      .lean();
     if (!user) {
       if (id !== userId) {
         return NextResponse.json(
@@ -1091,16 +1128,30 @@ export async function GET(
         );
       }
 
-      user = await User.create({ clerkId: id });
+      const createdUser = await User.create({ clerkId: id });
+      user = {
+        _id: createdUser._id,
+        xp: createdUser.xp ?? 0,
+        streak: createdUser.streak ?? 0,
+        hearts: createdUser.hearts ?? 0,
+        clerkId: createdUser.clerkId,
+      };
     }
 
-    const userDocumentId = user.id;
+    const userDocumentId = user._id.toString();
 
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const category = searchParams.get("category");
     const difficulty = searchParams.get("difficulty");
+
+    const cacheKey = `${userDocumentId}|${type ?? ""}|${category ?? ""}|${difficulty ?? ""}`;
+    const cached = userQuestsCache.get(cacheKey);
+    const nowTs = Date.now();
+    if (cached && cached.expiresAt > nowTs) {
+      return NextResponse.json(cached.payload);
+    }
 
     // Build filter for quests
     const questFilter: FilterQuery<QuestDocument> = {
@@ -1117,15 +1168,29 @@ export async function GET(
     if (category) questFilter.category = category;
     if (difficulty) questFilter.difficulty = difficulty;
 
-    // Fetch all available quests
-    const allQuests = await Quest.find(questFilter)
-      .sort({ priority: -1, startDate: 1 })
-      .lean();
-
-    // Fetch user quest progress for all quests
-    const userQuests = await UserQuest.find({
-      userId: userDocumentId,
-    }).lean();
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const [allQuests, userQuests, completedCount, totalAssignedQuests] =
+      await Promise.all([
+        Quest.find(questFilter)
+          .select(
+            "_id title description difficulty type endDate conditions rewards priority isFeatured category"
+          )
+          .sort({ priority: -1, startDate: 1 })
+          .lean(),
+        UserQuest.find({ userId: userDocumentId })
+          .select(
+            "_id questId status overallProgress conditionsProgress assignedAt startedAt completedAt rewardsClaimed priority"
+          )
+          .lean(),
+        UserQuest.countDocuments({
+          userId: userDocumentId,
+          status: "completed",
+          completedAt: { $gte: monthAgo },
+        }),
+        UserQuest.countDocuments({
+          userId: userDocumentId,
+        }),
+      ]);
 
     // Create a map of user quest progress by questId for quick lookup
     const userQuestMap = new Map();
@@ -1292,21 +1357,7 @@ export async function GET(
       };
     });
 
-    // Get user stats
-    const completedCount = await UserQuest.countDocuments({
-      userId: userDocumentId,
-      status: "completed",
-      completedAt: {
-        $gte: new Date(new Date().setDate(new Date().getDate() - 30)),
-      }, // Last 30 days
-    });
-
-    // Get total quests assigned to user
-    const totalAssignedQuests = await UserQuest.countDocuments({
-      userId: userDocumentId,
-    });
-
-    return NextResponse.json({
+    const payload = {
       success: true,
       data: {
         quests: transformedQuests,
@@ -1318,7 +1369,14 @@ export async function GET(
           streak: user.streak || 0,
         },
       },
+    };
+
+    userQuestsCache.set(cacheKey, {
+      expiresAt: nowTs + USER_QUESTS_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("User Quests API Error:", error);
     return NextResponse.json(
@@ -1349,14 +1407,16 @@ export async function PUT(
     const { id } = await params;
     await connectDB();
     // Find user by clerkId
-    const user = await User.findByClerkId(id);
+    const user = await User.findOne({ clerkId: id })
+      .select("_id xp hearts")
+      .lean();
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
         { status: 404 }
       );
     }
-    const userDocumentId = user.id;
+    const userDocumentId = user._id.toString();
     const { conditionType = "complete_lessons", incrementValue = 1 } =
       await request.json();
 
@@ -1471,6 +1531,8 @@ export async function PUT(
         }
       }
     }
+
+    invalidateUserQuestsCache(userDocumentId);
 
     return NextResponse.json({
       success: true,

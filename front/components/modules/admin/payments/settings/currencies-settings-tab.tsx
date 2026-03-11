@@ -81,11 +81,11 @@ export function CurrenciesSettingsTab({
                 })
               }
             >
-              <option value="USD">USD - US Dollar</option>
+              <option value="USD">USD - Amerikan Doları</option>
               <option value="EUR">EUR - Euro</option>
-              <option value="GBP">GBP - British Pound</option>
-              <option value="JPY">JPY - Japanese Yen</option>
-              <option value="CAD">CAD - Canadian Dollar</option>
+              <option value="GBP">GBP - İngiliz Sterlini</option>
+              <option value="JPY">JPY - Japon Yeni</option>
+              <option value="CAD">CAD - Kanada Doları</option>
             </select>
           </div>
 

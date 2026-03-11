@@ -45,10 +45,10 @@ interface RegionalSettingsTabProps {
 
 const regionSchema = z.object({
   name: z.string().min(2, {
-    message: "Region Name must be at least 2 characters.",
+    message: "Bölge adı en az 2 karakter olmalıdır.",
   }),
   currency: z.string().min(3, {
-    message: "Currency must be a valid currency code.",
+    message: "Para birimi geçerli bir para birimi kodu olmalıdır.",
   }),
   priceMultiplier: z.number(),
   taxRate: z.number(),
@@ -74,6 +74,19 @@ export function RegionalSettingsTab({
 }: RegionalSettingsTabProps) {
   const [isAddRegionDialogOpen, setIsAddRegionDialogOpen] = useState(false);
   const { getToken } = useAuth();
+
+  const getRegionStatusLabel = (status: Region["status"]) => {
+    switch (status) {
+      case "active":
+        return "Aktif";
+      case "pending":
+        return "Beklemede";
+      case "inactive":
+        return "Pasif";
+      default:
+        return status;
+    }
+  };
 
   // Form for adding a new region
   const addRegionForm = useForm<z.infer<typeof regionSchema>>({
@@ -128,7 +141,7 @@ export function RegionalSettingsTab({
         };
       });
 
-      toast.success("Region added successfully.");
+      toast.success("Bölge başarıyla eklendi.");
       setIsAddRegionDialogOpen(false);
       resetRegionForm();
     } catch (err) {
@@ -147,7 +160,7 @@ export function RegionalSettingsTab({
           }
         });
       } else {
-        toast.error(message || "An unknown error occurred.");
+        toast.error(message || "Bilinmeyen bir hata oluştu.");
       }
     }
   };
@@ -307,7 +320,7 @@ export function RegionalSettingsTab({
                             : "bg-red-100 text-red-800"
                         }
                       >
-                        {region.status}
+                        {getRegionStatusLabel(region.status)}
                       </Badge>
                     </td>
                   </tr>
@@ -356,7 +369,7 @@ export function RegionalSettingsTab({
                       </Label>
                       <Input
                         id="name"
-                        placeholder="e.g. Australia"
+                        placeholder="örn. Türkiye"
                         className="col-span-3"
                         {...registerRegion("name")}
                       />
@@ -378,12 +391,12 @@ export function RegionalSettingsTab({
                         className="flex h-10 col-span-3 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         {...registerRegion("currency")}
                       >
-                        <option value="AUD">AUD - Australian Dollar</option>
-                        <option value="CAD">CAD - Canadian Dollar</option>
+                        <option value="AUD">AUD - Avustralya Doları</option>
+                        <option value="CAD">CAD - Kanada Doları</option>
                         <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - British Pound</option>
-                        <option value="JPY">JPY - Japanese Yen</option>
-                        <option value="USD">USD - US Dollar</option>
+                        <option value="GBP">GBP - İngiliz Sterlini</option>
+                        <option value="JPY">JPY - Japon Yeni</option>
+                        <option value="USD">USD - Amerikan Doları</option>
                       </select>
                       {regionErrors.currency && (
                         <p className="col-span-4 text-red-500 text-sm">

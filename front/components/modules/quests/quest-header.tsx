@@ -25,7 +25,7 @@ export function QuestHeader({ onBack }: { onBack: () => void }) {
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-xl font-bold">
-          <FormattedMessage id="quests.header.title" defaultMessage="Quests" />
+          <FormattedMessage id="quests.header.title" defaultMessage="Görevler" />
         </h1>
       </div>
     </div>

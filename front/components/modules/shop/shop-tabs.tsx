@@ -76,19 +76,19 @@ export function ShopTabs({
       <Tabs defaultValue="all">
         <TabsList className="mb-6">
           <TabsTrigger value="all">
-            <FormattedMessage id="shop.tabs.all" defaultMessage="All" />
+            <FormattedMessage id="shop.tabs.all" defaultMessage="Tümü" />
           </TabsTrigger>
           <TabsTrigger value="hearts">
-            <FormattedMessage id="shop.tabs.hearts" defaultMessage="Hearts" />
+            <FormattedMessage id="shop.tabs.hearts" defaultMessage="Kalpler" />
           </TabsTrigger>
           <TabsTrigger value="premium">
             <FormattedMessage id="shop.tabs.premium" defaultMessage="Premium" />
           </TabsTrigger>
           <TabsTrigger value="boosts">
-            <FormattedMessage id="shop.tabs.boosts" defaultMessage="Boosts" />
+            <FormattedMessage id="shop.tabs.boosts" defaultMessage="Güçlendiriciler" />
           </TabsTrigger>
           <TabsTrigger value="gems">
-            <FormattedMessage id="shop.tabs.gems" defaultMessage="Buy Gems" />
+            <FormattedMessage id="shop.tabs.gems" defaultMessage="Elmas Satın Al" />
           </TabsTrigger>
         </TabsList>
 

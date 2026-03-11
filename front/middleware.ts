@@ -1,24 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { match } from "@formatjs/intl-localematcher";
-import Negotiator from "negotiator";
 import { i18n } from "./i18n-config";
 const { locales, defaultLocale } = i18n;
-
-function getLocale(request: NextRequest): string {
-  // get list string of lang
-  const localesString: string[] = [];
-  locales.map((item) => localesString.push(item.lang));
-
-  // get languages of navigators
-  const negotiatorHeaders: Record<string, string> = {};
-  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
-
-  // match the navigator language to locales languages
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-  return match(languages, localesString, defaultLocale);
-}
 
 /**Clerk middleware */
 const isAuthRoute = createRouteMatcher([
@@ -34,7 +18,10 @@ const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {
   // Bypass locale rewrite and auth for API routes
-  if (request.nextUrl.pathname.startsWith("/api")) {
+  if (
+    request.nextUrl.pathname.startsWith("/api") ||
+    request.nextUrl.pathname.startsWith("/_api")
+  ) {
     return NextResponse.next();
   }
   const { userId } = await auth();
@@ -48,53 +35,36 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     }
   }
 
-  //Rewrite URL for locale
-  let response, nextLocale;
+  // Rewrite URL for locale (only Turkish is supported)
+  let response: NextResponse;
+  const { basePath, pathname, search } = request.nextUrl;
+  const localePathPrefix = `/${defaultLocale}`;
 
-  const { basePath, pathname } = request.nextUrl;
-
-  // Redirect if there is no locale
   const pathLocale = locales.find(
     (locale) =>
       pathname.startsWith(`/${locale.lang}/`) || pathname === `/${locale.lang}`
   );
 
-  // a local is found
   if (pathLocale) {
-    const isDefaultLocale = pathLocale.lang === defaultLocale;
-    if (isDefaultLocale) {
-      let pathWithoutLocale =
-        pathname.slice(`/${pathLocale.lang}`.length) || "/";
-      if (request.nextUrl.search) pathWithoutLocale += request.nextUrl.search;
-      const url = basePath + pathWithoutLocale;
-      response = NextResponse.redirect(new URL(url, request.url));
-    }
-    nextLocale = pathLocale.lang;
+    let pathWithoutLocale =
+      pathname.slice(`/${pathLocale.lang}`.length) || "/";
+    if (search) pathWithoutLocale += search;
+    const url = basePath + pathWithoutLocale;
+    response = NextResponse.redirect(new URL(url, request.url));
+  } else {
+    let localizedPath = `${localePathPrefix}${pathname}`;
+    if (search) localizedPath += search;
+    response = NextResponse.rewrite(new URL(basePath + localizedPath, request.url));
   }
 
-  // a local is not found cause either is hidden for default or user is new to website
-  else {
-    const hasLocale = request.cookies.has("NEXT_LOCALE");
-    const locale = hasLocale ? defaultLocale : getLocale(request);
-    let newPath = `/${locale}${pathname}`;
-    if (request.nextUrl.search) newPath += request.nextUrl.search;
-    const url = basePath + newPath;
-    response =
-      locale === defaultLocale
-        ? NextResponse.rewrite(new URL(url, request.url))
-        : NextResponse.redirect(new URL(url, request.url));
-    nextLocale = locale;
-  }
-
-  if (!response) response = NextResponse.next();
-  if (nextLocale) response.cookies.set("NEXT_LOCALE", nextLocale);
+  response.cookies.set("NEXT_LOCALE", defaultLocale);
   return response;
 });
 
 export const config = {
   matcher: [
     // Skip all internal paths (_next)
-    "/((?!_next|api|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|api|_api|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Optional: only run on root (/) URL
     // '/'
   ],

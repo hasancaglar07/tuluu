@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -29,59 +29,62 @@ import {
 export default function Aside() {
   const pathname = usePathname();
 
-  const navItems = [
-    {
-      title: "Dashboard",
-      href: "/admin",
-      icon: <Home className="h-5 w-5" />,
-      exact: true,
-    },
-    {
-      title: "Users",
-      href: "/admin/users",
-      icon: <Users className="h-5 w-5" />,
-      subItems: [
-        { title: "User List", href: "/admin/users" },
-        { title: "Add User", href: "/admin/users/create" },
-        { title: "Roles & Permissions", href: "/admin/users/roles" },
-      ],
-    },
-    {
-      title: "Lessons",
-      href: "/admin/lessons",
-      icon: <BookOpen className="h-5 w-5" />,
-      subItems: [
-        { title: "Lesson List", href: "/admin/lessons" },
-        { title: "Add Lesson", href: "/admin/lessons/create" },
-        { title: "Chapters", href: "/admin/lessons/chapters" },
-        { title: "Units", href: "/admin/lessons/units" },
-      ],
-    },
-    {
-      title: "Quests",
-      href: "/admin/quests",
-      icon: <Star className="h-5 w-5" />,
-      subItems: [
-        { title: "Quest List", href: "/admin/quests" },
-        { title: "Add Quest", href: "/admin/quests/create" },
-      ],
-    },
-    {
-      title: "Payments",
-      href: "/admin/payments",
-      icon: <CreditCard className="h-5 w-5" />,
-      subItems: [
-        { title: "Transactions", href: "/admin/payments" },
-        { title: "Subscriptions", href: "/admin/payments/subscriptions" },
-        { title: "Settings", href: "/admin/payments/settings" },
-      ],
-    },
-    {
-      title: "Settings",
-      href: "/admin/settings",
-      icon: <Settings className="h-5 w-5" />,
-    },
-  ];
+  const navItems = useMemo(
+    () => [
+      {
+        title: "Dashboard",
+        href: "/admin",
+        icon: <Home className="h-5 w-5" />,
+        exact: true,
+      },
+      {
+        title: "Users",
+        href: "/admin/users",
+        icon: <Users className="h-5 w-5" />,
+        subItems: [
+          { title: "User List", href: "/admin/users" },
+          { title: "Add User", href: "/admin/users/create" },
+          { title: "Roles & Permissions", href: "/admin/users/roles" },
+        ],
+      },
+      {
+        title: "Lessons",
+        href: "/admin/lessons",
+        icon: <BookOpen className="h-5 w-5" />,
+        subItems: [
+          { title: "Lesson List", href: "/admin/lessons" },
+          { title: "Add Lesson", href: "/admin/lessons/create" },
+          { title: "Chapters", href: "/admin/lessons/chapters" },
+          { title: "Units", href: "/admin/lessons/units" },
+        ],
+      },
+      {
+        title: "Quests",
+        href: "/admin/quests",
+        icon: <Star className="h-5 w-5" />,
+        subItems: [
+          { title: "Quest List", href: "/admin/quests" },
+          { title: "Add Quest", href: "/admin/quests/create" },
+        ],
+      },
+      {
+        title: "Payments",
+        href: "/admin/payments",
+        icon: <CreditCard className="h-5 w-5" />,
+        subItems: [
+          { title: "Transactions", href: "/admin/payments" },
+          { title: "Subscriptions", href: "/admin/payments/subscriptions" },
+          { title: "Settings", href: "/admin/payments/settings" },
+        ],
+      },
+      {
+        title: "Settings",
+        href: "/admin/settings",
+        icon: <Settings className="h-5 w-5" />,
+      },
+    ],
+    []
+  );
 
   const isActive = (href: string, exact = false) => {
     if (exact) return pathname === href;

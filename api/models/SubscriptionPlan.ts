@@ -205,7 +205,7 @@ SubscriptionPlanSchema.virtual("isOnPromotion").get(function () {
 // **Instance Methods**
 SubscriptionPlanSchema.methods.getDisplayPrice = function (): string {
   const price = this.currentPrice / 100;
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("tr-TR", {
     style: "currency",
     currency: this.currency,
   }).format(price);

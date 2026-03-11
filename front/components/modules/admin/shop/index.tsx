@@ -75,7 +75,7 @@ export function ShopManagementPage() {
 
       setShopItems(response.data.items)
     } catch (error) {
-      console.error("Error fetching shop items:", error)
+      console.error("Mağaza ürünleri alınırken hata:", error)
       toast.error(<FormattedMessage id="shop.error.fetch-items" defaultMessage="Failed to fetch shop items" />)
     } finally {
       setLoading(false)
@@ -94,7 +94,7 @@ export function ShopManagementPage() {
 
       setShopAnalytics(response.data.analytics)
     } catch (error) {
-      console.error("Error fetching shop analytics:", error)
+      console.error("Mağaza analizleri alınırken hata:", error)
       toast.error(<FormattedMessage id="shop.error.fetch-analytics" defaultMessage="Failed to fetch shop analytics" />)
     } finally {
       setAnalyticsLoading(false)
@@ -112,7 +112,7 @@ export function ShopManagementPage() {
 
       setCategories(response.data.categories)
     } catch (error) {
-      console.error("Error fetching categories:", error)
+      console.error("Kategoriler alınırken hata:", error)
       toast.error(<FormattedMessage id="shop.error.fetch-categories" defaultMessage="Failed to fetch categories" />)
     }
   }, [getToken])
@@ -180,7 +180,7 @@ export function ShopManagementPage() {
 
   // Format currency for display
   const formatCurrency = (amount: number, currency: string) => {
-    if (currency === "gems") return `${amount} gems`
+    if (currency === "gems") return `${amount} elmas`
     if (currency === "USD") return `$${amount.toFixed(2)}`
     return `${amount} ${currency}`
   }
@@ -193,7 +193,10 @@ export function ShopManagementPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <ShopHeader title="Shop Management" description="Create, edit, and manage items in your in-app shop" />
+        <ShopHeader
+          title="Mağaza Yönetimi"
+          description="Uygulama içi mağaza ürünlerini oluştur, düzenle ve yönet"
+        />
         <div className="flex gap-2 flex-1 justify-end">
           <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
             <DialogTrigger asChild>
@@ -210,7 +213,7 @@ export function ShopManagementPage() {
                 <DialogDescription>
                   <FormattedMessage
                     id="shop.dialog.categories.description"
-                    defaultMessage="Create, edit, and organize categories for your shop items."
+                    defaultMessage="Mağaza ürünlerin için kategoriler oluştur, düzenle ve organize et."
                   />
                 </DialogDescription>
               </DialogHeader>
@@ -255,24 +258,24 @@ export function ShopManagementPage() {
         ) : shopAnalytics ? (
           <>
             <AnalyticsCard
-              title="Total Revenue"
-              value={`${formatNumber(shopAnalytics.totalRevenue)} gems`}
+              title="Toplam Gelir"
+              value={`${formatNumber(shopAnalytics.totalRevenue)} elmas`}
               subtitle={`~$${Math.round(shopAnalytics.totalRevenue / 100).toLocaleString()}`}
             />
             <AnalyticsCard
-              title="Total Purchases"
+              title="Toplam Satın Alma"
               value={formatNumber(shopAnalytics.totalPurchases)}
-              subtitle={`Avg. ${shopAnalytics.averageOrderValue.toFixed(0)} gems per purchase`}
+              subtitle={`Ortalama satın alma başına ${shopAnalytics.averageOrderValue.toFixed(0)} elmas`}
             />
             <AnalyticsCard
-              title="Top Selling"
+              title="En Çok Satan"
               value={shopAnalytics.topSellingItem}
-              subtitle={`Category: ${shopAnalytics.topSellingCategory}`}
+              subtitle={`Kategori: ${shopAnalytics.topSellingCategory}`}
             />
             <AnalyticsCard
-              title="Conversion Rate"
+              title="Dönüşüm Oranı"
               value={shopAnalytics.conversionRate}
-              subtitle="Of shop visitors make a purchase"
+              subtitle="Mağaza ziyaretçilerinin satın alma oranı"
             />
           </>
         ) : null}
@@ -287,7 +290,7 @@ export function ShopManagementPage() {
             id: "category",
             value: categoryFilter,
             options: [
-              { value: "all", label: "All Categories" },
+              { value: "all", label: "Tüm Kategoriler" },
               ...categories.map((category) => ({
                 value: category.name,
                 label: category.name,
@@ -299,9 +302,9 @@ export function ShopManagementPage() {
             id: "status",
             value: statusFilter,
             options: [
-              { value: "all", label: "All Statuses" },
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
+              { value: "all", label: "Tüm Durumlar" },
+              { value: "active", label: "Aktif" },
+              { value: "inactive", label: "Pasif" },
             ],
             onChange: setStatusFilter,
           },

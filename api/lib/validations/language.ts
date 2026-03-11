@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const SUPPORTED_LOCALES = ["en", "fr", "ar", "hi", "zh", "es", "tr"];
+const SUPPORTED_LOCALES = ["tr"];
 
 export const LanguageSchema = z.object({
   name: z

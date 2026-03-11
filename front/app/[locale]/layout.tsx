@@ -11,9 +11,8 @@ export default async function RootLayout({
   params: { locale: string };
 }) {
   const { locale } = await params;
-  const dir = locale === "ar" ? "rtl" : "ltr";
   return (
-    <html lang={locale} dir={dir}>
+    <html lang="tr" dir="ltr">
       <body
         className={`${fredoka.variable} min-h-screen antialiased flex flex-col`}
       >

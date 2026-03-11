@@ -53,7 +53,7 @@ const SEOSchema = new Schema<SEODocument>(
     locale: {
       type: String,
       required: true,
-      default: "en",
+      default: "tr",
     },
 
     // Robots directives (e.g., index,follow, noindex,follow)

@@ -11,10 +11,10 @@ export default function page() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Quests - TULU`,
-    description: `Page - Description here`,
+    title: `Görev Yönetimi - TULU`,
+    description: `Görevleri oluşturun, düzenleyin ve takip edin.`,
     icons: {
-      icon: `path to asset file`,
+      icon: "/favicon.ico",
     },
   };
 }

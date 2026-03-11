@@ -20,7 +20,7 @@ export default function BillingCycleTabs({
           className="data-[state=active]:bg-primary-500 data-[state=active]:text-white"
         >
           <FormattedMessage
-            defaultMessage="Monthly"
+            defaultMessage="Aylık"
             id="subscriptions.billing.monthly"
           />
         </TabsTrigger>
@@ -29,7 +29,7 @@ export default function BillingCycleTabs({
           className="data-[state=active]:bg-secondary-500 data-[state=active]:text-white"
         >
           <FormattedMessage
-            defaultMessage="Yearly"
+            defaultMessage="Yıllık"
             id="subscriptions.billing.yearly"
           />
           <Badge
@@ -37,7 +37,7 @@ export default function BillingCycleTabs({
             className="ml-2 bg-green-100 text-green-700"
           >
             <FormattedMessage
-              defaultMessage="Save + 25%"
+              defaultMessage="%25 Tasarruf Et"
               id="subscriptions.save25"
             />
           </Badge>

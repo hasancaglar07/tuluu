@@ -27,12 +27,7 @@ import { toast } from "sonner";
 
 // Mock data for demonstration
 const MOCK_LANGUAGES = [
-  { code: "en", name: "English", isDefault: true },
-  { code: "es", name: "Spanish", isDefault: false },
-  { code: "fr", name: "French", isDefault: false },
-  { code: "de", name: "German", isDefault: false },
-  { code: "it", name: "Italian", isDefault: false },
-  { code: "ja", name: "Japanese", isDefault: false },
+  { code: "tr", name: "Türkçe", isDefault: true },
 ];
 
 interface ImportTranslationsDialogProps {

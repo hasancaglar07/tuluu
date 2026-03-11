@@ -8,9 +8,9 @@ import Footer from "@/components/Footer/Footer";
 // Next.js dynamic metadata
 export function generateMetadata() {
   return {
-    title: `TULU - Language Learning API`,
+    title: `TULU - Dil Öğrenme API'si`,
     description:
-      "Gamified Language Learning API / Build your own Duolingo-style app with endpoints for XP, streaks, lessons, user progress, and more.",
+      "Oyunlaştırılmış dil öğrenme API'si. XP, seri, ders ve kullanıcı ilerlemesi gibi uç noktalarla kendi uygulamanızı geliştirin.",
     icons: {
       icon: `/logo_.png`,
     },

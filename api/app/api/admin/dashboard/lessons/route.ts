@@ -3,6 +3,27 @@ import UserProgress from "@/models/UserProgress";
 import connectDB from "@/lib/db/connect";
 import { authGuard } from "@/lib/utils";
 
+const DASHBOARD_LESSONS_CACHE_TTL_MS = 30 * 1000;
+
+type DashboardLessonsPayload = {
+  count: number;
+  percentageChange: number;
+  trend: "up" | "down" | "neutral";
+};
+
+type DashboardLessonsCacheValue = {
+  expiresAt: number;
+  payload: DashboardLessonsPayload;
+};
+
+const globalForDashboardLessonsCache = globalThis as typeof globalThis & {
+  _dashboardLessonsCache?: Map<string, DashboardLessonsCacheValue>;
+};
+
+const dashboardLessonsCache =
+  globalForDashboardLessonsCache._dashboardLessonsCache ?? new Map();
+globalForDashboardLessonsCache._dashboardLessonsCache = dashboardLessonsCache;
+
 /**
  * @swagger
  * /api/admin/completed-lessons:
@@ -39,46 +60,80 @@ export async function GET() {
     if (auth instanceof NextResponse) {
       return auth; // early return on unauthorized or forbidden
     }
+
+    const now = Date.now();
+    const cached = dashboardLessonsCache.get("summary");
+    if (cached && cached.expiresAt > now) {
+      return NextResponse.json(cached.payload);
+    }
+
     await connectDB();
 
-    // Aggregate to count all completed lessons
+    const startOfCurrentMonth = new Date();
+    startOfCurrentMonth.setDate(1);
+    startOfCurrentMonth.setHours(0, 0, 0, 0);
+
+    // Use a single aggregate pass to compute total and previous baseline.
     const aggregateResult = await UserProgress.aggregate([
-      { $unwind: "$completedLessons" },
-      { $match: { "completedLessons.isCompleted": true } },
-      { $count: "totalCompletedLessons" },
-    ]);
-
-    const totalCompletedLessons =
-      aggregateResult[0]?.totalCompletedLessons || 0;
-
-    // Get completed lessons from last month
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-
-    const lastMonthResult = await UserProgress.aggregate([
-      { $unwind: "$completedLessons" },
       {
-        $match: {
-          "completedLessons.isCompleted": true,
-          "completedLessons.completedAt": { $lt: lastMonth },
+        $project: {
+          completedCount: {
+            $size: {
+              $filter: {
+                input: { $ifNull: ["$completedLessons", []] },
+                as: "lesson",
+                cond: { $eq: ["$$lesson.isCompleted", true] },
+              },
+            },
+          },
+          completedBeforeCurrentMonth: {
+            $size: {
+              $filter: {
+                input: { $ifNull: ["$completedLessons", []] },
+                as: "lesson",
+                cond: {
+                  $and: [
+                    { $eq: ["$$lesson.isCompleted", true] },
+                    { $lt: ["$$lesson.completedAt", startOfCurrentMonth] },
+                  ],
+                },
+              },
+            },
+          },
         },
       },
-      { $count: "totalCompletedLessons" },
+      {
+        $group: {
+          _id: null,
+          totalCompletedLessons: { $sum: "$completedCount" },
+          completedBeforeCurrentMonth: {
+            $sum: "$completedBeforeCurrentMonth",
+          },
+        },
+      },
     ]);
 
-    const lastMonthCompletedLessons =
-      lastMonthResult[0]?.totalCompletedLessons || 0;
+    const totalCompletedLessons = aggregateResult[0]?.totalCompletedLessons ?? 0;
+    const previousBaseline = aggregateResult[0]?.completedBeforeCurrentMonth ?? 0;
 
     const percentageChange = calculatePercentageChange(
       totalCompletedLessons,
-      lastMonthCompletedLessons
+      previousBaseline
     );
 
-    return NextResponse.json({
+    const payload: DashboardLessonsPayload = {
       count: totalCompletedLessons,
       percentageChange,
-      trend: percentageChange >= 0 ? "up" : "down",
+      trend:
+        percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "neutral",
+    };
+
+    dashboardLessonsCache.set("summary", {
+      expiresAt: now + DASHBOARD_LESSONS_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error fetching completed lessons:", error);
     return NextResponse.json(

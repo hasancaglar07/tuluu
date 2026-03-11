@@ -10,10 +10,12 @@ export default async function Page() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: `Subscriptions - TULU`,
-    description: `Page - Description here`,
+    title: `Abonelikler - TULU`,
+    description: `TULU Premium planlarını inceleyin ve size uygun paketi seçin.`,
     icons: {
-      icon: `path to asset file`,
+      icon: "/images/logo_icon.png",
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
     },
   };
 }

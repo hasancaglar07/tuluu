@@ -207,6 +207,7 @@ const UserProgressSchema = new Schema(
 
 // 3. Indexes
 UserProgressSchema.index({ userId: 1, languageId: 1 }, { unique: true });
+UserProgressSchema.index({ languageId: 1 });
 
 // 4. Static methods
 
@@ -479,7 +480,7 @@ UserProgressSchema.statics.getTotalStats = async function (
   languageId?: string // optional
 ) {
   const match: { userId: string; languageId?: string } = {
-    userId: userId,
+    userId,
   };
   if (languageId) {
     match.languageId = languageId;
@@ -487,37 +488,62 @@ UserProgressSchema.statics.getTotalStats = async function (
 
   const result = await this.aggregate([
     { $match: match },
-    { $unwind: "$rewardHistory" },
+    {
+      $project: {
+        currentStreak: { $ifNull: ["$currentStreak", 0] },
+        rewardTotals: {
+          $reduce: {
+            input: { $ifNull: ["$rewardHistory", []] },
+            initialValue: { xp: 0, gems: 0, gel: 0 },
+            in: {
+              xp: {
+                $add: [
+                  "$$value.xp",
+                  {
+                    $cond: [
+                      { $eq: ["$$this.type", "xp"] },
+                      { $ifNull: ["$$this.amount", 0] },
+                      0,
+                    ],
+                  },
+                ],
+              },
+              gems: {
+                $add: [
+                  "$$value.gems",
+                  {
+                    $cond: [
+                      { $eq: ["$$this.type", "gems"] },
+                      { $ifNull: ["$$this.amount", 0] },
+                      0,
+                    ],
+                  },
+                ],
+              },
+              gel: {
+                $add: [
+                  "$$value.gel",
+                  {
+                    $cond: [
+                      { $eq: ["$$this.type", "gel"] },
+                      { $ifNull: ["$$this.amount", 0] },
+                      0,
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
     {
       $group: {
         _id: null,
-        totalXp: {
-          $sum: {
-            $cond: [
-              { $eq: ["$rewardHistory.type", "xp"] },
-              "$rewardHistory.amount",
-              0,
-            ],
-          },
-        },
-        totalGems: {
-          $sum: {
-            $cond: [
-              { $eq: ["$rewardHistory.type", "gems"] },
-              "$rewardHistory.amount",
-              0,
-            ],
-          },
-        },
-        totalGel: {
-          $sum: {
-            $cond: [
-              { $eq: ["$rewardHistory.type", "gel"] },
-              "$rewardHistory.amount",
-              0,
-            ],
-          },
-        },
+        totalXp: { $sum: "$rewardTotals.xp" },
+        totalGems: { $sum: "$rewardTotals.gems" },
+        totalGel: { $sum: "$rewardTotals.gel" },
+        totalStreak: { $max: "$currentStreak" },
       },
     },
     {
@@ -526,11 +552,21 @@ UserProgressSchema.statics.getTotalStats = async function (
         totalXp: 1,
         totalGems: 1,
         totalGel: 1,
+        totalHeart: { $literal: 0 },
+        totalStreak: 1,
       },
     },
   ]);
 
-  return result[0] || { totalXp: 0, totalGems: 0, totalGel: 0 };
+  return (
+    result[0] || {
+      totalXp: 0,
+      totalGems: 0,
+      totalGel: 0,
+      totalHeart: 0,
+      totalStreak: 0,
+    }
+  );
 };
 
 UserProgressSchema.statics.getUserCountPerLanguage = async function () {
@@ -667,28 +703,45 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
   userId: string,
   languageId: string
 ) {
-  const progress = await this.findOne({ userId, languageId })
-    .populate("completedLessons.lessonId")
-    .populate("completedUnits.unitId")
-    .populate("completedChapters.chapterId");
+  const progress = await this.findOne({ userId, languageId }).lean();
+
+  const getRefId = (value: unknown): string | null => {
+    if (!value) return null;
+    if (typeof value === "string") return value;
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      "_id" in (value as Record<string, unknown>)
+    ) {
+      const idValue = (value as Record<string, unknown>)._id;
+      return typeof idValue === "string" ? idValue : null;
+    }
+    return null;
+  };
 
   let currentLesson = null;
   let currentUnit = null;
   let currentChapter = null;
 
-  currentChapter = await Chapter.findOne({ languageId }).sort({
-    order: 1,
-  });
-  if (currentChapter) {
-    currentUnit = await Unit.findOne({ chapterId: currentChapter._id }).sort({
+  currentChapter = await Chapter.findOne({ languageId })
+    .sort({
       order: 1,
-    });
+    })
+    .lean();
+  if (currentChapter) {
+    currentUnit = await Unit.findOne({ chapterId: currentChapter._id })
+      .sort({
+        order: 1,
+      })
+      .lean();
     if (currentUnit) {
       currentLesson = await Lesson.findOne({
         unitId: currentUnit._id,
         isTest: { $ne: true },
         isActive: true,
-      }).sort({ order: 1 });
+      })
+        .sort({ order: 1 })
+        .lean();
     }
   }
   if (!progress) {
@@ -711,28 +764,26 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
     };
   }
 
-  const completedLessonIds = progress.completedLessons
-    .filter((l: CompletedLesson) => {
-      if (!l.isCompleted || !l.lessonId) return false;
-      if (typeof l.lessonId === "string") {
-        return Types.ObjectId.isValid(l.lessonId);
-      }
-      if (typeof l.lessonId === "object" && l.lessonId._id) {
-        return Types.ObjectId.isValid(l.lessonId._id);
-      }
-      return false;
+  const completedLessonIds = (progress.completedLessons ?? [])
+    .filter((lesson: { isCompleted?: boolean; lessonId?: unknown }) => {
+      if (!lesson.isCompleted) return false;
+      const id = getRefId(lesson.lessonId);
+      return Boolean(id && Types.ObjectId.isValid(id));
     })
-    .map((l: CompletedLesson) => {
-      const id = typeof l.lessonId === "object" ? l.lessonId._id : l.lessonId;
+    .map((lesson: { lessonId?: unknown }) => {
+      const id = getRefId(lesson.lessonId) as string;
       return new Types.ObjectId(id);
     });
 
-  const lastCompletedLesson =
-    progress.completedLessons.length > 0
-      ? progress.completedLessons[progress.completedLessons.length - 1].lessonId
-      : null;
+  const lastCompletedLessonId = getRefId(
+    progress.completedLessons?.[progress.completedLessons.length - 1]?.lessonId
+  );
 
-  const lastCompletedUnitId = lastCompletedLesson?.unitId;
+  const lastCompletedLessonDoc = lastCompletedLessonId
+    ? await Lesson.findById(lastCompletedLessonId).select("unitId").lean()
+    : null;
+
+  const lastCompletedUnitId = lastCompletedLessonDoc?.unitId?.toString() ?? null;
 
   if (lastCompletedUnitId) {
     const lastLessonInUnit = await Lesson.findOne({
@@ -743,32 +794,32 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
       .sort({ order: -1 })
       .lean();
 
-    const lastCompletedLessonId =
-      typeof lastCompletedLesson === "object"
-        ? lastCompletedLesson._id?.toString()
-        : lastCompletedLesson?.toString();
-
     const isLastLessonInUnit =
       lastLessonInUnit &&
+      lastCompletedLessonId &&
       lastLessonInUnit._id.toString() === lastCompletedLessonId;
 
     if (isLastLessonInUnit) {
-      const currentUnitData = await Unit.findById(lastCompletedUnitId);
+      const currentUnitData = await Unit.findById(lastCompletedUnitId)
+        .select("chapterId order")
+        .lean();
       if (currentUnitData) {
         const nextUnit = await Unit.findOne({
           chapterId: currentUnitData.chapterId,
           order: currentUnitData.order + 1,
-        });
+        }).lean();
 
         if (nextUnit) {
           currentUnit = nextUnit;
-          currentChapter = await Chapter.findById(nextUnit.chapterId);
+          currentChapter = await Chapter.findById(nextUnit.chapterId).lean();
 
           currentLesson = await Lesson.findOne({
             unitId: nextUnit._id,
             isTest: { $ne: true },
             isActive: true,
-          }).sort({ order: 1 });
+          })
+            .sort({ order: 1 })
+            .lean();
         }
       }
     } else {
@@ -777,11 +828,13 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
         _id: { $nin: completedLessonIds },
         isTest: { $ne: true },
         isActive: true,
-      }).sort({ order: 1 });
+      })
+        .sort({ order: 1 })
+        .lean();
 
       if (currentLesson) {
-        currentUnit = await Unit.findById(currentLesson.unitId);
-        currentChapter = await Chapter.findById(currentUnit?.chapterId);
+        currentUnit = await Unit.findById(currentLesson.unitId).lean();
+        currentChapter = await Chapter.findById(currentUnit?.chapterId).lean();
       }
     }
   }
@@ -792,15 +845,18 @@ UserProgressSchema.statics.getCurrentProgressData = async function (
     unitColor: currentUnit?.color ?? "bg-[#ff2dbd]",
     currentLesson,
     completedLessons:
-      progress.completedLessons.map((l: { lessonId: string }) => l.lessonId) ??
-      [],
+      progress.completedLessons
+        ?.map((l: { lessonId?: unknown }) => getRefId(l.lessonId))
+        .filter((id: string | null): id is string => Boolean(id)) ?? [],
     completedUnits:
-      progress.completedUnits.map((u: { unitId: string }) => u.unitId) ?? [],
+      progress.completedUnits
+        ?.map((u: { unitId?: unknown }) => getRefId(u.unitId))
+        .filter((id: string | null): id is string => Boolean(id)) ?? [],
     completedChapters:
-      progress.completedChapters.map(
-        (c: { chapterId: string }) => c.chapterId
-      ) ?? [],
-    lastCompletedLesson: lastCompletedLesson ?? null,
+      progress.completedChapters
+        ?.map((c: { chapterId?: unknown }) => getRefId(c.chapterId))
+        .filter((id: string | null): id is string => Boolean(id)) ?? [],
+    lastCompletedLesson: lastCompletedLessonId ?? null,
     error: null,
     loading: false,
     valuePoints: mergeValuePoints(progress.valuePoints),

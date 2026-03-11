@@ -7,6 +7,21 @@ import { CreateQuestSchema, QuestSearchSchema } from "@/lib/validations/quest";
 import { FilterQuery } from "mongoose";
 import { authGuard } from "@/lib/utils";
 
+const ADMIN_QUESTS_LIST_CACHE_TTL_MS = 20 * 1000;
+
+type AdminQuestsCacheValue = {
+  expiresAt: number;
+  payload: unknown;
+};
+
+const globalForAdminQuestsCache = globalThis as typeof globalThis & {
+  _adminQuestsListCache?: Map<string, AdminQuestsCacheValue>;
+};
+
+const adminQuestsListCache =
+  globalForAdminQuestsCache._adminQuestsListCache ?? new Map();
+globalForAdminQuestsCache._adminQuestsListCache = adminQuestsListCache;
+
 /**
  * @swagger
  * components:
@@ -685,6 +700,13 @@ export async function GET(request: NextRequest) {
     }
 
     const { search, status, type, limit = 10, page = 1 } = validatedSearch.data;
+    const cacheKey = `${search}|${status}|${type}|${limit}|${page}`;
+    const now = Date.now();
+    const cached = adminQuestsListCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return NextResponse.json(cached.payload);
+    }
+
     // Build query
     const query: FilterQuery<QuestDocument> = {};
 
@@ -710,113 +732,132 @@ export async function GET(request: NextRequest) {
     // Get quests with pagination
 
     const skip = (page - 1) * limit;
-    const quests = await Quest.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    const [quests, totalCount] = await Promise.all([
+      Quest.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Quest.countDocuments(query),
+    ]);
 
-    // Get total count for pagination
-    const totalCount = await Quest.countDocuments(query);
+    const questIds = quests.map((quest) => String(quest._id));
+    const questStatsMap = new Map<
+      string,
+      {
+        usersAssigned: number;
+        usersCompleted: number;
+        usersStarted: number;
+      }
+    >();
 
-    // Transform quests to match admin page format
-    const transformedQuests = await Promise.all(
-      quests.map(async (quest) => {
-        // Get user quest statistics
-        const userQuestStats = await UserQuest.aggregate([
-          { $match: { questId: quest._id } },
-          {
-            $group: {
-              _id: null,
-              usersAssigned: { $sum: 1 },
-              usersCompleted: {
-                $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
-              },
-              usersStarted: {
-                $sum: {
-                  $cond: [
-                    {
-                      $in: ["$status", ["started", "in_progress", "completed"]],
-                    },
-                    1,
-                    0,
-                  ],
-                },
+    if (questIds.length > 0) {
+      const perQuestStats = await UserQuest.aggregate([
+        {
+          $match: {
+            questId: { $in: questIds },
+          },
+        },
+        {
+          $group: {
+            _id: "$questId",
+            usersAssigned: { $sum: 1 },
+            usersCompleted: {
+              $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+            },
+            usersStarted: {
+              $sum: {
+                $cond: [
+                  {
+                    $in: ["$status", ["started", "in_progress", "completed"]],
+                  },
+                  1,
+                  0,
+                ],
               },
             },
           },
-        ]);
+        },
+      ]);
 
-        const stats = userQuestStats[0] || {
-          usersAssigned: 0,
-          usersCompleted: 0,
-          usersStarted: 0,
-        };
+      for (const stat of perQuestStats) {
+        questStatsMap.set(String(stat._id), {
+          usersAssigned: stat.usersAssigned ?? 0,
+          usersCompleted: stat.usersCompleted ?? 0,
+          usersStarted: stat.usersStarted ?? 0,
+        });
+      }
+    }
 
-        // Calculate completion rate
-        const completionRate =
-          stats.usersAssigned > 0
-            ? Math.round((stats.usersCompleted / stats.usersAssigned) * 100)
-            : 0;
+    // Transform quests to match admin page format
+    const transformedQuests = quests.map((quest) => {
+      const stats = questStatsMap.get(String(quest._id)) ?? {
+        usersAssigned: 0,
+        usersCompleted: 0,
+        usersStarted: 0,
+      };
 
-        // Transform reward format
-        const reward = quest.rewards?.[0] || { type: "xp", value: 0 };
+      // Calculate completion rate
+      const completionRate =
+        stats.usersAssigned > 0
+          ? Math.round((stats.usersCompleted / stats.usersAssigned) * 100)
+          : 0;
 
-        return {
-          id: quest._id.toString(),
-          title: quest.title,
-          description: quest.description,
-          type: quest.type,
-          goal: quest.goal,
-          reward: {
-            type: reward.type,
-            value: reward.value,
-          },
-          startDate: quest.startDate,
-          endDate: quest.endDate,
-          status: quest.status,
-          targetSegment: quest.targetSegment,
-          completionRate,
-          usersAssigned: stats.usersAssigned,
-          usersCompleted: stats.usersCompleted,
-          usersStarted: stats.usersStarted,
-          difficulty: quest.difficulty,
-          category: quest.category,
-          priority: quest.priority,
-          isVisible: quest.isVisible,
-          isFeatured: quest.isFeatured,
-          createdAt: quest.createdAt,
-          updatedAt: quest.updatedAt,
-        };
-      })
-    );
+      // Transform reward format
+      const reward = quest.rewards?.[0] || { type: "xp", value: 0 };
+
+      return {
+        id: String(quest._id),
+        title: quest.title,
+        description: quest.description,
+        type: quest.type,
+        goal: quest.goal,
+        reward: {
+          type: reward.type,
+          value: reward.value,
+        },
+        startDate: quest.startDate,
+        endDate: quest.endDate,
+        status: quest.status,
+        targetSegment: quest.targetSegment,
+        completionRate,
+        usersAssigned: stats.usersAssigned,
+        usersCompleted: stats.usersCompleted,
+        usersStarted: stats.usersStarted,
+        difficulty: quest.difficulty,
+        category: quest.category,
+        priority: quest.priority,
+        isVisible: quest.isVisible,
+        isFeatured: quest.isFeatured,
+        createdAt: quest.createdAt,
+        updatedAt: quest.updatedAt,
+      };
+    });
 
     // Calculate summary statistics
-    const totalActiveQuests = await Quest.countDocuments({ status: "active" });
-    const totalUpcomingQuests = await Quest.countDocuments({
-      status: "draft",
-      startDate: { $gt: new Date() },
-    });
+    const [
+      totalActiveQuests,
+      totalUpcomingQuests,
+      averageCompletionResult,
+      totalUsersEngaged,
+      totalCompletedQuests,
+    ] = await Promise.all([
+      Quest.countDocuments({ status: "active" }),
+      Quest.countDocuments({
+        status: "draft",
+        startDate: { $gt: new Date() },
+      }),
+      Quest.aggregate([
+        {
+          $group: {
+            _id: null,
+            averageCompletionRate: { $avg: "$completionRate" },
+          },
+        },
+      ]),
+      UserQuest.distinct("userId").then((users) => users.length),
+      UserQuest.countDocuments({
+        status: "completed",
+      }),
+    ]);
 
-    const allQuests = await Quest.find({}).lean();
-    const averageCompletionRate =
-      allQuests.length > 0
-        ? Math.round(
-            allQuests.reduce(
-              (acc, quest) => acc + (quest.completionRate || 0),
-              0
-            ) / allQuests.length
-          )
-        : 0;
-
-    const totalUsersEngaged = await UserQuest.distinct("clerkId").then(
-      (users) => users.length
-    );
-    const totalCompletedQuests = await UserQuest.countDocuments({
-      status: "completed",
-    });
-
-    return NextResponse.json({
+    const payload = {
       success: true,
       data: transformedQuests,
       pagination: {
@@ -828,11 +869,20 @@ export async function GET(request: NextRequest) {
       summary: {
         totalActiveQuests,
         totalUpcomingQuests,
-        averageCompletionRate,
+        averageCompletionRate: Math.round(
+          averageCompletionResult[0]?.averageCompletionRate ?? 0
+        ),
         totalUsersEngaged,
         totalCompletedQuests,
       },
+    };
+
+    adminQuestsListCache.set(cacheKey, {
+      expiresAt: now + ADMIN_QUESTS_LIST_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error fetching quests:", error);
     return NextResponse.json(

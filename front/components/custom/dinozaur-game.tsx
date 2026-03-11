@@ -168,7 +168,7 @@ export function DinosaurGame() {
       dino.velocityY = JUMP_FORCE;
       dino.isJumping = true;
     }
-  }, [gameState]);
+  }, [gameState, JUMP_FORCE]);
 
   const duck = useCallback(
     (isDucking: boolean) => {
@@ -260,7 +260,7 @@ export function DinosaurGame() {
 
     // Increase game speed gradually
     setGameSpeed((prev) => Math.min(prev + 0.001, 12));
-  }, [gameState, score, highScore, checkCollision, spawnObstacle]);
+  }, [gameState, score, highScore, gameSpeed, checkCollision, spawnObstacle]);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;

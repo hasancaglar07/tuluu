@@ -166,7 +166,7 @@ function SubscriptionCard({
       <h3 className="font-bold text-lg mb-2">
         <FormattedMessage
           id="sidebar.subscription.title"
-          defaultMessage="Your Subscription"
+          defaultMessage="Aboneliğin"
         />
       </h3>
       <div className="flex items-center gap-2 mb-4">
@@ -191,7 +191,7 @@ function SubscriptionCard({
           <p className="text-sm text-gray-600 mb-4">
             <FormattedMessage
               id="sidebar.subscription.upgradeMessage"
-              defaultMessage="Upgrade to Premium to access all content and learn without limits!"
+              defaultMessage="Tüm içeriklere erişmek ve sınırsız öğrenmek için Premium'a geç!"
             />
           </p>
           <m.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -202,7 +202,7 @@ function SubscriptionCard({
             >
               <FormattedMessage
                 id="sidebar.subscription.upgradeButton"
-                defaultMessage="UPGRADE TO PREMIUM"
+                defaultMessage="PREMIUM'A YÜKSELT"
               />
             </Button>
           </m.div>
@@ -211,7 +211,7 @@ function SubscriptionCard({
         <p className="text-sm text-gray-600">
           <FormattedMessage
             id="sidebar.subscription.premiumMessage"
-            defaultMessage="You have access to all premium content. Enjoy your learning!"
+            defaultMessage="Tüm premium içeriklere erişimin var. Keyifli öğrenmeler!"
           />
         </p>
       )}
@@ -240,7 +240,7 @@ function ProgressCard({
       <h3 className="font-bold text-lg mb-4">
         <FormattedMessage
           id="sidebar.progress.title"
-          defaultMessage="Your Progress"
+          defaultMessage="İlerlemen"
         />
       </h3>
       <div className="space-y-4">
@@ -250,7 +250,7 @@ function ProgressCard({
             <span>
               <FormattedMessage
                 id="sidebar.progress.completed"
-                defaultMessage="Lessons Completed"
+                defaultMessage="Tamamlanan Dersler"
               />
             </span>
             <span className="font-bold">
@@ -275,7 +275,7 @@ function ProgressCard({
             <span>
               <FormattedMessage
                 id="sidebar.progress.xpWeek"
-                defaultMessage="XP This Week"
+                defaultMessage="Bu Hafta XP"
               />
             </span>
             <span className="font-bold">{userXp}/5000</span>
@@ -322,11 +322,11 @@ function DailyQuestsCard({ userXp }: { userXp: number }) {
         if (response.data.success) {
           setDailyQuests(response.data.data.quests);
         } else {
-          setError("Failed to load quests, relaod the page");
+          setError("Görevler yüklenemedi, sayfayı yenileyin");
         }
       } catch (err) {
-        console.error("Error fetching daily quests:", err);
-        setError("Error loading quests, reload the page");
+        console.error("Günlük görevler alınırken hata:", err);
+        setError("Görevler yüklenirken hata oluştu, sayfayı yenileyin");
       } finally {
         setIsLoading(false);
       }
@@ -345,7 +345,7 @@ function DailyQuestsCard({ userXp }: { userXp: number }) {
         <h3 className="font-bold text-lg">
           <FormattedMessage
             id="sidebar.quests.title"
-            defaultMessage="Daily Quests"
+            defaultMessage="Günlük Görevler"
           />
         </h3>
         <LocaleLink
@@ -354,7 +354,7 @@ function DailyQuestsCard({ userXp }: { userXp: number }) {
         >
           <FormattedMessage
             id="sidebar.quests.viewAll"
-            defaultMessage="VIEW ALL"
+            defaultMessage="TÜMÜNÜ GÖR"
           />
         </LocaleLink>
       </div>
@@ -410,7 +410,7 @@ function DailyQuestsCard({ userXp }: { userXp: number }) {
             <div className="font-bold">
               <FormattedMessage
                 id="sidebar.quests.earnXp"
-                defaultMessage="Earn 10 XP"
+                defaultMessage="10 XP Kazan"
               />
             </div>
             <m.div

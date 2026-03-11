@@ -70,7 +70,7 @@ export const LessonItem = ({
             <h6>
               <FormattedMessage
                 id="dashboard.lesson.title"
-                defaultMessage="Lesson {order}: {title}"
+                defaultMessage="Ders {order}: {title}"
                 values={{ order: lesson.order, title: lesson.title }}
               />
             </h6>
@@ -85,7 +85,7 @@ export const LessonItem = ({
                   <p>
                     <FormattedMessage
                       id="dashboard.lesson.premiumLocked"
-                      defaultMessage="Premium content - Subscribe to unlock"
+                      defaultMessage="Premium içerik - Kilidi açmak için abone ol"
                     />
                   </p>
                 </TooltipContent>
@@ -102,7 +102,7 @@ export const LessonItem = ({
                   <p>
                     <FormattedMessage
                       id="dashboard.lesson.progressionLocked"
-                      defaultMessage="Complete previous lessons to unlock"
+                      defaultMessage="Kilidi açmak için önceki dersleri tamamla"
                     />
                   </p>
                 </TooltipContent>
@@ -138,21 +138,21 @@ export const LessonItem = ({
             {lesson.isCompleted
               ? intl.formatMessage({
                   id: "dashboard.lesson.restart",
-                  defaultMessage: "RESTART",
+                  defaultMessage: "TEKRARLA",
                 })
               : !lesson.isCompleted && !isPremiumLocked
               ? intl.formatMessage({
                   id: "dashboard.lesson.start",
-                  defaultMessage: "START",
+                  defaultMessage: "BAŞLA",
                 })
               : isPremiumLocked
               ? intl.formatMessage({
                   id: "dashboard.lesson.unlock",
-                  defaultMessage: "UNLOCK",
+                  defaultMessage: "KİLİDİ AÇ",
                 })
               : intl.formatMessage({
                   id: "dashboard.lesson.locked",
-                  defaultMessage: "LOCKED",
+                  defaultMessage: "KİLİTLİ",
                 })}
           </Button>
         </m.div>

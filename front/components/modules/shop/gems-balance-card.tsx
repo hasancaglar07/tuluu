@@ -65,7 +65,7 @@ export function GemsBalanceCard({
           <p className="text-yellow-800 text-sm font-medium mb-2 text-center">
             <FormattedMessage
               id="shop.gems.premiumMessage"
-              defaultMessage="✨ Want unlimited gems? Get Premium now!"
+              defaultMessage="✨ Sınırsız elmas mı istiyorsun? Hemen Premium al!"
             />
           </p>
           <Button
@@ -74,7 +74,7 @@ export function GemsBalanceCard({
           >
             <FormattedMessage
               id="shop.gems.getPremium"
-              defaultMessage="Get Premium"
+              defaultMessage="Premium Al"
             />
           </Button>
         </m.div>
@@ -85,7 +85,7 @@ export function GemsBalanceCard({
           <Gem className="h-5 w-5 text-yellow-500" />
           <FormattedMessage
             id="shop.gems.balance.title"
-            defaultMessage="Your Gems Balance"
+            defaultMessage="Elmas Bakiyen"
           />
         </h2>
 
@@ -94,14 +94,14 @@ export function GemsBalanceCard({
             <div className="text-3xl font-bold text-yellow-700 mb-2">
               <FormattedMessage
                 id="shop.gems.amount"
-                defaultMessage="{gems} Gems"
+                defaultMessage="{gems} Elmas"
                 values={{ gems: userGems.toLocaleString() }}
               />
             </div>
             <p className="text-yellow-700 mb-4">
               <FormattedMessage
                 id="shop.gems.description"
-                defaultMessage="Use your Gems to buy hearts and other items in the shop."
+                defaultMessage="Elmaslarını kalp ve mağazadaki diğer ürünleri almak için kullan."
               />
             </p>
 
@@ -123,7 +123,7 @@ export function GemsBalanceCard({
               >
                 <FormattedMessage
                   id="shop.gems.add"
-                  defaultMessage="Add Gems"
+                  defaultMessage="Elmas Ekle"
                 />
               </Button>
             </div>

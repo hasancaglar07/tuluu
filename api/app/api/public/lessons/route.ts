@@ -9,8 +9,37 @@ import User from "@/models/User";
 import Exercise from "@/models/Exercise";
 import { auth } from "@clerk/nextjs/server";
 
-const SUPPORTED_LOCALES = ["en", "fr", "ar", "hi", "zh", "es", "tr"];
+const SUPPORTED_LOCALES = ["tr"];
 const DEFAULT_LOCALE = "tr";
+const SUMMARY_CACHE_TTL_MS = 5 * 60 * 1000;
+const DEFAULT_SUMMARY_USER = {
+  xp: 0,
+  gems: 0,
+  gel: 0,
+  hearts: 0,
+  streak: 0,
+  lastActive: null as string | null,
+};
+
+type LessonsSummaryPayload = {
+  languages: any[];
+  user: typeof DEFAULT_SUMMARY_USER;
+  progress: any[];
+};
+
+type SummaryCacheValue = {
+  expiresAt: number;
+  payload: LessonsSummaryPayload;
+};
+
+const globalForLessonsSummaryCache = globalThis as typeof globalThis & {
+  _lessonsSummaryCache?: Map<string, SummaryCacheValue>;
+};
+
+const lessonsSummaryCache =
+  globalForLessonsSummaryCache._lessonsSummaryCache ?? new Map();
+
+globalForLessonsSummaryCache._lessonsSummaryCache = lessonsSummaryCache;
 
 export interface RewardType {
   xp: number;
@@ -923,13 +952,13 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
-    const { userId } = await auth();
-
     const { searchParams } = new URL(req.url);
     const action = searchParams.get("action");
     const category = searchParams.get("category");
     const ageGroup = searchParams.get("ageGroup");
     const localeParam = searchParams.get("locale");
+    const detailLevel = searchParams.get("detail") ?? "full";
+    const summaryOnly = detailLevel === "summary";
 
     const languageFilter: Record<string, unknown> = {
       isActive: true,
@@ -974,45 +1003,143 @@ export async function GET(req: NextRequest) {
       themeMetadata: normalizeThemeMetadata(language.themeMetadata),
     });
 
-    const languagesFromDb = await Language.find(languageFilter).lean();
+    const languagesFromDb = await Language.find(languageFilter)
+      .select(
+        "_id name nativeName imageUrl baseLanguage flag locale isActive category themeMetadata"
+      )
+      .lean();
     const languages = languagesFromDb.map(normalizeLanguage);
+    const languageIds = languages.map((language) => language._id.toString());
+
+    if (action === "learn" && summaryOnly) {
+      const summaryCacheKey = JSON.stringify({
+        locale: effectiveLocale ?? null,
+        category: category ?? null,
+        ageGroup: ageGroup ?? null,
+      });
+      const now = Date.now();
+      const cachedSummary = lessonsSummaryCache.get(summaryCacheKey);
+
+      if (cachedSummary && cachedSummary.expiresAt > now) {
+        return NextResponse.json(cachedSummary.payload, { status: 200 });
+      }
+
+      const lessonStats = languageIds.length
+        ? await Lesson.aggregate([
+            {
+              $match: {
+                languageId: { $in: languageIds },
+                isActive: true,
+              },
+            },
+            {
+              $group: {
+                _id: "$languageId",
+                count: { $sum: 1 },
+              },
+            },
+          ])
+        : [];
+
+      const lessonCountMap = lessonStats.reduce((acc, row) => {
+        acc[String(row._id)] = row.count as number;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const summaryLanguages = languages.map((language) => {
+        const languageId = language._id.toString();
+        return {
+          _id: language._id,
+          name: language.name,
+          nativeName: language.nativeName ?? "",
+          imageUrl: language.imageUrl,
+          baseLanguage: language.baseLanguage,
+          flag: language.flag,
+          locale: language.locale ?? DEFAULT_LOCALE,
+          isActive: language.isActive ?? true,
+          category: language.category ?? "language_learning",
+          themeMetadata: language.themeMetadata ?? normalizeThemeMetadata(),
+          isCompleted: false,
+          userCount: 0,
+          stats: {
+            chapters: 0,
+            units: 0,
+            lessons: lessonCountMap[languageId] || 0,
+          },
+          chapters: [],
+        };
+      });
+
+      const payload: LessonsSummaryPayload = {
+        languages: summaryLanguages,
+        user: DEFAULT_SUMMARY_USER,
+        progress: [],
+      };
+
+      lessonsSummaryCache.set(summaryCacheKey, {
+        expiresAt: now + SUMMARY_CACHE_TTL_MS,
+        payload,
+      });
+
+      return NextResponse.json(payload, { status: 200 });
+    }
+
+    const { userId } =
+      action === "learn" ? await auth() : { userId: null as string | null };
 
     if (action === "learn" && userId) {
-      const totalStats = await UserProgress.getTotalStats(userId);
+      const [userDoc, userCountStats, userProgressList] =
+        await Promise.all([
+          User.findOne({ clerkId: userId })
+            .select("xp gems gel hearts streak loginHistory")
+            .slice("loginHistory", -1)
+            .lean(),
+          languageIds.length
+            ? UserProgress.aggregate([
+                {
+                  $match: {
+                    languageId: { $in: languageIds },
+                  },
+                },
+                {
+                  $group: {
+                    _id: "$languageId",
+                    userCount: { $sum: 1 },
+                  },
+                },
+              ])
+            : Promise.resolve([]),
+          languageIds.length
+            ? UserProgress.find({
+                userId,
+                languageId: { $in: languageIds },
+              })
+                .select(
+                  "userId languageId isCompleted completedChapters completedUnits completedLessons currentLesson valuePoints dailyLimits parentalControls createdAt updatedAt"
+                )
+                .lean()
+            : Promise.resolve([]),
+        ]);
 
-      // 4. Get user doc for last login and streak
-
-      const lastLogin = await User.findOne({ clerkId: userId })
-        .select("loginHistory")
-        .lean();
-
-      const lastHistory =
-        lastLogin?.loginHistory?.[lastLogin.loginHistory.length - 1];
+      const lastHistory = userDoc?.loginHistory?.[0];
 
       const lastActive = lastHistory?.date
         ? new Date(lastHistory.date).toISOString()
         : null;
 
       const user = {
-        xp: totalStats.totalXp,
-        gems: totalStats.totalGems,
-        gel: totalStats.totalGel,
-        hearts: totalStats?.totalHeart,
-        streak: totalStats?.totalStreak,
+        xp: userDoc?.xp ?? 0,
+        gems: userDoc?.gems ?? 0,
+        gel: userDoc?.gel ?? 0,
+        hearts: userDoc?.hearts ?? 0,
+        streak: userDoc?.streak ?? 0,
         lastActive: lastActive,
       };
-      const userCountStats = await UserProgress.getUserCountPerLanguage();
-      // Step 2: Convert stats array to a dictionary for fast lookup
+
       const userCountMap = userCountStats.reduce((acc, lang) => {
-        acc[lang.languageId] = lang.userCount;
+        acc[String(lang._id)] = lang.userCount;
         return acc;
       }, {} as Record<string, number>);
-
-      // Get all UserProgress for user and languages
-      const userProgressList = await UserProgress.find({
-        userId: userId,
-        languageId: { $in: languages.map((lang) => lang._id) },
-      }).lean();
 
       const normalizeProgress = (progress: any) => ({
         ...progress,
@@ -1037,155 +1164,214 @@ export async function GET(req: NextRequest) {
           guardianContact: progress?.parentalControls?.guardianContact ?? "",
         },
       });
+
       const normalizedProgressList = userProgressList.map(normalizeProgress);
 
-      // Define the type for progressMap
       const progressMap: Record<string, UserProgressType> = {};
       normalizedProgressList.forEach((progress) => {
         progressMap[progress.languageId] = progress as UserProgressType;
       });
 
-      const lessons = await Promise.all(
-        languages.map(async (language) => {
-          const progress = progressMap[language._id.toString()];
+      const chapters = languageIds.length
+        ? await Chapter.find({ languageId: { $in: languageIds } })
+            .sort({ order: 1 })
+            .lean()
+        : [];
 
-          const isLanguageCompleted = progress?.isCompleted || false;
+      const chapterIds = chapters.map((chapter) => chapter._id.toString());
+      const units = chapterIds.length
+        ? await Unit.find({ chapterId: { $in: chapterIds } })
+            .sort({ order: 1 })
+            .lean()
+        : [];
 
-          const chapters = await Chapter.find({ languageId: language._id });
+      const unitIds = units.map((unit) => unit._id.toString());
+      const lessonsByUnits = unitIds.length
+        ? await Lesson.find({ unitId: { $in: unitIds } })
+            .sort({ order: 1 })
+            .lean()
+        : [];
 
-          const formattedChapters = await Promise.all(
-            chapters.map(async (chapter) => {
-              const isChapterCompleted =
-                progress?.completedChapters?.some(
-                  (item: { chapterId: string }) =>
-                    item.chapterId === chapter._id.toString()
-                ) || false;
+      const lessonIds = lessonsByUnits.map((lesson) => lesson._id.toString());
+      const exercises = lessonIds.length
+        ? await Exercise.find({ lessonId: { $in: lessonIds }, isActive: true })
+            .sort({ order: 1 })
+            .lean()
+        : [];
 
-              const units = await Unit.find({ chapterId: chapter._id });
+      const chaptersByLanguage = new Map<string, any[]>();
+      chapters.forEach((chapter) => {
+        const key = chapter.languageId.toString();
+        if (!chaptersByLanguage.has(key)) {
+          chaptersByLanguage.set(key, []);
+        }
+        chaptersByLanguage.get(key)?.push(chapter);
+      });
 
-              const formattedUnits = await Promise.all(
-                units.map(async (unit) => {
-                  const isUnitCompleted =
-                    progress?.completedUnits?.some(
-                      (item: { unitId: string }) =>
-                        item.unitId === unit._id.toString()
-                    ) || false;
+      const unitsByChapter = new Map<string, any[]>();
+      units.forEach((unit) => {
+        const key = unit.chapterId.toString();
+        if (!unitsByChapter.has(key)) {
+          unitsByChapter.set(key, []);
+        }
+        unitsByChapter.get(key)?.push(unit);
+      });
 
-                  const lessons = await Lesson.find({ unitId: unit._id });
+      const lessonsByUnit = new Map<string, any[]>();
+      lessonsByUnits.forEach((lesson) => {
+        const key = lesson.unitId.toString();
+        if (!lessonsByUnit.has(key)) {
+          lessonsByUnit.set(key, []);
+        }
+        lessonsByUnit.get(key)?.push(lesson);
+      });
 
-                  const formattedLessons = await Promise.all(
-                    // await Promise.all here, since lessons.map is async
-                    lessons.map(async (lesson) => {
-                      const isLessonCompleted =
-                        progress?.completedLessons?.some(
-                          (item: { lessonId: string }) =>
-                            item.lessonId === lesson._id.toString()
-                        ) || false;
+      const exercisesByLesson = new Map<string, any[]>();
+      exercises.forEach((exercise) => {
+        const key = exercise.lessonId.toString();
+        if (!exercisesByLesson.has(key)) {
+          exercisesByLesson.set(key, []);
+        }
+        exercisesByLesson.get(key)?.push(exercise);
+      });
 
-                      const exercises = await Exercise.find({
-                        lessonId: lesson._id,
-                        isActive: true,
-                      });
-                      const formattedExercises = exercises.map((exercise) => ({
-                        _id: exercise._id,
-                        type: exercise.type,
-                        instruction: exercise.instruction,
-                        sourceText: exercise.sourceText,
-                        sourceLanguage: exercise.sourceLanguage,
-                        targetLanguage: exercise.targetLanguage,
-                        correctAnswer: exercise.correctAnswer,
-                        options: exercise.options,
-                        isNewWord: exercise.isNewWord,
-                        audioUrl: exercise.audioUrl,
-                        neutralAnswerImage: exercise.neutralAnswerImage,
-                        badAnswerImage: exercise.badAnswerImage,
-                        correctAnswerImage: exercise.correctAnswerImage,
-                        isActive: exercise.isActive,
-                        order: exercise.order,
-                        educationContent: (exercise as any).educationContent ?? null,
-                      }));
+      const sortByOrder = (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0);
 
-                      return {
-                        id: lesson._id,
-                        title: lesson.title,
-                        chapterId: lesson.chapterId,
-                        unitId: lesson.unitId,
-                        description: lesson.description || "",
-                        isPremium: lesson.isPremium || false,
-                        isCompleted: isLessonCompleted,
-                        imageUrl: lesson.imageUrl || "",
-                        xpReward: lesson.xpReward || 10,
-                        order: lesson.order || 10,
-                        moralLesson: chapter.moralLesson || null,
-                        miniGame: chapter.miniGame || null,
-                        storyPages: lesson.storyPages || [],
-                        storyMetadata: lesson.storyMetadata || null,
-                        exercises: formattedExercises,
-                      };
-                    })
-                  );
+      const lessons = languages.map((language) => {
+        const progress = progressMap[language._id.toString()];
+        const isLanguageCompleted = progress?.isCompleted || false;
+        const completedChapterIds = new Set(
+          (progress?.completedChapters ?? []).map((item: { chapterId: string }) =>
+            item.chapterId?.toString()
+          )
+        );
+        const completedUnitIds = new Set(
+          (progress?.completedUnits ?? []).map((item: { unitId: string }) =>
+            item.unitId?.toString()
+          )
+        );
+        const completedLessonIds = new Set(
+          (progress?.completedLessons ?? []).map((item: { lessonId: string }) =>
+            item.lessonId?.toString()
+          )
+        );
 
-                  return {
-                    id: unit._id,
-                    title: unit.title,
-                    description: unit.description || "",
-                    isPremium: unit.isPremium || false,
-                    isCompleted: isUnitCompleted,
-                    color: unit.color || "bg-[#ff2dbd]",
-                    isExpanded: true,
-                    imageUrl: unit.imageUrl || "",
-                    lessons: formattedLessons,
-                  };
-                })
-              );
+        const languageChapters = (
+          chaptersByLanguage.get(language._id.toString()) ?? []
+        ).sort(sortByOrder);
+
+        const formattedChapters = languageChapters.map((chapter) => {
+          const chapterUnits = (
+            unitsByChapter.get(chapter._id.toString()) ?? []
+          ).sort(sortByOrder);
+
+          const formattedUnits = chapterUnits.map((unit) => {
+            const unitLessons = (
+              lessonsByUnit.get(unit._id.toString()) ?? []
+            ).sort(sortByOrder);
+
+            const formattedLessons = unitLessons.map((lesson) => {
+              const lessonExercises = (
+                exercisesByLesson.get(lesson._id.toString()) ?? []
+              ).sort(sortByOrder);
+
+              const formattedExercises = lessonExercises.map((exercise) => ({
+                _id: exercise._id,
+                type: exercise.type,
+                instruction: exercise.instruction,
+                sourceText: exercise.sourceText,
+                sourceLanguage: exercise.sourceLanguage,
+                targetLanguage: exercise.targetLanguage,
+                correctAnswer: exercise.correctAnswer,
+                options: exercise.options,
+                isNewWord: exercise.isNewWord,
+                audioUrl: exercise.audioUrl,
+                neutralAnswerImage: exercise.neutralAnswerImage,
+                badAnswerImage: exercise.badAnswerImage,
+                correctAnswerImage: exercise.correctAnswerImage,
+                isActive: exercise.isActive,
+                order: exercise.order,
+                educationContent: (exercise as any).educationContent ?? null,
+              }));
 
               return {
-                id: chapter._id,
-                title: chapter.title,
-                description: chapter.description || "",
-                isPremium: chapter.isPremium || false,
-                isCompleted: isChapterCompleted,
-                isExpanded: true,
-                contentType: chapter.contentType || "lesson",
+                id: lesson._id,
+                title: lesson.title,
+                chapterId: lesson.chapterId,
+                unitId: lesson.unitId,
+                description: lesson.description || "",
+                isPremium: lesson.isPremium || false,
+                isCompleted: completedLessonIds.has(lesson._id.toString()),
+                imageUrl: lesson.imageUrl || "",
+                xpReward: lesson.xpReward || 10,
+                order: lesson.order || 10,
                 moralLesson: chapter.moralLesson || null,
                 miniGame: chapter.miniGame || null,
-                units: formattedUnits,
+                storyPages: lesson.storyPages || [],
+                storyMetadata: lesson.storyMetadata || null,
+                exercises: formattedExercises,
               };
-            })
-          );
+            });
 
-          const chapterCount = formattedChapters.length;
-          const unitCount = formattedChapters.reduce((acc, chapter) => {
-            return acc + (chapter.units?.length ?? 0);
-          }, 0);
-          const lessonCount = formattedChapters.reduce((acc, chapter) => {
-            const lessonsInChapter = chapter.units?.reduce((unitAcc, unit) => {
-              return unitAcc + (unit.lessons?.length ?? 0);
-            }, 0);
-            return acc + (lessonsInChapter ?? 0);
-          }, 0);
+            return {
+              id: unit._id,
+              title: unit.title,
+              description: unit.description || "",
+              isPremium: unit.isPremium || false,
+              isCompleted: completedUnitIds.has(unit._id.toString()),
+              color: unit.color || "bg-[#ff2dbd]",
+              isExpanded: true,
+              imageUrl: unit.imageUrl || "",
+              lessons: formattedLessons,
+            };
+          });
 
           return {
-            _id: language._id,
-            name: language.name,
-            nativeName: language.nativeName ?? "",
-            imageUrl: language.imageUrl,
-            baseLanguage: language.baseLanguage,
-            flag: language.flag,
-            isActive: language.isActive ?? true,
-            category: language.category ?? "language_learning",
-            themeMetadata: language.themeMetadata ?? normalizeThemeMetadata(),
-            isCompleted: isLanguageCompleted,
-            userCount: userCountMap[language._id.toString()] || 0,
-            stats: {
-              chapters: chapterCount,
-              units: unitCount,
-              lessons: lessonCount,
-            },
-            chapters: formattedChapters,
+            id: chapter._id,
+            title: chapter.title,
+            description: chapter.description || "",
+            isPremium: chapter.isPremium || false,
+            isCompleted: completedChapterIds.has(chapter._id.toString()),
+            isExpanded: true,
+            contentType: chapter.contentType || "lesson",
+            moralLesson: chapter.moralLesson || null,
+            miniGame: chapter.miniGame || null,
+            units: formattedUnits,
           };
-        })
-      );
+        });
+
+        const chapterCount = formattedChapters.length;
+        const unitCount = formattedChapters.reduce((acc, chapter) => {
+          return acc + (chapter.units?.length ?? 0);
+        }, 0);
+        const lessonCount = formattedChapters.reduce((acc, chapter) => {
+          const lessonsInChapter = chapter.units?.reduce((unitAcc, unit) => {
+            return unitAcc + (unit.lessons?.length ?? 0);
+          }, 0);
+          return acc + (lessonsInChapter ?? 0);
+        }, 0);
+
+        return {
+          _id: language._id,
+          name: language.name,
+          nativeName: language.nativeName ?? "",
+          imageUrl: language.imageUrl,
+          baseLanguage: language.baseLanguage,
+          flag: language.flag,
+          locale: language.locale ?? DEFAULT_LOCALE,
+          isActive: language.isActive ?? true,
+          category: language.category ?? "language_learning",
+          themeMetadata: language.themeMetadata ?? normalizeThemeMetadata(),
+          isCompleted: isLanguageCompleted,
+          userCount: userCountMap[language._id.toString()] || 0,
+          stats: {
+            chapters: chapterCount,
+            units: unitCount,
+            lessons: lessonCount,
+          },
+          chapters: formattedChapters,
+        };
+      });
 
       return NextResponse.json(
         {

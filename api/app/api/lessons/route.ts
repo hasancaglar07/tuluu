@@ -54,6 +54,97 @@ export interface UserProgressType {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const STRUCTURE_CACHE_TTL_MS = 3 * 60 * 1000;
+
+type LanguageStructureCacheValue = {
+  expiresAt: number;
+  chapters: any[];
+  units: any[];
+  lessons: any[];
+  exercises: any[];
+};
+
+const DEFAULT_VALUE_POINTS = {
+  patience: 0,
+  gratitude: 0,
+  kindness: 0,
+  honesty: 0,
+  sharing: 0,
+  mercy: 0,
+  justice: 0,
+  respect: 0,
+};
+
+const DEFAULT_DAILY_LIMITS = {
+  minutesAllowed: 0,
+  minutesUsed: 0,
+  lastResetAt: null as Date | null,
+};
+
+const DEFAULT_PARENTAL_CONTROLS = {
+  enabled: false,
+  guardianContact: "",
+};
+
+const globalForLanguageStructureCache = globalThis as typeof globalThis & {
+  _languageStructureCache?: Map<string, LanguageStructureCacheValue>;
+};
+
+const languageStructureCache =
+  globalForLanguageStructureCache._languageStructureCache ?? new Map();
+
+globalForLanguageStructureCache._languageStructureCache =
+  languageStructureCache;
+
+const getCachedLanguageStructure = async (languageId: string) => {
+  const now = Date.now();
+  const cached = languageStructureCache.get(languageId);
+
+  if (cached && cached.expiresAt > now) {
+    return {
+      chapters: cached.chapters,
+      units: cached.units,
+      lessons: cached.lessons,
+      exercises: cached.exercises,
+    };
+  }
+
+  const [chapters, units, lessons, exercises] = await Promise.all([
+    Chapter.find({ languageId })
+      .select(
+        "_id title isPremium imageUrl order description contentType moralLesson miniGame"
+      )
+      .sort({ order: 1 })
+      .lean(),
+    Unit.find({ languageId })
+      .select("_id chapterId title description isPremium color imageUrl order")
+      .sort({ order: 1 })
+      .lean(),
+    Lesson.find({ languageId, isActive: true })
+      .select(
+        "_id title chapterId unitId description isPremium imageUrl xpReward order storyPages storyMetadata"
+      )
+      .sort({ order: 1 })
+      .lean(),
+    Exercise.find({ languageId, isActive: true })
+      .select(
+        "_id lessonId type instruction sourceText sourceLanguage targetLanguage correctAnswer options isNewWord audioUrl neutralAnswerImage badAnswerImage correctAnswerImage isActive order educationContent mediaPack hoverHint answerAudioUrl ttsVoiceId autoRevealMilliseconds"
+      )
+      .sort({ order: 1 })
+      .lean(),
+  ]);
+
+  languageStructureCache.set(languageId, {
+    expiresAt: now + STRUCTURE_CACHE_TTL_MS,
+    chapters,
+    units,
+    lessons,
+    exercises,
+  });
+
+  return { chapters, units, lessons, exercises };
+};
 /**
  * @swagger
  * /api/lessons:
@@ -597,37 +688,10 @@ export async function GET(req: NextRequest) {
 
     if (!languageId) {
       return NextResponse.json(
-        { error: "language not found " },
-        { status: 500 }
+        { error: "languageId is required" },
+        { status: 400 }
       );
     }
-    const lesson = await Lesson.getFirstLessonByLanguage(languageId);
-
-    await UserProgress.findOneAndUpdate(
-      {
-        userId,
-        languageId,
-        "currentLesson.lessonId": { $exists: false },
-      },
-      {
-        $set: {
-          currentLesson: {
-            lessonId: lesson?._id,
-            progress: 0,
-            lastAccessed: new Date(),
-          },
-        },
-      },
-      { new: true }
-    );
-
-    const userCountStats = await UserProgress.getUserCountPerLanguage();
-
-    // Step 2: Convert stats array to a dictionary for fast lookup
-    const userCountMap = userCountStats.reduce((acc, lang) => {
-      acc[lang.languageId] = lang.userCount;
-      return acc;
-    }, {} as Record<string, number>);
 
     const normalizeThemeMetadata = (metadata?: {
       islamicContent?: boolean;
@@ -649,215 +713,261 @@ export async function GET(req: NextRequest) {
       themeMetadata: normalizeThemeMetadata(language.themeMetadata),
     });
 
-    const languagesFromDb = await Language.find().lean();
-    const languages = languagesFromDb.map(normalizeLanguage);
+    const [languageDoc, progressDoc, structure] = await Promise.all([
+      Language.findById(languageId)
+        .select(
+          "_id name imageUrl baseLanguage nativeName flag isActive category themeMetadata"
+        )
+        .lean(),
+      UserProgress.findOne({ userId, languageId })
+        .select(
+          "isCompleted completedChapters completedUnits completedLessons currentLesson valuePoints dailyLimits parentalControls"
+        )
+        .lean(),
+      getCachedLanguageStructure(languageId),
+    ]);
 
-    // Get all UserProgress for user and languages
-    const userProgressList = await UserProgress.find({
-      userId: userId,
-      languageId: { $in: languages.map((lang) => lang._id) },
-    }).lean();
+    if (!languageDoc) {
+      return NextResponse.json({ error: "Language not found" }, { status: 404 });
+    }
 
-    const normalizeProgress = (progress: any) => ({
-      ...progress,
-      valuePoints: {
-        patience: 0,
-        gratitude: 0,
-        kindness: 0,
-        honesty: 0,
-        sharing: 0,
-        mercy: 0,
-        justice: 0,
-        respect: 0,
-        ...(progress?.valuePoints ?? {}),
-      },
-      dailyLimits: {
-        minutesAllowed: progress?.dailyLimits?.minutesAllowed ?? 0,
-        minutesUsed: progress?.dailyLimits?.minutesUsed ?? 0,
-        lastResetAt: progress?.dailyLimits?.lastResetAt ?? null,
-      },
-      parentalControls: {
-        enabled: progress?.parentalControls?.enabled ?? false,
-        guardianContact: progress?.parentalControls?.guardianContact ?? "",
-      },
-    });
-    const normalizedProgressList = userProgressList.map(normalizeProgress);
+    const { chapters, units, lessons, exercises } = structure;
+    const sortByOrder = (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0);
 
-    // Define the type for progressMap
-
-    const progressMap: Record<string, UserProgressType> = {};
-    normalizedProgressList.forEach((progress) => {
-      progressMap[progress.languageId] = progress as UserProgressType;
+    const unitsByChapter = new Map<string, any[]>();
+    units.forEach((unit) => {
+      const key = unit.chapterId.toString();
+      if (!unitsByChapter.has(key)) {
+        unitsByChapter.set(key, []);
+      }
+      unitsByChapter.get(key)?.push(unit);
     });
 
-    const lessons = await Promise.all(
-      languages.map(async (language) => {
-        const progress = progressMap[language._id.toString()];
+    const lessonsByUnit = new Map<string, any[]>();
+    lessons.forEach((lessonItem) => {
+      const key = lessonItem.unitId.toString();
+      if (!lessonsByUnit.has(key)) {
+        lessonsByUnit.set(key, []);
+      }
+      lessonsByUnit.get(key)?.push(lessonItem);
+    });
 
-        const isLanguageCompleted = progress?.isCompleted || false;
+    const exercisesByLesson = new Map<string, any[]>();
+    exercises.forEach((exercise) => {
+      const key = exercise.lessonId.toString();
+      if (!exercisesByLesson.has(key)) {
+        exercisesByLesson.set(key, []);
+      }
+      exercisesByLesson.get(key)?.push(exercise);
+    });
 
-        const chapters = await Chapter.find({ languageId: language._id });
+    const completedChapterIds = new Set(
+      (progressDoc?.completedChapters ?? []).map((item: any) =>
+        item.chapterId?.toString()
+      )
+    );
+    const completedUnitIds = new Set(
+      (progressDoc?.completedUnits ?? []).map((item: any) =>
+        item.unitId?.toString()
+      )
+    );
+    const completedLessonIds = new Set(
+      (progressDoc?.completedLessons ?? []).map((item: any) =>
+        item.lessonId?.toString()
+      )
+    );
 
-        const formattedChapters = await Promise.all(
-          chapters.map(async (chapter) => {
-            const isChapterCompleted =
-              progress?.completedChapters?.some(
-                (item: { chapterId: string }) =>
-                  item.chapterId === chapter._id.toString()
-              ) || false;
+    const chapterById = new Map<string, any>();
+    chapters.forEach((chapter) => {
+      chapterById.set(chapter._id.toString(), chapter);
+    });
 
-            const units = await Unit.find({ chapterId: chapter._id });
+    const unitById = new Map<string, any>();
+    units.forEach((unit) => {
+      unitById.set(unit._id.toString(), unit);
+    });
 
-            const formattedUnits = await Promise.all(
-              units.map(async (unit) => {
-                const isUnitCompleted =
-                  progress?.completedUnits?.some(
-                    (item: { unitId: string }) =>
-                      item.unitId === unit._id.toString()
-                  ) || false;
+    const lessonById = new Map<string, any>();
+    lessons.forEach((lessonItem) => {
+      lessonById.set(lessonItem._id.toString(), lessonItem);
+    });
 
-                const lessons = await Lesson.find({
-                  unitId: unit._id,
-                  isActive: true,
-                  // isTest: { $ne: true },
-                });
+    const formattedChapters = chapters.map((chapter) => {
+      const chapterUnits = (
+        unitsByChapter.get(chapter._id.toString()) ?? []
+      ).sort(sortByOrder);
 
-                const formattedLessons = await Promise.all(
-                  // await Promise.all here, since lessons.map is async
-                  lessons.map(async (lesson) => {
-                    const isLessonCompleted =
-                      progress?.completedLessons?.some(
-                        (item: { lessonId: string }) =>
-                          item.lessonId === lesson._id.toString()
-                      ) || false;
+      const formattedUnits = chapterUnits.map((unit) => {
+        const unitLessons = (
+          lessonsByUnit.get(unit._id.toString()) ?? []
+        ).sort(sortByOrder);
+        const formattedLessons = unitLessons.map((lessonItem) => {
+          const lessonExercises = (
+            exercisesByLesson.get(lessonItem._id.toString()) ?? []
+          ).sort(sortByOrder);
 
-                const exercises = await Exercise.find({
-                  lessonId: lesson._id,
-                  isActive: true,
-                });
-                    const formattedExercises = exercises.map((exercise) => ({
-                      _id: exercise._id,
-                      type: exercise.type,
-                      instruction: exercise.instruction,
-                      sourceText: exercise.sourceText,
-                      sourceLanguage: exercise.sourceLanguage,
-                      targetLanguage: exercise.targetLanguage,
-                      correctAnswer: exercise.correctAnswer,
-                      options: exercise.options,
-                      isNewWord: exercise.isNewWord,
-                      audioUrl: exercise.audioUrl,
-                      neutralAnswerImage: exercise.neutralAnswerImage,
-                      badAnswerImage: exercise.badAnswerImage,
-                      correctAnswerImage: exercise.correctAnswerImage,
-                      isActive: exercise.isActive,
-                      order: exercise.order,
-                      educationContent: (exercise as any).educationContent ?? null,
-                      mediaPack: (exercise as any).mediaPack ?? null,
-                      hoverHint: (exercise as any).hoverHint ?? null,
-                      answerAudioUrl: (exercise as any).answerAudioUrl ?? "",
-                      ttsVoiceId: (exercise as any).ttsVoiceId ?? "",
-                      autoRevealMilliseconds:
-                        (exercise as any).autoRevealMilliseconds ?? null,
-                    }));
+          const formattedExercises = lessonExercises.map((exercise) => ({
+            _id: exercise._id,
+            type: exercise.type,
+            instruction: exercise.instruction,
+            sourceText: exercise.sourceText,
+            sourceLanguage: exercise.sourceLanguage,
+            targetLanguage: exercise.targetLanguage,
+            correctAnswer: exercise.correctAnswer,
+            options: exercise.options,
+            isNewWord: exercise.isNewWord,
+            audioUrl: exercise.audioUrl,
+            neutralAnswerImage: exercise.neutralAnswerImage,
+            badAnswerImage: exercise.badAnswerImage,
+            correctAnswerImage: exercise.correctAnswerImage,
+            isActive: exercise.isActive,
+            order: exercise.order,
+            educationContent: (exercise as any).educationContent ?? null,
+            mediaPack: (exercise as any).mediaPack ?? null,
+            hoverHint: (exercise as any).hoverHint ?? null,
+            answerAudioUrl: (exercise as any).answerAudioUrl ?? "",
+            ttsVoiceId: (exercise as any).ttsVoiceId ?? "",
+            autoRevealMilliseconds:
+              (exercise as any).autoRevealMilliseconds ?? null,
+          }));
 
-                    return {
-                      _id: lesson._id,
-                      title: lesson.title,
-                      chapterId: lesson.chapterId,
-                      unitId: lesson.unitId,
-                      description: lesson.description || "",
-                      isPremium: lesson.isPremium || false,
-                      isCompleted: isLessonCompleted,
-                      imageUrl: lesson.imageUrl || "",
-                      xpReward: lesson.xpReward || 10,
-                      order: lesson.order || 10,
-                      moralLesson: chapter.moralLesson || null,
-                      miniGame: chapter.miniGame || null,
-                      storyPages: lesson.storyPages || [],
-                      storyMetadata: lesson.storyMetadata || null,
-                      exercises: formattedExercises,
-                    };
-                  })
-                );
-
-                return {
-                  _id: unit._id,
-                  title: unit.title,
-                  description: unit.description || "",
-                  isPremium: unit.isPremium || false,
-                  isCompleted: isUnitCompleted,
-                  color: unit.color || "bg-[#ff2dbd]",
-                  isExpanded: true,
-                  imageUrl: unit.imageUrl || "",
-                  order: unit.order || 0,
-                  lessons: formattedLessons,
-                };
-              })
-            );
-
-            return {
-              _id: chapter._id,
-              title: chapter.title,
-              isPremium: chapter.isPremium || false,
-              isCompleted: isChapterCompleted,
-              isExpanded: true,
-              imageUrl: chapter.imageUrl || "",
-              order: chapter.order || 0,
-              description: chapter.description,
-              contentType: chapter.contentType || "lesson",
-              moralLesson: chapter.moralLesson || null,
-              miniGame: chapter.miniGame || null,
-              units: formattedUnits,
-            };
-          })
-        );
+          return {
+            _id: lessonItem._id,
+            title: lessonItem.title,
+            chapterId: lessonItem.chapterId,
+            unitId: lessonItem.unitId,
+            description: lessonItem.description || "",
+            isPremium: lessonItem.isPremium || false,
+            isCompleted: completedLessonIds.has(lessonItem._id.toString()),
+            imageUrl: lessonItem.imageUrl || "",
+            xpReward: lessonItem.xpReward || 10,
+            order: lessonItem.order || 10,
+            moralLesson: chapter.moralLesson || null,
+            miniGame: chapter.miniGame || null,
+            storyPages: lessonItem.storyPages || [],
+            storyMetadata: lessonItem.storyMetadata || null,
+            exercises: formattedExercises,
+          };
+        });
 
         return {
-          _id: language._id,
-          name: language.name,
-          imageUrl: language.imageUrl,
-          baseLanguage: language.baseLanguage,
-          nativeName: language.nativeName,
-          flag: language.flag,
-          isCompleted: isLanguageCompleted,
-          isActive: language.isActive,
-          category: language.category,
-          themeMetadata: language.themeMetadata,
-          userCount: userCountMap[language._id.toString()] || 0,
-          chapters: formattedChapters,
+          _id: unit._id,
+          title: unit.title,
+          description: unit.description || "",
+          isPremium: unit.isPremium || false,
+          isCompleted: completedUnitIds.has(unit._id.toString()),
+          color: unit.color || "bg-[#ff2dbd]",
+          isExpanded: true,
+          imageUrl: unit.imageUrl || "",
+          order: unit.order || 0,
+          lessons: formattedLessons,
         };
-      })
-    );
+      });
 
-    const specificLanguage = lessons.find(
-      (lang) => lang._id.toString() === languageId
-    );
+      return {
+        _id: chapter._id,
+        title: chapter.title,
+        isPremium: chapter.isPremium || false,
+        isCompleted: completedChapterIds.has(chapter._id.toString()),
+        isExpanded: true,
+        imageUrl: chapter.imageUrl || "",
+        order: chapter.order || 0,
+        description: chapter.description,
+        contentType: chapter.contentType || "lesson",
+        moralLesson: chapter.moralLesson || null,
+        miniGame: chapter.miniGame || null,
+        units: formattedUnits,
+      };
+    });
 
-    const lessonsForLanguage = specificLanguage
-      ? specificLanguage.chapters.flatMap((chapter) =>
-          chapter.units.flatMap((unit) => unit.lessons)
-        )
-      : [];
+    const progressCurrentLessonId =
+      progressDoc?.currentLesson?.lessonId?.toString() ?? null;
 
-    const currentProgressData = await UserProgress.getCurrentProgressData(
-      userId,
-      languageId
-    );
+    let currentLesson = progressCurrentLessonId
+      ? lessonById.get(progressCurrentLessonId) ?? null
+      : null;
 
-    const filterChapters = lessons.filter(
-      (l) => l._id.toString() === languageId
+    if (!currentLesson) {
+      for (const chapter of chapters) {
+        const chapterUnits =
+          unitsByChapter.get(chapter._id.toString())?.sort(sortByOrder) ?? [];
+
+        for (const unit of chapterUnits) {
+          const unitLessons =
+            lessonsByUnit.get(unit._id.toString())?.sort(sortByOrder) ?? [];
+
+          const firstUncompleted = unitLessons.find(
+            (lessonItem) => !completedLessonIds.has(lessonItem._id.toString())
+          );
+
+          if (firstUncompleted) {
+            currentLesson = firstUncompleted;
+            break;
+          }
+        }
+
+        if (currentLesson) {
+          break;
+        }
+      }
+    }
+
+    if (!currentLesson) {
+      currentLesson = lessons[0] ?? null;
+    }
+
+    const currentUnit = currentLesson
+      ? unitById.get(currentLesson.unitId?.toString()) ?? null
+      : units[0] ?? null;
+
+    const currentChapter = currentUnit
+      ? chapterById.get(currentUnit.chapterId?.toString()) ?? null
+      : chapters[0] ?? null;
+
+    const normalizedValuePoints = {
+      ...DEFAULT_VALUE_POINTS,
+      ...(progressDoc?.valuePoints ?? {}),
+    };
+
+    const normalizedDailyLimits = {
+      ...DEFAULT_DAILY_LIMITS,
+      ...(progressDoc?.dailyLimits ?? {}),
+    };
+
+    const normalizedParentalControls = {
+      ...DEFAULT_PARENTAL_CONTROLS,
+      ...(progressDoc?.parentalControls ?? {}),
+    };
+
+    const normalizedLanguage = normalizeLanguage(languageDoc);
+    const specificLanguage = {
+      _id: normalizedLanguage._id,
+      name: normalizedLanguage.name,
+      imageUrl: normalizedLanguage.imageUrl,
+      baseLanguage: normalizedLanguage.baseLanguage,
+      nativeName: normalizedLanguage.nativeName,
+      flag: normalizedLanguage.flag,
+      isCompleted: progressDoc?.isCompleted || false,
+      isActive: normalizedLanguage.isActive,
+      category: normalizedLanguage.category,
+      themeMetadata: normalizedLanguage.themeMetadata,
+      chapters: formattedChapters,
+    };
+
+    const lessonsForLanguage = formattedChapters.flatMap((chapter) =>
+      chapter.units.flatMap((unit) => unit.lessons)
     );
 
     return NextResponse.json(
       {
-        chapters: filterChapters[0].chapters,
+        chapters: specificLanguage.chapters,
         lessonContents: lessonsForLanguage,
-        currentChapter: currentProgressData?.currentChapter,
-        currentUnit: currentProgressData?.currentUnit,
-        currentLesson: currentProgressData?.currentLesson,
-        valuePoints: currentProgressData?.valuePoints,
-        dailyLimits: currentProgressData?.dailyLimits,
-        parentalControls: currentProgressData?.parentalControls,
+        currentChapter: currentChapter,
+        currentUnit: currentUnit,
+        currentLesson: currentLesson,
+        valuePoints: normalizedValuePoints,
+        dailyLimits: normalizedDailyLimits,
+        parentalControls: normalizedParentalControls,
         language: {
           _id: specificLanguage?._id,
           name: specificLanguage?.name,

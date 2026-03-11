@@ -44,6 +44,8 @@ const UnitSchema = new Schema(
 
 // 2. Add Indexes
 UnitSchema.index({ chapterId: 1, languageId: 1 });
+UnitSchema.index({ chapterId: 1, order: 1, isActive: 1 });
+UnitSchema.index({ languageId: 1, order: 1, isActive: 1 });
 
 // 3. Add Statics
 UnitSchema.statics.findByChapter = function (chapterId: string) {

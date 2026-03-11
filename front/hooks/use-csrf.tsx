@@ -10,6 +10,18 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
+const useApiProxy =
+  process.env.NEXT_PUBLIC_USE_API_PROXY === "true" ||
+  (typeof process.env.NEXT_PUBLIC_USE_API_PROXY === "undefined" &&
+    process.env.NODE_ENV === "development");
+
+const CSRF_URL =
+  useApiProxy
+    ? "/_api/api/csrf"
+    : `${
+        process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || ""
+      }/api/csrf`;
+
 interface CSRFState {
   token: string | null;
   isLoading: boolean;
@@ -39,12 +51,9 @@ export function useCSRF() {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + "/api/csrf",
-        {
-          withCredentials: true, // Include cookies
-        }
-      );
+      const response = await axios.get(CSRF_URL, {
+        withCredentials: true, // Include cookies
+      });
 
       if (response.data.success) {
         setState({

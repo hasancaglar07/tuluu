@@ -170,7 +170,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
           toast.error(
             intl.formatMessage({
               id: "shop.error.fetch",
-              defaultMessage: "Failed to load shop data",
+              defaultMessage: "Mağaza verileri yüklenemedi",
             })
           );
         }
@@ -179,7 +179,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         toast.error(
           intl.formatMessage({
             id: "shop.error.network",
-            defaultMessage: "Network error. Please try again.",
+            defaultMessage: "Ağ hatası. Lütfen tekrar deneyin.",
           })
         );
       } finally {
@@ -214,7 +214,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       if (response.data.success) {
         return response.data;
       } else {
-        throw new Error(response.data.error || "Failed to update gems");
+        throw new Error(response.data.error || "Elmaslar güncellenemedi");
       }
     } catch (error) {
       console.error("Error updating gems:", error);
@@ -242,7 +242,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       if (response.data.success) {
         return response.data;
       } else {
-        throw new Error(response.data.error || "Failed to update hearts");
+        throw new Error(response.data.error || "Kalpler güncellenemedi");
       }
     } catch (error) {
       console.error("Error updating hearts:", error);
@@ -286,7 +286,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         return response.data;
       } else {
         throw new Error(
-          response.data.error || "Failed to create purchase record"
+          response.data.error || "Satın alma kaydı oluşturulamadı"
         );
       }
     } catch (error) {
@@ -309,7 +309,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
           {
             id: "shop.hearts.max.reached",
             defaultMessage:
-              "You already have the maximum number of hearts ({max})!",
+              "Zaten maksimum kalp sayısına ({max}) ulaştın!",
           },
           { max: maxHearts }
         )
@@ -325,7 +325,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
           {
             id: "shop.hearts.partial.allowed",
             defaultMessage:
-              "You can only purchase {allowed} more hearts to reach your maximum of {max}.",
+              "Maksimum {max} kalbe ulaşmak için yalnızca {allowed} kalp daha alabilirsin.",
           },
           { allowed: allowedPurchase, max: maxHearts }
         )
@@ -337,7 +337,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.hearts.disabled",
-          defaultMessage: "Heart purchases are currently disabled",
+          defaultMessage: "Kalp satın alma şu anda kapalı",
         })
       );
       return;
@@ -359,7 +359,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         toast.success(
           intl.formatMessage({
             id: "shop.hearts.purchase.success",
-            defaultMessage: "Hearts purchased successfully!",
+            defaultMessage: "Kalpler başarıyla satın alındı!",
           })
         );
 
@@ -373,7 +373,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         toast.error(
           intl.formatMessage({
             id: "shop.hearts.purchase.error",
-            defaultMessage: "Failed to purchase hearts. Please try again.",
+            defaultMessage: "Kalpler satın alınamadı. Lütfen tekrar deneyin.",
           })
         );
       }
@@ -381,7 +381,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.insufficient.gems",
-          defaultMessage: "Insufficient gems for this purchase",
+          defaultMessage: "Bu satın alma için yeterli elmas yok",
         })
       );
     }
@@ -395,7 +395,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.gems.disabled",
-          defaultMessage: "Gem purchases are currently disabled",
+          defaultMessage: "Elmas satın alma şu anda kapalı",
         })
       );
       return;
@@ -405,18 +405,18 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.payments.disabled",
-          defaultMessage: "Payments are currently disabled",
+          defaultMessage: "Ödeme işlemleri şu anda kapalı",
         })
       );
       return;
     }
 
-    const queryParams = new URLSearchParams({
-      type: "gems",
-      gemsAmount: gemsAmount.toString(),
-      currency: shopSettings.currencies.defaultCurrency,
-      testMode: shopSettings.general.testMode.toString(),
-    });
+      const queryParams = new URLSearchParams({
+        type: "gems",
+        gemsAmount: gemsAmount.toString(),
+        currency: shopSettings.currencies.defaultCurrency,
+        testMode: shopSettings.general.testMode.toString(),
+      });
 
     router.push(`/payment?${queryParams.toString()}`);
   };
@@ -429,7 +429,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.payments.disabled",
-          defaultMessage: "Payments are currently disabled",
+          defaultMessage: "Ödeme işlemleri şu anda kapalı",
         })
       );
       return;
@@ -461,7 +461,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
             {
               id: "shop.hearts.partial.allowed",
               defaultMessage:
-                "You can only purchase {allowed} more hearts to reach your maximum of {max}.",
+                "Maksimum {max} kalbe ulaşmak için yalnızca {allowed} kalp daha alabilirsin.",
             },
             { allowed: allowedPurchase, max: maxHearts }
           )
@@ -485,7 +485,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         toast.success(
           intl.formatMessage({
             id: "shop.item.purchase.success",
-            defaultMessage: "Item purchased successfully!",
+            defaultMessage: "Ürün başarıyla satın alındı!",
           })
         );
         setIsPurchasing(false);
@@ -502,7 +502,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         toast.error(
           intl.formatMessage({
             id: "shop.insufficient.currency",
-            defaultMessage: "Insufficient currency for this purchase",
+            defaultMessage: "Bu satın alma için yetersiz bakiye",
           })
         );
       }
@@ -511,7 +511,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.purchase.error",
-          defaultMessage: "Failed to complete purchase. Please try again.",
+          defaultMessage: "Satın alma tamamlanamadı. Lütfen tekrar deneyin.",
         })
       );
     } finally {
@@ -527,7 +527,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.upgradeToPremium",
-          defaultMessage: "Get premium access to add gems for free",
+          defaultMessage: "Elmasları ücretsiz eklemek için Premium erişim al",
         })
       );
       return;
@@ -543,7 +543,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.gems.limit.exceeded",
-          defaultMessage: "You can't add more than 1000 gems at once.",
+          defaultMessage: "Tek seferde 1000'den fazla elmas ekleyemezsin.",
         })
       );
       return;
@@ -560,7 +560,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
         intl.formatMessage(
           {
             id: "shop.gems.added",
-            defaultMessage: "Gems added successfully!",
+            defaultMessage: "Elmaslar başarıyla eklendi!",
           },
           { amount: actualAmount }
         )
@@ -570,7 +570,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
       toast.error(
         intl.formatMessage({
           id: "shop.gems.add.error",
-          defaultMessage: "Failed to add gems. Please try again.",
+          defaultMessage: "Elmas eklenemedi. Lütfen tekrar deneyin.",
         })
       );
     }
@@ -584,7 +584,7 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
           <p className="text-gray-600">
             {intl.formatMessage({
               id: "shop.loading",
-              defaultMessage: "Loading shop...",
+              defaultMessage: "Mağaza yükleniyor...",
             })}
           </p>
         </div>
@@ -643,13 +643,13 @@ export default function Shop({ subscription }: { subscription: Subscription }) {
             <h3 className="font-bold text-yellow-800 mb-2">
               {intl.formatMessage({
                 id: "shop.test.mode",
-                defaultMessage: "Test Mode Active",
+                defaultMessage: "Test Modu Etkin",
               })}
             </h3>
             <div className="text-sm text-yellow-700 space-y-1">
-              <p>Company: {shopSettings.general.companyName}</p>
-              <p>Default Currency: {shopSettings.currencies.defaultCurrency}</p>
-              <p>Heart Cost: {shopSettings.currencies.hearts.gemsCost} gems</p>
+              <p>Şirket: {shopSettings.general.companyName}</p>
+              <p>Varsayılan Para Birimi: {shopSettings.currencies.defaultCurrency}</p>
+              <p>Kalp Bedeli: {shopSettings.currencies.hearts.gemsCost} elmas</p>
             </div>
           </div>
         )}

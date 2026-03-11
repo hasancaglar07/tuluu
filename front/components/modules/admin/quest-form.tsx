@@ -53,11 +53,11 @@ import axios from "axios";
 const questFormSchema = z.object({
   title: z
     .string()
-    .min(3, { message: "Title must be at least 3 characters" })
+    .min(3, { message: "Başlık en az 3 karakter olmalı" })
     .max(100),
   description: z
     .string()
-    .min(10, { message: "Description must be at least 10 characters" })
+    .min(10, { message: "Açıklama en az 10 karakter olmalı" })
     .max(500),
   type: z.enum([
     "daily",
@@ -67,9 +67,9 @@ const questFormSchema = z.object({
     "achievement",
     "custom",
   ]),
-  goal: z.string().min(3, { message: "Goal must be at least 3 characters" }),
+  goal: z.string().min(3, { message: "Hedef en az 3 karakter olmalı" }),
   rewardType: z.enum(["xp", "gems", "badge"]),
-  rewardValue: z.string().min(1, { message: "Reward value is required" }),
+  rewardValue: z.string().min(1, { message: "Ödül değeri zorunludur" }),
   targetSegment: z.enum(["all", "free", "premium"]),
   dateRange: z.object({
     from: z.date(),
@@ -122,6 +122,34 @@ export function QuestForm({
   const watchedValues = form.watch();
   const { getToken } = useAuth();
 
+  const getQuestTypeLabel = (type?: string) => {
+    switch (type) {
+      case "daily":
+        return "Günlük";
+      case "weekly":
+        return "Haftalık";
+      case "event":
+        return "Etkinlik";
+      case "custom":
+        return "Özel";
+      default:
+        return type || "Özel";
+    }
+  };
+
+  const getTargetSegmentLabel = (segment?: string) => {
+    switch (segment) {
+      case "all":
+        return "Tüm kullanıcılar";
+      case "free":
+        return "Ücretsiz";
+      case "premium":
+        return "Premium";
+      default:
+        return segment || "Tüm kullanıcılar";
+    }
+  };
+
   // Handle form submission
   async function handleSubmit(data: QuestFormValues) {
     try {
@@ -157,8 +185,8 @@ export function QuestForm({
         isVisible: data.isVisible,
         // Map sendNotifications to other fields as needed
         notes: data.sendNotifications
-          ? "Notifications enabled"
-          : "Notifications disabled",
+          ? "Bildirimler açık"
+          : "Bildirimler kapalı",
       };
 
       const token = await getToken();
@@ -191,7 +219,7 @@ export function QuestForm({
       const result = response.data;
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to save quest");
+        throw new Error(result.error || "Görev kaydedilemedi");
       }
 
       // Transform the response data to match Quest type
@@ -210,15 +238,17 @@ export function QuestForm({
 
       // Show success message
       toast.success(
-        isEditing ? "Quest updated successfully" : "Quest created successfully"
+        isEditing
+          ? "Görev başarıyla güncellendi"
+          : "Görev başarıyla oluşturuldu"
       );
 
       // Call onSubmit to close dialog
       onSubmit();
     } catch (error) {
-      console.error("Error saving quest:", error);
+      console.error("Görev kaydetme hatası:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to save quest"
+        error instanceof Error ? error.message : "Görev kaydedilemedi"
       );
     } finally {
       setIsSubmitting(false);
@@ -228,8 +258,8 @@ export function QuestForm({
   return (
     <Tabs value={previewTab} onValueChange={setPreviewTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="form">Form</TabsTrigger>
-        <TabsTrigger value="preview">Preview</TabsTrigger>
+        <TabsTrigger value="form">Form Alanları</TabsTrigger>
+        <TabsTrigger value="preview">Önizleme</TabsTrigger>
       </TabsList>
       <TabsContent value="form" className="mt-4">
         <Form {...form}>
@@ -245,15 +275,15 @@ export function QuestForm({
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Quest Title</FormLabel>
+                      <FormLabel>Görev Başlığı</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="e.g., Daily XP Challenge"
+                          placeholder="örn. Günlük XP Görevi"
                           {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        A short, catchy title for your quest.
+                        Görevin için kısa ve dikkat çekici bir başlık.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -266,16 +296,16 @@ export function QuestForm({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>Açıklama</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Describe what users need to do to complete this quest"
+                          placeholder="Kullanıcıların görevi tamamlamak için ne yapması gerektiğini açıklayın"
                           className="min-h-[100px]"
                           {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        Clearly explain the quest objectives and benefits.
+                        Görevin hedeflerini ve faydalarını net şekilde açıklayın.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -289,25 +319,25 @@ export function QuestForm({
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Quest Type</FormLabel>
+                        <FormLabel>Görev Türü</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select type" />
+                              <SelectValue placeholder="Tür seçin" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="daily">Daily</SelectItem>
-                            <SelectItem value="weekly">Weekly</SelectItem>
-                            <SelectItem value="event">Event</SelectItem>
-                            <SelectItem value="custom">Custom</SelectItem>
+                            <SelectItem value="daily">Günlük</SelectItem>
+                            <SelectItem value="weekly">Haftalık</SelectItem>
+                            <SelectItem value="event">Etkinlik</SelectItem>
+                            <SelectItem value="custom">Özel</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormDescription>
-                          The type determines frequency and visibility.
+                          Tür, sıklığı ve görünürlüğü belirler.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -320,24 +350,24 @@ export function QuestForm({
                     name="targetSegment"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Target Users</FormLabel>
+                        <FormLabel>Hedef Kullanıcılar</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select target" />
+                              <SelectValue placeholder="Hedef kitle seçin" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="all">All Users</SelectItem>
-                            <SelectItem value="free">Free</SelectItem>
+                            <SelectItem value="all">Tüm Kullanıcılar</SelectItem>
+                            <SelectItem value="free">Ücretsiz</SelectItem>
                             <SelectItem value="premium">Premium</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormDescription>
-                          Which users should see this quest.
+                          Bu görevi hangi kullanıcıların göreceği.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -351,12 +381,12 @@ export function QuestForm({
                   name="goal"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Quest Goal</FormLabel>
+                      <FormLabel>Görev Hedefi</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Earn 50 XP" {...field} />
+                        <Input placeholder="örn. 50 XP kazan" {...field} />
                       </FormControl>
                       <FormDescription>
-                        What users need to achieve to complete the quest.
+                        Kullanıcıların görevi tamamlamak için ulaşması gereken hedef.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -371,7 +401,7 @@ export function QuestForm({
                   name="dateRange"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Quest Duration</FormLabel>
+                      <FormLabel>Görev Süresi</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -392,7 +422,7 @@ export function QuestForm({
                                   format(field.value.from, "LLL dd, y")
                                 )
                               ) : (
-                                <span>Pick a date range</span>
+                                <span>Tarih aralığı seçin</span>
                               )}
                             </Button>
                           </FormControl>
@@ -407,7 +437,7 @@ export function QuestForm({
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        The start and end dates for the quest.
+                        Görevin başlangıç ve bitiş tarihleri.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -421,24 +451,24 @@ export function QuestForm({
                     name="rewardType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Reward Type</FormLabel>
+                        <FormLabel>Ödül Türü</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select reward type" />
+                              <SelectValue placeholder="Ödül türü seçin" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="xp">XP Points</SelectItem>
-                            <SelectItem value="gems">Gems</SelectItem>
-                            <SelectItem value="badge">Badge</SelectItem>
+                            <SelectItem value="xp">XP Puanı</SelectItem>
+                            <SelectItem value="gems">Elmas</SelectItem>
+                            <SelectItem value="badge">Rozet</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormDescription>
-                          Type of reward users will receive.
+                          Kullanıcıların alacağı ödül türü.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -451,21 +481,21 @@ export function QuestForm({
                     name="rewardValue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Reward Value</FormLabel>
+                        <FormLabel>Ödül Değeri</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={
                               form.watch("rewardType") === "badge"
-                                ? "e.g., Master Linguist"
-                                : "e.g., 50"
+                                ? "örn. Usta Dilci"
+                                : "örn. 50"
                             }
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
                           {form.watch("rewardType") === "badge"
-                            ? "Name of the badge"
-                            : "Amount of reward"}
+                            ? "Rozet adı"
+                            : "Ödül miktarı"}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -481,9 +511,9 @@ export function QuestForm({
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
-                          <FormLabel>Visibility</FormLabel>
+                          <FormLabel>Görünürlük</FormLabel>
                           <FormDescription>
-                            Make this quest visible to users
+                            Bu görevi kullanıcılara görünür yap
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -503,9 +533,9 @@ export function QuestForm({
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
-                          <FormLabel>Notifications</FormLabel>
+                          <FormLabel>Bildirimler</FormLabel>
                           <FormDescription>
-                            Send notifications to users about this quest
+                            Bu görev hakkında kullanıcılara bildirim gönder
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -529,7 +559,7 @@ export function QuestForm({
                 onClick={onSubmit}
                 disabled={isSubmitting}
               >
-                Cancel
+                İptal
               </Button>
               <Button
                 type="submit"
@@ -539,7 +569,7 @@ export function QuestForm({
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isEditing ? "Update Quest" : "Create Quest"}
+                {isEditing ? "Görevi Güncelle" : "Görev Oluştur"}
               </Button>
             </div>
           </form>
@@ -552,9 +582,9 @@ export function QuestForm({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-lg">
-                  {watchedValues.title || "Quest Title"}
+                  {watchedValues.title || "Görev Başlığı"}
                 </h3>
-                <Badge className="bg-green-500">Preview</Badge>
+                <Badge className="bg-green-500">Önizleme</Badge>
                 {watchedValues.type && (
                   <Badge
                     variant="outline"
@@ -568,8 +598,7 @@ export function QuestForm({
                         : "border-orange-500 text-orange-700"
                     }
                   >
-                    {watchedValues.type.charAt(0).toUpperCase() +
-                      watchedValues.type.slice(1)}
+                    {getQuestTypeLabel(watchedValues.type)}
                   </Badge>
                 )}
                 {!watchedValues.isVisible && (
@@ -577,13 +606,13 @@ export function QuestForm({
                     variant="outline"
                     className="border-gray-500 text-gray-700"
                   >
-                    Hidden
+                    Gizli
                   </Badge>
                 )}
               </div>
               <p className="text-sm text-muted-foreground mb-4">
                 {watchedValues.description ||
-                  "Quest description will appear here"}
+                  "Görev açıklaması burada görünecek"}
               </p>
             </div>
             <TooltipProvider>
@@ -595,7 +624,7 @@ export function QuestForm({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>
-                    This is a preview of how your quest will appear to users
+                    Bu, görevin kullanıcılara nasıl görüneceğinin önizlemesidir.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -604,30 +633,30 @@ export function QuestForm({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p className="text-xs text-muted-foreground">Goal</p>
+              <p className="text-xs text-muted-foreground">Hedef</p>
               <p className="text-sm font-medium">
-                {watchedValues.goal || "Quest goal"}
+                {watchedValues.goal || "Görev hedefi"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Reward</p>
+              <p className="text-xs text-muted-foreground">Ödül</p>
               <p className="text-sm font-medium">
                 {watchedValues.rewardType === "xp" &&
                   `${watchedValues.rewardValue || "0"} XP`}
                 {watchedValues.rewardType === "gems" &&
-                  `${watchedValues.rewardValue || "0"} Gems`}
+                  `${watchedValues.rewardValue || "0"} Elmas`}
                 {watchedValues.rewardType === "badge" &&
-                  `Badge: ${watchedValues.rewardValue || "Name"}`}
+                  `Rozet: ${watchedValues.rewardValue || "İsim"}`}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Target</p>
-              <p className="text-sm font-medium capitalize">
-                {watchedValues.targetSegment || "All users"}
+              <p className="text-xs text-muted-foreground">Hedef Kitle</p>
+              <p className="text-sm font-medium">
+                {getTargetSegmentLabel(watchedValues.targetSegment)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Duration</p>
+              <p className="text-xs text-muted-foreground">Süre</p>
               <p className="text-sm font-medium flex items-center gap-1">
                 <CalendarIcon className="h-3 w-3" />
                 {watchedValues.dateRange?.from &&
@@ -637,7 +666,7 @@ export function QuestForm({
                     {format(watchedValues.dateRange.to, "MMM d, yyyy")}
                   </>
                 ) : (
-                  "Date range"
+                  "Tarih aralığı"
                 )}
               </p>
             </div>
@@ -645,7 +674,7 @@ export function QuestForm({
 
           <div className="pt-4 border-t">
             <h4 className="text-sm font-medium mb-2">
-              How it will appear to users:
+              Kullanıcılara nasıl görünecek:
             </h4>
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
@@ -663,39 +692,39 @@ export function QuestForm({
                       </div>
                       <div>
                         <h5 className="font-medium">
-                          {watchedValues.title || "Quest Title"}
+                          {watchedValues.title || "Görev Başlığı"}
                         </h5>
                         <p className="text-xs text-muted-foreground">
                           {watchedValues.dateRange?.from &&
                           watchedValues.dateRange?.to ? (
                             <>
-                              Ends {format(watchedValues.dateRange.to, "MMM d")}
+                              Bitiş {format(watchedValues.dateRange.to, "MMM d")}
                             </>
                           ) : (
-                            "Duration"
+                            "Süre"
                           )}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Reward</p>
+                      <p className="text-xs text-muted-foreground">Ödül</p>
                       <p className="text-sm font-medium">
                         {watchedValues.rewardType === "xp" &&
                           `${watchedValues.rewardValue || "0"} XP`}
                         {watchedValues.rewardType === "gems" &&
-                          `${watchedValues.rewardValue || "0"} Gems`}
-                        {watchedValues.rewardType === "badge" && `Badge`}
+                          `${watchedValues.rewardValue || "0"} Elmas`}
+                        {watchedValues.rewardType === "badge" && `Rozet`}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm">
-                      {watchedValues.description || "Quest description"}
+                      {watchedValues.description || "Görev açıklaması"}
                     </p>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div className="bg-[#58cc02] h-2.5 rounded-full w-0"></div>
                     </div>
-                    <p className="text-xs text-right">0% complete</p>
+                    <p className="text-xs text-right">%0 tamamlandı</p>
                   </div>
                 </CardContent>
               </Card>
@@ -741,13 +770,13 @@ export function QuestForm({
                         </svg>
                       )}
                     </div>
-                    <h5 className="font-medium">Notification Preview</h5>
+                    <h5 className="font-medium">Bildirim Önizlemesi</h5>
                     <p className="text-sm text-muted-foreground">
                       {watchedValues.sendNotifications
-                        ? `Users will be notified about "${
-                            watchedValues.title || "this quest"
+                        ? `Kullanıcılar "${
+                            watchedValues.title || "bu görev"
                           }"`
-                        : "Notifications are disabled for this quest"}
+                        : "Bu görev için bildirimler kapalı"}
                     </p>
                   </div>
                 </CardContent>

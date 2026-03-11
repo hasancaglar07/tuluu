@@ -40,7 +40,7 @@ interface ReportData {
  */
 const generateEmailTemplate = (reportData: ReportData, userEmail?: string) => {
   const formatDate = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString("en-US", {
+    return new Date(timestamp).toLocaleString("tr-TR", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -59,7 +59,7 @@ const generateEmailTemplate = (reportData: ReportData, userEmail?: string) => {
 
   return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="tr">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">

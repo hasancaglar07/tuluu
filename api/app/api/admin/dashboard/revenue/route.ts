@@ -2,6 +2,28 @@ import { authGuard } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
+const DASHBOARD_REVENUE_CACHE_TTL_MS = 60 * 1000;
+
+type RevenuePayload = {
+  amount: number;
+  percentageChange: number;
+  trend: "up" | "down" | "neutral";
+  simulated?: boolean;
+};
+
+type RevenueCacheValue = {
+  expiresAt: number;
+  payload: RevenuePayload;
+};
+
+const globalForRevenueCache = globalThis as typeof globalThis & {
+  _dashboardRevenueCache?: Map<string, RevenueCacheValue>;
+};
+
+const dashboardRevenueCache =
+  globalForRevenueCache._dashboardRevenueCache ?? new Map();
+globalForRevenueCache._dashboardRevenueCache = dashboardRevenueCache;
+
 // Initialize Stripe lazily to avoid build-time errors
 function getStripe() {
   const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder";
@@ -50,6 +72,12 @@ export async function GET() {
     if (auth instanceof NextResponse) {
       return auth; // early return on unauthorized or forbidden
     }
+    const nowTs = Date.now();
+    const cached = dashboardRevenueCache.get("monthly");
+    if (cached && cached.expiresAt > nowTs) {
+      return NextResponse.json(cached.payload);
+    }
+
     // Get start and end of current month
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
@@ -59,33 +87,33 @@ export async function GET() {
 
     // Get all successful payments for the current month
     const stripe = getStripe();
-    const charges = await stripe.charges.list({
-      created: {
-        gte: Math.floor(startOfMonth.getTime() / 1000),
-        lte: Math.floor(endOfMonth.getTime() / 1000),
-      },
-      limit: 100,
-    });
-
-    // Calculate total revenue
-    const revenue = charges.data.reduce((sum: number, charge: any) => {
-      return sum + charge.amount / 100; // Convert from cents to dollars
-    }, 0);
-
-    // Get last month's revenue for comparison
     const startOfLastMonth = new Date(startOfMonth);
     startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1);
 
     const endOfLastMonth = new Date(startOfMonth);
     endOfLastMonth.setSeconds(endOfLastMonth.getSeconds() - 1);
 
-    const lastMonthCharges = await stripe.charges.list({
-      created: {
-        gte: Math.floor(startOfLastMonth.getTime() / 1000),
-        lte: Math.floor(endOfLastMonth.getTime() / 1000),
-      },
-      limit: 100,
-    });
+    const [charges, lastMonthCharges] = await Promise.all([
+      stripe.charges.list({
+        created: {
+          gte: Math.floor(startOfMonth.getTime() / 1000),
+          lte: Math.floor(endOfMonth.getTime() / 1000),
+        },
+        limit: 100,
+      }),
+      stripe.charges.list({
+        created: {
+          gte: Math.floor(startOfLastMonth.getTime() / 1000),
+          lte: Math.floor(endOfLastMonth.getTime() / 1000),
+        },
+        limit: 100,
+      }),
+    ]);
+
+    // Calculate total revenue
+    const revenue = charges.data.reduce((sum: number, charge: any) => {
+      return sum + charge.amount / 100; // Convert from cents to dollars
+    }, 0);
 
     const lastMonthRevenue = lastMonthCharges.data.reduce((sum: number, charge: any) => {
       return sum + charge.amount / 100;
@@ -95,12 +123,19 @@ export async function GET() {
       revenue,
       lastMonthRevenue
     );
-
-    return NextResponse.json({
+    const payload: RevenuePayload = {
       amount: revenue,
       percentageChange,
-      trend: percentageChange >= 0 ? "up" : "down",
+      trend:
+        percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "neutral",
+    };
+
+    dashboardRevenueCache.set("monthly", {
+      expiresAt: nowTs + DASHBOARD_REVENUE_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error fetching revenue data:", error);
 
@@ -115,7 +150,8 @@ export async function GET() {
     return NextResponse.json({
       amount: revenue,
       percentageChange,
-      trend: percentageChange >= 0 ? "up" : "down",
+      trend:
+        percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "neutral",
       simulated: true, // Flag to indicate this is simulated data
     });
   }

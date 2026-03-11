@@ -93,8 +93,8 @@ export function SubscriptionPlansTable() {
 
       setPlans(response.data.data.plans);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      toast.error("Failed to load subscription plans");
+      setError(err instanceof Error ? err.message : "Bir hata oluştu");
+      toast.error("Abonelik planları yüklenemedi");
     } finally {
       setIsLoading(false);
     }
@@ -126,11 +126,11 @@ export function SubscriptionPlansTable() {
       );
 
       toast.success(
-        `Plan ${!plan.active ? "activated" : "deactivated"} successfully`
+        `Plan başarıyla ${!plan.active ? "etkinleştirildi" : "pasife alındı"}`
       );
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to delete plan";
+        err instanceof Error ? err.message : "Plan silinemedi";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -186,7 +186,7 @@ export function SubscriptionPlansTable() {
       toast.success("Plan deleted successfully");
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to delete plan";
+        err instanceof Error ? err.message : "Plan silinemedi";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -239,7 +239,7 @@ export function SubscriptionPlansTable() {
         setPlans([...plans, savedPlan.plan]);
       }
 
-      toast(`Plan ${currentPlan.id ? "updated" : "created"} successfully`);
+      toast(`Plan başarıyla ${currentPlan.id ? "güncellendi" : "oluşturuldu"}`);
     } catch (err) {
       const error = err as AxiosError<{
         message?: string;
@@ -256,7 +256,7 @@ export function SubscriptionPlansTable() {
           }
         });
       } else {
-        toast.error(message || "Failed to delete language.");
+        toast.error(message || "Plan kaydedilemedi.");
       }
     } finally {
       setIsLoading(false);
@@ -266,7 +266,7 @@ export function SubscriptionPlansTable() {
   if (isLoading) {
     return (
       <div className="flex justify-center p-4">
-        Loading subscription plans...
+        Abonelik planları yükleniyor...
       </div>
     );
   }
@@ -274,9 +274,9 @@ export function SubscriptionPlansTable() {
   if (error) {
     return (
       <div className="flex flex-col items-center p-4">
-        <p className="text-red-500 mb-2">Error: {error}</p>
+        <p className="text-red-500 mb-2">Hata: {error}</p>
         <Button disabled={isLoading} onClick={fetchSubscriptionPlans}>
-          Retry
+          Tekrar Dene
         </Button>
       </div>
     );
@@ -287,7 +287,7 @@ export function SubscriptionPlansTable() {
       <div className="flex justify-end mb-4">
         <Button disabled={isLoading} onClick={openNewPlanDialog}>
           <Plus className="mr-2 h-4 w-4" />
-          Add New Plan
+          Yeni Plan Ekle
         </Button>
       </div>
 
@@ -295,13 +295,13 @@ export function SubscriptionPlansTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Interval</TableHead>
-              <TableHead>Trial</TableHead>
-              <TableHead>Features</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Ad</TableHead>
+              <TableHead>Fiyat</TableHead>
+              <TableHead>Periyot</TableHead>
+              <TableHead>Deneme</TableHead>
+              <TableHead>Özellikler</TableHead>
+              <TableHead>Durum</TableHead>
+              <TableHead className="text-right">İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -321,14 +321,19 @@ export function SubscriptionPlansTable() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">
-                      {plan.billingCycle.charAt(0).toUpperCase() +
-                        plan?.billingCycle.slice(1)}
+                      {plan.billingCycle === "monthly"
+                        ? "Aylık"
+                        : plan.billingCycle === "yearly"
+                        ? "Yıllık"
+                        : plan.billingCycle === "one-time"
+                        ? "Tek Seferlik"
+                        : plan.billingCycle}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     {plan?.trialDays > 0
-                      ? `${plan.trialDays} days`
-                      : "No trial"}
+                      ? `${plan.trialDays} gün`
+                      : "Deneme yok"}
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
@@ -339,7 +344,7 @@ export function SubscriptionPlansTable() {
                       ))}
                       {plan?.features.length > 2 && (
                         <Badge variant="outline">
-                          +{plan?.features.length - 2} more
+                          +{plan?.features.length - 2} daha
                         </Badge>
                       )}
                     </div>
@@ -357,7 +362,7 @@ export function SubscriptionPlansTable() {
                             : "text-muted-foreground"
                         }
                       >
-                        {plan.active ? "Active" : "Inactive"}
+                        {plan.active ? "Aktif" : "Pasif"}
                       </span>
                     </div>
                   </TableCell>
@@ -369,11 +374,11 @@ export function SubscriptionPlansTable() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => openEditDialog(plan)}>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit Plan
+                          Planı Düzenle
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleToggleActive(plan.id)}
@@ -381,12 +386,12 @@ export function SubscriptionPlansTable() {
                           {plan.active ? (
                             <>
                               <X className="mr-2 h-4 w-4" />
-                              Deactivate
+                              Pasife Al
                             </>
                           ) : (
                             <>
                               <Check className="mr-2 h-4 w-4" />
-                              Activate
+                              Etkinleştir
                             </>
                           )}
                         </DropdownMenuItem>
@@ -396,7 +401,7 @@ export function SubscriptionPlansTable() {
                         >
                           {isLoading && <Loader2 className="animate-spin" />}
                           <Trash className="mr-2 h-4 w-4" />
-                          Delete Plan
+                          Planı Sil
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -413,27 +418,26 @@ export function SubscriptionPlansTable() {
           <DialogHeader>
             <DialogTitle>
               {currentPlan && currentPlan.name
-                ? `Edit ${currentPlan.name}`
-                : "Create New Subscription Plan"}
+                ? `${currentPlan.name} Planını Düzenle`
+                : "Yeni Abonelik Planı Oluştur"}
             </DialogTitle>
             <DialogDescription>
-              Configure the subscription plan details. Click save when
-              you&apos;re done.
+              Abonelik planı detaylarını yapılandırın. İşiniz bittiğinde kaydedin.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSavePlan}>
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="details">Basic Details</TabsTrigger>
-                <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="pricing">Pricing & Trial</TabsTrigger>
+                <TabsTrigger value="details">Temel Bilgiler</TabsTrigger>
+                <TabsTrigger value="features">Özellikler</TabsTrigger>
+                <TabsTrigger value="pricing">Fiyat & Deneme</TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4 py-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Plan Name</Label>
+                    <Label htmlFor="name">Plan Adı</Label>
                     <Input
                       id="name"
                       value={currentPlan?.name || ""}
@@ -448,7 +452,7 @@ export function SubscriptionPlansTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name">Checkout link</Label>
+                    <Label htmlFor="name">Ödeme bağlantısı</Label>
                     <Input
                       id="checkoutLink"
                       value={currentPlan?.checkoutLink || ""}
@@ -463,7 +467,7 @@ export function SubscriptionPlansTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">Açıklama</Label>
                     <Textarea
                       id="description"
                       value={currentPlan?.description || ""}
@@ -478,7 +482,7 @@ export function SubscriptionPlansTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="billingCycle">Billing Interval</Label>
+                    <Label htmlFor="billingCycle">Faturalama Periyodu</Label>
                     <select
                       id="billingCycle"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -490,9 +494,9 @@ export function SubscriptionPlansTable() {
                         })
                       }
                     >
-                      <option value="monthly">Monthly</option>
-                      <option value="yearly">Yearly</option>
-                      <option value="one-time">One-time</option>
+                      <option value="monthly">Aylık</option>
+                      <option value="yearly">Yıllık</option>
+                      <option value="one-time">Tek Seferlik</option>
                     </select>
                   </div>
 
@@ -504,14 +508,14 @@ export function SubscriptionPlansTable() {
                         setCurrentPlan({ ...currentPlan!, active: checked })
                       }
                     />
-                    <Label htmlFor="active">Active</Label>
+                    <Label htmlFor="active">Aktif</Label>
                   </div>
                 </div>
               </TabsContent>
 
               <TabsContent value="features" className="space-y-4 py-4">
                 <div className="space-y-4">
-                  <Label>Plan Features</Label>
+                  <Label>Plan Özellikleri</Label>
                   <div className="space-y-2">
                     {currentPlan?.features?.map(
                       (feature: string, index: number) => (
@@ -566,7 +570,7 @@ export function SubscriptionPlansTable() {
                       }}
                     >
                       <Plus className="mr-2 h-4 w-4" />
-                      Add Feature
+                      Özellik Ekle
                     </Button>
                   </div>
                 </div>
@@ -575,7 +579,7 @@ export function SubscriptionPlansTable() {
               <TabsContent value="pricing" className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price</Label>
+                    <Label htmlFor="price">Fiyat</Label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
                         $
@@ -598,7 +602,7 @@ export function SubscriptionPlansTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currency">Currency</Label>
+                    <Label htmlFor="currency">Para Birimi</Label>
                     <select
                       id="currency"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -619,7 +623,7 @@ export function SubscriptionPlansTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="trialDays">Trial Period (Days)</Label>
+                    <Label htmlFor="trialDays">Deneme Süresi (Gün)</Label>
                     <Input
                       id="trialDays"
                       type="number"
@@ -638,11 +642,11 @@ export function SubscriptionPlansTable() {
                 <Separator className="my-4" />
 
                 <div className="space-y-2">
-                  <Label>Regional Pricing (Coming Soon)</Label>
+                  <Label>Bölgesel Fiyatlandırma (Yakında)</Label>
                   <div className="p-4 border rounded-md bg-muted/50">
                     <p className="text-sm text-muted-foreground">
-                      Regional pricing allows you to set different prices for
-                      different regions. This feature will be available soon.
+                      Bölgesel fiyatlandırma, farklı bölgeler için farklı fiyat
+                      belirlemenizi sağlar. Bu özellik yakında aktif olacak.
                     </p>
                   </div>
                 </div>
@@ -657,11 +661,11 @@ export function SubscriptionPlansTable() {
                 className="flex-1"
                 onClick={() => setIsDialogOpen(false)}
               >
-                Cancel
+                Vazgeç
               </Button>
               <Button disabled={isLoading} className="flex-1" type="submit">
                 {isLoading && <Loader2 className="animate-spin" />}
-                Save Plan
+                Planı Kaydet
               </Button>
             </DialogFooter>
           </form>
@@ -672,10 +676,10 @@ export function SubscriptionPlansTable() {
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Subscription Plan</DialogTitle>
+            <DialogTitle>Abonelik Planını Sil</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the {currentPlan?.name} plan? This
-              action cannot be undone.
+              {currentPlan?.name} planını silmek istediğinize emin misiniz?
+              Bu işlem geri alınamaz.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -684,14 +688,14 @@ export function SubscriptionPlansTable() {
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
             <Button
               disabled={isLoading}
               variant="destructive"
               onClick={handleDeletePlan}
             >
-              Delete
+              Sil
             </Button>
           </DialogFooter>
         </DialogContent>

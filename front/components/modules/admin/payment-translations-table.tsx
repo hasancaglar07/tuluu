@@ -43,6 +43,19 @@ export function PaymentTransactionsTable() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "succeeded":
+        return "Başarılı";
+      case "pending":
+        return "Beklemede";
+      case "failed":
+        return "Başarısız";
+      default:
+        return status;
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -129,18 +142,18 @@ export function PaymentTransactionsTable() {
                     </div>
                   </td>
                   <td className="p-3 text-sm font-medium">
-                    {transaction.amount.toLocaleString("en-US", {
+                    {transaction.amount.toLocaleString("tr-TR", {
                       style: "currency",
                       currency: transaction.currency,
                     })}
                   </td>
                   <td className="p-3 text-sm">
                     <Badge className={getStatusColor(transaction.status)}>
-                      {transaction.status}
+                      {getStatusLabel(transaction.status)}
                     </Badge>
                   </td>
                   <td className="p-3 text-sm text-muted-foreground">
-                    {new Date(transaction.createdAt).toLocaleDateString()}
+                    {new Date(transaction.createdAt).toLocaleDateString("tr-TR")}
                   </td>
                 </tr>
               ))}

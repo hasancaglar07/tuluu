@@ -57,51 +57,65 @@ export function LanguagesGridView({
   };
 
   const hasActiveFilters = searchTerm.trim().length > 0 || statusFilter !== "all";
+  const activeCount = languages.filter((language) => language.isActive).length;
+  const inactiveCount = Math.max(languages.length - activeCount, 0);
 
   return (
     <>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold">
-          <FormattedMessage
-            id="admin.lessons.tabs.languages"
-            defaultMessage="Programs"
-          />
-        </h2>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold">
+            <FormattedMessage
+              id="admin.lessons.tabs.languages"
+              defaultMessage="Programlar"
+            />
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Programları tek ekrandan filtreleyin, düzenleyin ve pasife alın.
+          </p>
+        </div>
         <Button className="w-full sm:w-auto" onClick={onAddLanguage}>
           <Globe className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addLanguage"
-            defaultMessage="Add Program"
+            defaultMessage="Program Ekle"
           />
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-muted/20 p-3 sm:p-4">
-        <div className="grid gap-2 lg:grid-cols-[1fr,180px,auto]">
-          <Input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Program adı, dil veya locale ara..."
-          />
-          <select
-            value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as "all" | "active" | "inactive")
-            }
-            className="h-10 rounded-md border bg-background px-3 text-sm"
-          >
-            <option value="all">Tüm Durumlar</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Pasif</option>
-          </select>
-          <Button
-            variant="outline"
-            className="w-full lg:w-auto"
-            onClick={clearFilters}
-            disabled={!hasActiveFilters}
-          >
-            Temizle
-          </Button>
+      <div className="grid gap-3 lg:grid-cols-[1fr,auto]">
+        <div className="rounded-lg border bg-muted/20 p-3 sm:p-4">
+          <div className="mb-3 flex flex-wrap gap-2">
+            <Badge variant="outline">{languages.length} toplam program</Badge>
+            <Badge>{activeCount} aktif</Badge>
+            <Badge variant="secondary">{inactiveCount} pasif</Badge>
+          </div>
+          <div className="grid gap-2 lg:grid-cols-[1fr,180px,auto]">
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Program adı, dil veya locale ara..."
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as "all" | "active" | "inactive")
+              }
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="all">Tüm Durumlar</option>
+              <option value="active">Aktif</option>
+              <option value="inactive">Pasif</option>
+            </select>
+            <Button
+              variant="outline"
+              className="w-full lg:w-auto"
+              onClick={clearFilters}
+              disabled={!hasActiveFilters}
+            >
+              Temizle
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -110,7 +124,7 @@ export function LanguagesGridView({
           <p className="text-sm text-muted-foreground">
             <FormattedMessage
               id="admin.lessons.noLanguages.subtitle"
-              defaultMessage="Get started by adding your first language."
+              defaultMessage="İlk programı ekleyerek başlayın."
             />
           </p>
         </div>
@@ -119,12 +133,12 @@ export function LanguagesGridView({
           <p className="text-sm text-muted-foreground">Aramanıza uyan program bulunamadı.</p>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="overflow-hidden rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Program</TableHead>
-                <TableHead>Locale</TableHead>
+                <TableHead>Yerel Kod</TableHead>
                 <TableHead>Temel Dil</TableHead>
                 <TableHead>Kategori</TableHead>
                 <TableHead>Bölüm</TableHead>
@@ -159,7 +173,7 @@ export function LanguagesGridView({
                               language.category ||
                               intl.formatMessage({
                                 id: "category.undefined",
-                                defaultMessage: "Other",
+                                defaultMessage: "Diğer",
                               }),
                           })}
                         </Badge>

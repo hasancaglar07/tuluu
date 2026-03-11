@@ -68,7 +68,7 @@ export default function UserReportsDialog({
   // Function to format date
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), "MMM d, yyyy 'at' h:mm a");
+      return format(new Date(dateString), "dd.MM.yyyy HH:mm");
     } catch (error) {
       return dateString;
     }
@@ -134,30 +134,30 @@ export default function UserReportsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Flag className="h-5 w-5" />
-            User Reports
+            Kullanıcı Raporları
           </DialogTitle>
           <DialogDescription>
-            View reports submitted by or about user {user.name}.
+            {user.name} kullanıcısı hakkında veya kullanıcı tarafından gönderilen raporları görüntüleyin.
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between">
             <TabsList>
-              <TabsTrigger value="submitted">Submitted by User</TabsTrigger>
-              <TabsTrigger value="received">About User</TabsTrigger>
+              <TabsTrigger value="submitted">Kullanıcının Gönderdikleri</TabsTrigger>
+              <TabsTrigger value="received">Kullanıcı Hakkında</TabsTrigger>
             </TabsList>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder="Duruma göre filtrele" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="all">Tüm Durumlar</SelectItem>
+                <SelectItem value="open">Açık</SelectItem>
+                <SelectItem value="in_progress">İşlemde</SelectItem>
+                <SelectItem value="resolved">Çözüldü</SelectItem>
+                <SelectItem value="closed">Kapalı</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -196,11 +196,11 @@ export default function UserReportsDialog({
                   <CardFooter className="flex justify-end gap-2 pt-0">
                     <Button variant="outline" size="sm">
                       <Pencil className="h-4 w-4 mr-2" />
-                      Update Status
+                      Durumu Güncelle
                     </Button>
                     <Button variant="outline" size="sm">
                       <UserCheck className="h-4 w-4 mr-2" />
-                      Assign
+                      Ata
                     </Button>
                   </CardFooter>
                 </Card>
@@ -208,11 +208,11 @@ export default function UserReportsDialog({
             ) : (
               <div className="text-center py-8">
                 <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium">No Reports Found</h3>
+                <h3 className="text-lg font-medium">Rapor Bulunamadı</h3>
                 <p className="text-sm text-gray-500">
                   {activeTab === "submitted"
-                    ? "This user hasn't submitted any reports."
-                    : "There are no reports about this user."}
+                    ? "Bu kullanıcı henüz rapor göndermedi."
+                    : "Bu kullanıcı hakkında rapor bulunmuyor."}
                 </p>
               </div>
             )}
@@ -221,9 +221,9 @@ export default function UserReportsDialog({
           <TabsContent value="received" className="mt-4">
             <div className="text-center py-8">
               <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium">No Reports Found</h3>
+              <h3 className="text-lg font-medium">Rapor Bulunamadı</h3>
               <p className="text-sm text-gray-500">
-                There are no reports about this user.
+                Bu kullanıcı hakkında rapor bulunmuyor.
               </p>
             </div>
           </TabsContent>

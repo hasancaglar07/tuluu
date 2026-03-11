@@ -53,13 +53,13 @@ export function DeleteAccountDialog({
           <DialogTitle className="text-red-500">
             <FormattedMessage
               id="deleteAccount.title"
-              defaultMessage="Delete my account"
+              defaultMessage="Hesabımı Sil"
             />
           </DialogTitle>
           <DialogDescription>
             <FormattedMessage
               id="deleteAccount.description"
-              defaultMessage="This action is irreversible. All your data, including your progress, will be permanently deleted."
+              defaultMessage="Bu işlem geri alınamaz. İlerlemen dahil tüm verilerin kalıcı olarak silinir."
             />
           </DialogDescription>
         </DialogHeader>
@@ -69,7 +69,7 @@ export function DeleteAccountDialog({
           <p className="text-sm text-gray-500 mb-2">
             <FormattedMessage
               id="deleteAccount.confirmation.prompt"
-              defaultMessage="To confirm, please type 'DELETE' below:"
+              defaultMessage="Onaylamak için aşağıya 'SIL' yaz:"
             />
           </p>
           <input
@@ -77,7 +77,7 @@ export function DeleteAccountDialog({
             value={confirmation}
             onChange={(e) => onConfirmationChange(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="DELETE"
+            placeholder="SIL"
           />
         </div>
 
@@ -85,13 +85,13 @@ export function DeleteAccountDialog({
           <Button variant="outline" onClick={onClose}>
             <FormattedMessage
               id="deleteAccount.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
             variant="destructive"
             onClick={onDelete}
-            disabled={confirmation !== "DELETE" || isLoading}
+            disabled={confirmation !== "SIL" || isLoading}
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -100,7 +100,7 @@ export function DeleteAccountDialog({
             )}
             <FormattedMessage
               id="deleteAccount.confirm"
-              defaultMessage="Delete permanently"
+              defaultMessage="Kalıcı Olarak Sil"
             />
           </Button>
         </DialogFooter>

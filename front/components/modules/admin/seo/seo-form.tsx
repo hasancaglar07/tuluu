@@ -221,13 +221,7 @@ export default function SEOForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                      <SelectItem value="de">German</SelectItem>
-                      <SelectItem value="ja">Japanese</SelectItem>
-                      <SelectItem value="zh">Chinese</SelectItem>
-                      {/* Add more languages as needed */}
+                      <SelectItem value="tr">Türkçe</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>

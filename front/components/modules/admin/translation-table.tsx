@@ -37,12 +37,7 @@ const MOCK_TRANSLATIONS = [
     key: "quest.daily.title",
     module: "quests",
     translations: {
-      en: "Daily Quest",
-      es: "Misión diaria",
-      fr: "Quête quotidienne",
-      de: "Tägliche Quest",
-      it: "",
-      ja: "",
+      tr: "Daily Quest",
     },
   },
   {
@@ -50,12 +45,7 @@ const MOCK_TRANSLATIONS = [
     key: "shop.item.purchase",
     module: "shop",
     translations: {
-      en: "Purchase Item",
-      es: "Comprar artículo",
-      fr: "Acheter l'article",
-      de: "Artikel kaufen",
-      it: "Acquista articolo",
-      ja: "",
+      tr: "Purchase Item",
     },
   },
   {
@@ -63,12 +53,7 @@ const MOCK_TRANSLATIONS = [
     key: "lesson.complete.message",
     module: "lessons",
     translations: {
-      en: "Lesson completed!",
-      es: "¡Lección completada!",
-      fr: "Leçon terminée !",
-      de: "Lektion abgeschlossen!",
-      it: "Lezione completata!",
-      ja: "レッスン完了！",
+      tr: "Lesson completed!",
     },
   },
   {
@@ -76,12 +61,7 @@ const MOCK_TRANSLATIONS = [
     key: "settings.language.title",
     module: "settings",
     translations: {
-      en: "Language Settings",
-      es: "Configuración de idioma",
-      fr: "Paramètres de langue",
-      de: "Spracheinstellungen",
-      it: "",
-      ja: "",
+      tr: "Language Settings",
     },
   },
   {
@@ -89,12 +69,7 @@ const MOCK_TRANSLATIONS = [
     key: "user.profile.edit",
     module: "users",
     translations: {
-      en: "Edit Profile",
-      es: "Editar perfil",
-      fr: "Modifier le profil",
-      de: "Profil bearbeiten",
-      it: "Modifica profilo",
-      ja: "プロフィール編集",
+      tr: "Edit Profile",
     },
   },
   {
@@ -102,12 +77,7 @@ const MOCK_TRANSLATIONS = [
     key: "dashboard.stats.title",
     module: "dashboard",
     translations: {
-      en: "Statistics Overview",
-      es: "Resumen de estadísticas",
-      fr: "Aperçu des statistiques",
-      de: "",
-      it: "",
-      ja: "",
+      tr: "Statistics Overview",
     },
   },
   {
@@ -115,12 +85,7 @@ const MOCK_TRANSLATIONS = [
     key: "payment.success.message",
     module: "payments",
     translations: {
-      en: "Payment successful!",
-      es: "¡Pago exitoso!",
-      fr: "Paiement réussi !",
-      de: "Zahlung erfolgreich!",
-      it: "Pagamento riuscito!",
-      ja: "",
+      tr: "Payment successful!",
     },
   },
   {
@@ -128,12 +93,7 @@ const MOCK_TRANSLATIONS = [
     key: "quest.weekly.title",
     module: "quests",
     translations: {
-      en: "Weekly Challenge",
-      es: "Desafío semanal",
-      fr: "Défi hebdomadaire",
-      de: "Wöchentliche Herausforderung",
-      it: "",
-      ja: "",
+      tr: "Weekly Challenge",
     },
   },
   {
@@ -141,12 +101,7 @@ const MOCK_TRANSLATIONS = [
     key: "shop.currency.gems",
     module: "shop",
     translations: {
-      en: "Gems",
-      es: "Gemas",
-      fr: "Gemmes",
-      de: "Edelsteine",
-      it: "Gemme",
-      ja: "ジェム",
+      tr: "Gems",
     },
   },
   {
@@ -154,23 +109,13 @@ const MOCK_TRANSLATIONS = [
     key: "lesson.start.button",
     module: "lessons",
     translations: {
-      en: "Start Lesson",
-      es: "Comenzar lección",
-      fr: "Commencer la leçon",
-      de: "Lektion starten",
-      it: "Inizia lezione",
-      ja: "レッスンを開始",
+      tr: "Start Lesson",
     },
   },
 ];
 
 const MOCK_LANGUAGES = [
-  { code: "en", name: "English", isDefault: true },
-  { code: "es", name: "Spanish", isDefault: false },
-  { code: "fr", name: "French", isDefault: false },
-  { code: "de", name: "German", isDefault: false },
-  { code: "it", name: "Italian", isDefault: false },
-  { code: "ja", name: "Japanese", isDefault: false },
+  { code: "tr", name: "Türkçe", isDefault: true },
 ];
 
 interface TranslationTableProps {
@@ -334,7 +279,9 @@ export function TranslationTable({
                     const value =
                       translation.translations[
                         language.code as keyof typeof translation.translations
-                      ] || "";
+                      ] ||
+                      translation.translations.tr ||
+                      "";
                     const isEmpty = value === "";
 
                     return (

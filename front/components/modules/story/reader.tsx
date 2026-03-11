@@ -28,11 +28,6 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { m } from "framer-motion";
-import {
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
 
 interface StoryReaderProps {
   languageId?: string | null;
@@ -224,7 +219,7 @@ export function StoryReader({ languageId, bookId }: StoryReaderProps) {
       setCompletionMessage(
         intl.formatMessage({
           id: "stories.reader.completed",
-          defaultMessage: "Story completed! XP added to your progress.",
+          defaultMessage: "Hikâye tamamlandı! XP ilerlemene eklendi.",
         })
       );
     } catch (error) {
@@ -233,7 +228,7 @@ export function StoryReader({ languageId, bookId }: StoryReaderProps) {
           ?.error ||
         intl.formatMessage({
           id: "stories.reader.completeError",
-          defaultMessage: "We could not update your progress right now.",
+          defaultMessage: "İlerlemen şu anda güncellenemedi.",
         });
       setCompletionMessage(message);
     } finally {
@@ -266,20 +261,20 @@ export function StoryReader({ languageId, bookId }: StoryReaderProps) {
           <h2 className="mt-4 text-xl font-semibold text-foreground">
             {intl.formatMessage({
               id: "stories.reader.selectLibraryTitle",
-              defaultMessage: "Choose a story library",
+              defaultMessage: "Bir hikâye kütüphanesi seç",
             })}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {intl.formatMessage({
               id: "stories.reader.selectLibraryDescription",
               defaultMessage:
-                "Pick a story programme first so we can load the book for you.",
+                "Kitabı yükleyebilmemiz için önce bir hikâye programı seç.",
             })}
           </p>
           <Button className="mt-6" onClick={handleBackToLibrary}>
             {intl.formatMessage({
               id: "stories.reader.backToLibrary",
-              defaultMessage: "Back to library",
+              defaultMessage: "Kütüphaneye Dön",
             })}
           </Button>
         </CardContent>
@@ -295,20 +290,20 @@ export function StoryReader({ languageId, bookId }: StoryReaderProps) {
           <h2 className="mt-4 text-xl font-semibold text-foreground">
             {intl.formatMessage({
               id: "stories.reader.notFound",
-              defaultMessage: "Story not found",
+              defaultMessage: "Hikâye bulunamadı",
             })}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {intl.formatMessage({
               id: "stories.reader.notFoundDescription",
               defaultMessage:
-                "Please return to the library and pick another adventure.",
+                "Lütfen kütüphaneye dönüp başka bir macera seç.",
             })}
           </p>
           <Button className="mt-6" onClick={handleBackToLibrary}>
             {intl.formatMessage({
               id: "stories.reader.backToLibrary",
-              defaultMessage: "Back to library",
+              defaultMessage: "Kütüphaneye Dön",
             })}
           </Button>
         </CardContent>
@@ -326,296 +321,159 @@ export function StoryReader({ languageId, bookId }: StoryReaderProps) {
     totalPages > 0 ? (currentPageNumber / totalPages) * 100 : 0;
 
   return (
-    <div className="flex min-h-[70vh] flex-col gap-6">
-      <header className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBackToDashboard}
-              className="rounded-full border border-muted bg-white/60 px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm hover:bg-white"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {intl.formatMessage({
-                id: "stories.reader.backToDashboard",
-                defaultMessage: "Back to dashboard",
-              })}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleBackToLibrary}
-              className="rounded-full px-4 py-2 text-sm font-semibold normal-case"
-            >
-              <BookOpen className="mr-2 h-4 w-4" />
-              {intl.formatMessage({
-                id: "stories.reader.backToLibrary",
-                defaultMessage: "Back to library",
-              })}
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <m.div
-              className="h-16 w-16"
-              animate={{
-                scale: isCompleting ? [1, 1.05, 1] : 1,
-              }}
-              transition={{
-                repeat: isCompleting ? Number.POSITIVE_INFINITY : 0,
-                duration: 1.2,
-              }}
-            >
-              <CircularProgressbarWithChildren
-                value={progressPercentage}
-                strokeWidth={12}
-                styles={buildStyles({
-                  pathColor: accentColor,
-                  trailColor: "#e2e8f0",
-                  strokeLinecap: "round",
-                })}
-              >
-                <span className="text-xs font-semibold text-foreground">
-                  {totalPages > 0 ? currentPageNumber : "-"} / {totalPages || "-"}
-                </span>
-              </CircularProgressbarWithChildren>
-            </m.div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant="outline"
-                className="rounded-full border-primary-200 bg-white px-3 py-1 text-xs font-semibold text-primary-600"
-              >
-                {intl.formatMessage(
-                  {
-                    id: "stories.reader.xpReward",
-                    defaultMessage: "Reward: {xp} XP",
-                  },
-                  { xp: lesson.xpReward }
-                )}
-              </Badge>
-              {metadata?.ageBadge && (
-                <Badge className="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
-                  {metadata.ageBadge}
-                </Badge>
-              )}
-              {hasAudio && (
-                <Badge className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                  {intl.formatMessage({
-                    id: "stories.reader.audioAvailable",
-                    defaultMessage: "Page narration available",
-                  })}
-                </Badge>
-              )}
-              {metadata?.primaryLocale && (
-                <Badge
-                  variant="outline"
-                  className="rounded-full border-muted-foreground/20 px-3 py-1 text-xs font-semibold uppercase text-muted-foreground"
-                >
-                  {metadata.primaryLocale}
-                </Badge>
-              )}
-            </div>
+    <div className="flex h-full w-full flex-col bg-gray-50 overflow-hidden relative">
+      {/* HEADER */}
+      <header className="shrink-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10 w-full transition-all md:px-8">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackToLibrary}
+            className="rounded-full text-muted-foreground hover:bg-gray-100"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="hidden sm:flex flex-col ml-2 max-w-[150px] md:max-w-xs">
+             <span className="text-sm font-semibold text-foreground truncate">
+                {displayName}
+             </span>
+             <span className="text-xs text-muted-foreground truncate">
+                {intl.formatMessage({ id: "stories.reader.pageIndicator", defaultMessage: "{total} sayfanın {current}. sayfası" }, { current: totalPages > 0 ? currentPageNumber : 0, total: totalPages > 0 ? totalPages : 0 })}
+             </span>
           </div>
         </div>
 
-        <div className="mt-4 space-y-2">
-          <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-            <h1 className="text-xl font-semibold text-foreground">
-              {displayName}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {intl.formatMessage(
-                {
-                  id: "stories.reader.pageIndicator",
-                  defaultMessage: "Page {current} of {total}",
-                },
-                {
-                  current: totalPages > 0 ? currentPageNumber : 0,
-                  total: totalPages > 0 ? totalPages : 0,
-                }
-              )}
-            </p>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
+        <div className="flex-1 max-w-sm lg:max-w-md mx-4 md:mx-6">
+          <Progress value={progressPercentage} className="h-3 bg-gray-200" />
+        </div>
+
+        <div className="flex items-center gap-2">
+          {metadata?.ageBadge && (
+            <Badge className="hidden md:inline-flex rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-semibold text-primary-700">
+              {metadata.ageBadge}
+            </Badge>
+          )}
+          {hasAudio && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleAudio}
+              className="rounded-full hover:bg-gray-100 transition-colors"
+            >
+               {isAudioEnabled ? <Volume2 className="h-6 w-6 text-primary-500" /> : <VolumeX className="h-6 w-6 text-gray-400 opacity-70" />}
+            </Button>
+          )}
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col gap-6 lg:flex-row">
-        <div className="flex flex-1 flex-col gap-4">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 shadow-sm">
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 overflow-y-auto relative w-full flex flex-col bg-gray-50/50">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center p-4 sm:p-6 md:p-8 min-h-full">
+          
+          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:h-[65vh] overflow-hidden rounded-2xl md:rounded-3xl border border-gray-200 bg-white shadow-sm flex items-center justify-center">
             {currentPage ? (
-              <Image
+              <img
                 src={currentPage.imageUrl || coverImage || "/images/book.png"}
                 alt={displayName}
-                fill
-                className="bg-white object-contain"
+                className="w-full h-full object-contain p-2 md:p-6 drop-shadow-sm"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
+              <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                 {intl.formatMessage({
                   id: "stories.reader.noPage",
-                  defaultMessage: "Page not available",
+                  defaultMessage: "Sayfa mevcut değil",
                 })}
               </div>
             )}
           </div>
 
-          <ScrollArea orientation="horizontal" className="w-full">
-            <div className="flex gap-2 pb-2">
-              {storyPages.map((page, index) => {
-                const isActive = index === currentPageIndex;
-                return (
-                  <m.button
-                    key={page.pageNumber}
-                    type="button"
-                    onClick={() => setCurrentPageIndex(index)}
-                    className={`min-w-[48px] rounded-full border px-3 py-2 text-sm font-semibold ${
-                      isActive
-                        ? "border-primary-500 bg-primary-50 text-primary-700 shadow-sm"
-                        : "border-gray-200 bg-white text-muted-foreground hover:bg-muted/50"
-                    }`}
-                    whileHover={{ scale: isActive ? 1.05 : 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {page.pageNumber}
-                  </m.button>
-                );
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-
-        <aside className="w-full space-y-6 lg:max-w-sm">
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="space-y-4 text-sm text-muted-foreground">
-              <p>{lesson.description}</p>
-              <ul className="space-y-1">
-                <li>
-                  {intl.formatMessage(
-                    {
-                      id: "stories.reader.totalPages",
-                      defaultMessage: "{count} illustrated pages",
-                    },
-                    { count: totalPages }
-                  )}
-                </li>
-                {metadata?.ageBadge && (
-                  <li>
-                    {intl.formatMessage(
-                      {
-                        id: "stories.reader.ageRange",
-                        defaultMessage: "Recommended ages: {badge}",
-                      },
-                      { badge: metadata.ageBadge }
-                    )}
-                  </li>
-                )}
-              </ul>
-              {completionMessage && (
-                <p className="text-xs text-primary-600">{completionMessage}</p>
-              )}
-            </div>
+          {/* PAGE DOTS / THUMBNAILS */}
+          <div className="w-full mt-6 flex justify-center pb-8">
+             <ScrollArea className="w-full whitespace-nowrap max-w-2xl mx-auto">
+                <div className="flex w-max items-center justify-center mx-auto gap-2 pb-2 px-1">
+                  {storyPages.map((page, index) => {
+                    const isActive = index === currentPageIndex;
+                    return (
+                      <m.button
+                        key={page.pageNumber}
+                        type="button"
+                        onClick={() => setCurrentPageIndex(index)}
+                        className={`min-w-[44px] rounded-xl border-2 px-3 py-1.5 text-sm font-semibold transition-all ${
+                          isActive
+                            ? "border-primary-500 bg-primary-50 text-primary-600 scale-105 shadow-sm"
+                            : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {page.pageNumber}
+                      </m.button>
+                    );
+                  })}
+                </div>
+                <ScrollBar orientation="horizontal" className="invisible" />
+             </ScrollArea>
           </div>
-        </aside>
+        </div>
       </main>
 
-      <footer className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <Button
-              variant="secondary"
-              onClick={handlePrevPage}
-              disabled={currentPageIndex === 0}
-              className="flex-1"
-            >
-              {intl.formatMessage({
-                id: "stories.reader.previous",
-                defaultMessage: "Previous",
-              })}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleNextPage}
-              disabled={currentPageIndex >= totalPages - 1}
-              className="flex-1"
-            >
-              {intl.formatMessage({
-                id: "stories.reader.next",
-                defaultMessage: "Next",
-              })}
-            </Button>
+      {/* FOOTER */}
+      <footer className="shrink-0 bg-white border-t border-gray-200 p-4 z-10 w-full md:px-8">
+        <div className="mx-auto flex flex-col sm:flex-row max-w-4xl items-center justify-between gap-4">
+          
+          <div className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-4 order-2 sm:order-1">
+             <Button
+                variant="secondary"
+                size="lg"
+                onClick={handlePrevPage}
+                disabled={currentPageIndex === 0}
+                className="w-[48%] sm:w-[140px] uppercase font-bold text-gray-600 border-b-4 border-gray-300 active:border-b-0 active:mt-1 transition-all !mt-0 h-12"
+             >
+                {intl.formatMessage({
+                  id: "stories.reader.previous",
+                  defaultMessage: "Önceki",
+                })}
+             </Button>
+
+             {currentPageIndex >= totalPages - 1 ? (
+                <Button
+                   size="lg"
+                   onClick={handleCompleteStory}
+                   disabled={isCompleting || isCompleted}
+                   className="w-[48%] sm:w-[200px] lg:w-[250px] uppercase font-bold bg-[#58cc02] hover:bg-[#46a302] text-white border-b-4 border-[#46a302] active:border-b-0 active:translate-y-1 transition-all h-12"
+                >
+                   {isCompleted ? (
+                      intl.formatMessage({ id: "stories.reader.completedButton", defaultMessage: "Tamamlandı" })
+                   ) : isCompleting ? (
+                      "..."
+                   ) : (
+                      intl.formatMessage({ id: "stories.reader.finish", defaultMessage: "Hikâyeyi Bitir" })
+                   )}
+                </Button>
+             ) : (
+                <Button
+                   size="lg"
+                   onClick={handleNextPage}
+                   className="w-[48%] sm:w-[200px] lg:w-[250px] uppercase font-bold text-white bg-primary-500 hover:bg-primary-600 border-b-4 border-primary-600 border-x-0 border-t-0 active:border-b-0 active:translate-y-1 transition-all h-12"
+                >
+                   {intl.formatMessage({
+                     id: "stories.reader.next",
+                     defaultMessage: "Sonraki",
+                   })}
+                </Button>
+             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {hasAudio && (
-              <Button
-                variant="outline"
-                onClick={toggleAudio}
-                className="flex items-center justify-center gap-2"
-              >
-                {isAudioEnabled ? (
-                  <>
-                    <Volume2 className="h-4 w-4" />
-                    {intl.formatMessage({
-                      id: "stories.reader.audioOn",
-                      defaultMessage: "Audio playing",
-                    })}
-                  </>
-                ) : (
-                  <>
-                    <VolumeX className="h-4 w-4" />
-                    {intl.formatMessage({
-                      id: "stories.reader.audioOff",
-                      defaultMessage: "Enable audio",
-                    })}
-                  </>
-                )}
-              </Button>
-            )}
-            <Button
-              onClick={handleCompleteStory}
-              disabled={isCompleting || isCompleted}
-              className="flex items-center justify-center gap-2"
-            >
-              {isCompleted ? (
-                <>
-                  <CheckCircle2 className="h-4 w-4" />
-                  {intl.formatMessage({
-                    id: "stories.reader.completedButton",
-                    defaultMessage: "Story already completed",
-                  })}
-                </>
-              ) : isCompleting ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  {intl.formatMessage({
-                    id: "stories.reader.completing",
-                    defaultMessage: "Updating progress…",
-                  })}
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  {intl.formatMessage({
-                    id: "stories.reader.completeStory",
-                    defaultMessage: "Finish story",
-                  })}
-                </>
-              )}
-            </Button>
+          <div className="hidden sm:flex order-1 sm:order-2 items-center flex-col items-end">
+             {completionMessage ? (
+                <span className="text-sm font-semibold text-[#58cc02]">{completionMessage}</span>
+             ) : (
+                <span className="text-sm font-bold text-gray-400">
+                   {intl.formatMessage({ id: "stories.reader.xpReward", defaultMessage: "+{xp} XP" }, { xp: lesson.xpReward })}
+                </span>
+             )}
           </div>
+
         </div>
-        {!completionMessage && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            {intl.formatMessage({
-              id: "stories.reader.completeHint",
-              defaultMessage:
-                "Mark as complete once you have finished every page.",
-            })}
-          </p>
-        )}
       </footer>
       <audio ref={audioRef} hidden />
     </div>

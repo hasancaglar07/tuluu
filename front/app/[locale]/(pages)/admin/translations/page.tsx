@@ -40,12 +40,7 @@ import { LanguageManagementDialog } from "@/components/modules/admin/language-ma
 
 // Mock data for demonstration
 const MOCK_LANGUAGES = [
-  { code: "en", name: "English", isDefault: true, completionPercentage: 100 },
-  { code: "es", name: "Spanish", isDefault: false, completionPercentage: 87 },
-  { code: "fr", name: "French", isDefault: false, completionPercentage: 76 },
-  { code: "de", name: "German", isDefault: false, completionPercentage: 65 },
-  { code: "it", name: "Italian", isDefault: false, completionPercentage: 42 },
-  { code: "ja", name: "Japanese", isDefault: false, completionPercentage: 31 },
+  { code: "tr", name: "Türkçe", isDefault: true, completionPercentage: 100 },
 ];
 
 const MOCK_MODULES = [
@@ -326,16 +321,8 @@ export default function TranslationsPage() {
                 <h3 className="font-medium mb-3">Daily Quest</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs">Spanish</span>
-                    <span className="text-xs">Misión diaria</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs">French</span>
-                    <span className="text-xs">Quête quotidienne</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs">German</span>
-                    <span className="text-xs text-red-500">Missing</span>
+                    <span className="text-xs">Türkçe</span>
+                    <span className="text-xs">Günlük Görev</span>
                   </div>
                 </div>
               </Card>

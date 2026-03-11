@@ -3,6 +3,7 @@
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { FormattedMessage } from "react-intl";
 
 export default function NoExercises({ lessonId }: { lessonId: string }) {
   const router = useLocalizedRouter();
@@ -25,18 +26,20 @@ export default function NoExercises({ lessonId }: { lessonId: string }) {
         height={150}
       />
       <h2 className="text-2xl font-semibold text-center text-gray-800">
-        Aucun exercice disponible pour cette leçon.
+        <FormattedMessage id="lesson.noExercises" defaultMessage="Bu ders için mevcut alıştırma yok." />
       </h2>
-      <p className="text-center text-gray-500">
-        Cette leçon n’a pas encore d’exercices à compléter. Reviens plus tard ou
-        explore d’autres leçons.
+      <p className="text-center text-gray-500 max-w-md mx-auto">
+        <FormattedMessage 
+          id="lesson.noExercisesDesc" 
+          defaultMessage="Bu dersin henüz tamamlanacak bir alıştırması yok. Daha sonra tekrar uğra veya diğer dersleri keşfet." 
+        />
       </p>
-      <Button onClick={handleGoToDashboard} size="lg" variant="default">
-        Retour au tableau de bord
+      <Button onClick={handleGoToDashboard} size="lg" variant="default" className="mt-4 uppercase">
+        <FormattedMessage id="lesson.backToDashboard" defaultMessage="PANEL'E DÖN" />
       </Button>
 
-      <Button onClick={handleGoToAdminDashboard} size="lg" variant="secondary">
-        Créer des exercices
+      <Button onClick={handleGoToAdminDashboard} size="lg" variant="secondary" className="uppercase">
+        <FormattedMessage id="lesson.createExercises" defaultMessage="ALIŞTIRMA OLUŞTUR" />
       </Button>
     </div>
   );

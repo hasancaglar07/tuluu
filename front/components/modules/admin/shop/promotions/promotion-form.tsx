@@ -48,7 +48,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
       startDate: promotion?.startDate || "",
       endDate: promotion?.endDate || "",
       status: promotion?.status || "upcoming",
-      eligibility: promotion?.eligibility || "All users",
+      eligibility: promotion?.eligibility || "Tüm kullanıcılar",
       target: promotion?.target || null,
       shopItemIds: promotion?.shopItemIds || [],
     },
@@ -82,7 +82,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
 
       onClose()
     } catch (error) {
-      console.error("Error saving promotion:", error)
+      console.error("Promosyon kaydetme hatası:", error)
       toast.error(<FormattedMessage id="promotions.error.save-promotion" defaultMessage="Failed to save promotion" />)
     } finally {
       setIsSubmitting(false)
@@ -139,7 +139,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder="Tür seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -171,7 +171,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
                       <FormattedMessage id="promotions.form.discount" defaultMessage="Discount" />
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., 20%, $10 off" />
+                      <Input {...field} placeholder="örn. %20, $10 indirim" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -228,7 +228,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder="Durum seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -292,7 +292,7 @@ export function PromotionForm({ promotion, onClose, onPromotionCreated, onPromot
                   <FormDescription>
                     <FormattedMessage
                       id="promotions.form.eligibility.description"
-                      defaultMessage="Who can use this promotion (e.g., All users, New users only)"
+                      defaultMessage="Bu promosyonu kimler kullanabilir (örn. Tüm kullanıcılar, yalnızca yeni kullanıcılar)"
                     />
                   </FormDescription>
                   <FormMessage />

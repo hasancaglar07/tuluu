@@ -45,7 +45,7 @@ export default function UserSubscriptionDialog({
     e.preventDefault();
 
     // In a real app, you would send this data to your API
-    console.log("Subscription update:", {
+    console.log("Abonelik güncellemesi:", {
       userId: user.id,
       plan,
       duration: Number.parseInt(duration),
@@ -53,7 +53,7 @@ export default function UserSubscriptionDialog({
     });
 
     // Show success message and close dialog
-    alert("Subscription updated successfully!");
+    alert("Abonelik başarıyla güncellendi!");
     onOpenChange(false);
   };
 
@@ -63,17 +63,17 @@ export default function UserSubscriptionDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
-            Manage Subscription
+            Aboneliği Yönet
           </DialogTitle>
           <DialogDescription>
-            Update privateMetadata.subscription plan for user{" "}
+            Kullanıcı için abonelik planını güncelleyin{" "}
             {user.privateMetadata.subscription}.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
             <div className="flex items-center justify-between">
-              <span>Current Plan:</span>
+              <span>Mevcut Plan:</span>
               <Badge
                 className={
                   user.privateMetadata.subscription === "premium"
@@ -87,7 +87,7 @@ export default function UserSubscriptionDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Subscription Plan</Label>
+              <Label>Abonelik Planı</Label>
               <RadioGroup
                 value={plan}
                 onValueChange={setPlan}
@@ -96,7 +96,7 @@ export default function UserSubscriptionDialog({
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="free" id="free" />
                   <Label htmlFor="free" className="font-normal">
-                    Free
+                    Ücretsiz
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -111,16 +111,16 @@ export default function UserSubscriptionDialog({
             {plan === "premium" && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
+                  <Label htmlFor="duration">Süre</Label>
                   <Select value={duration} onValueChange={setDuration}>
                     <SelectTrigger id="duration">
-                      <SelectValue placeholder="Select duration" />
+                      <SelectValue placeholder="Süre seçin" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 month</SelectItem>
-                      <SelectItem value="3">3 months</SelectItem>
-                      <SelectItem value="6">6 months</SelectItem>
-                      <SelectItem value="12">12 months</SelectItem>
+                      <SelectItem value="1">1 ay</SelectItem>
+                      <SelectItem value="3">3 ay</SelectItem>
+                      <SelectItem value="6">6 ay</SelectItem>
+                      <SelectItem value="12">12 ay</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -128,10 +128,10 @@ export default function UserSubscriptionDialog({
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="auto-renew">
-                      Auto-renew privateMetadata.subscription
+                      Aboneliği otomatik yenile
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Automatically renew when period ends
+                      Süre bitince otomatik yenile
                     </p>
                   </div>
                   <Switch
@@ -148,13 +148,12 @@ export default function UserSubscriptionDialog({
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-yellow-800">
-                        Subscription Information
+                        Abonelik Bilgisi
                       </h3>
                       <div className="mt-2 text-sm text-yellow-700">
                         <p>
-                          This will override any existing
-                          privateMetadata.subscription. The new
-                          privateMetadata.subscription will start immediately.
+                          Bu işlem mevcut abonelik bilgisini geçersiz kılar.
+                          Yeni abonelik hemen başlar.
                         </p>
                       </div>
                     </div>
@@ -172,12 +171,12 @@ export default function UserSubscriptionDialog({
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-red-800">
-                        Downgrade Warning
+                        Düşürme Uyarısı
                       </h3>
                       <div className="mt-2 text-sm text-red-700">
                         <p>
-                          Downgrading to the free plan will immediately remove
-                          all premium features for this user.
+                          Ücretsiz plana geçiş, bu kullanıcıdaki tüm premium
+                          özellikleri anında kaldırır.
                         </p>
                       </div>
                     </div>
@@ -192,9 +191,9 @@ export default function UserSubscriptionDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              Vazgeç
             </Button>
-            <Button type="submit">Update Subscription</Button>
+            <Button type="submit">Aboneliği Güncelle</Button>
           </DialogFooter>
         </form>
       </DialogContent>

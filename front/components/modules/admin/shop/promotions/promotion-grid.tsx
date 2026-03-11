@@ -76,8 +76,8 @@ export function PromotionsGrid({
     return (
       <EmptyState
         icon={Tag}
-        title="No promotions found"
-        description="Try adjusting your search or filter criteria"
+        title="Promosyon bulunamadı"
+        description="Arama veya filtre kriterlerini değiştirerek tekrar dene"
       />
     );
   }

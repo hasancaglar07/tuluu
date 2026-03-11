@@ -81,7 +81,7 @@ export function PromotionsManagementPage() {
 
       setPromotions(response.data.promotions);
     } catch (error) {
-      console.error("Error fetching promotions:", error);
+      console.error("Promosyonlar alınırken hata:", error);
       toast.error(
         <FormattedMessage
           id="promotions.error.fetch-promotions"
@@ -108,7 +108,7 @@ export function PromotionsManagementPage() {
 
       setPromotionAnalytics(response.data.analytics);
     } catch (error) {
-      console.error("Error fetching promotion analytics:", error);
+      console.error("Promosyon analizleri alınırken hata:", error);
       toast.error(
         <FormattedMessage
           id="promotions.error.fetch-analytics"
@@ -205,8 +205,8 @@ export function PromotionsManagementPage() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <ShopHeader
-          title="Promotions & Discounts"
-          description="Create and manage special offers and promotions"
+          title="Promosyonlar ve İndirimler"
+          description="Özel teklifler ve promosyonları oluştur ve yönet"
         />
         <div className="flex gap-2">
           <Dialog
@@ -233,7 +233,7 @@ export function PromotionsManagementPage() {
                 <DialogDescription>
                   <FormattedMessage
                     id="promotions.dialog.new-promotion.description"
-                    defaultMessage="Set up a new promotion or discount for your shop items."
+                    defaultMessage="Mağaza ürünlerin için yeni bir promosyon veya indirim oluştur."
                   />
                 </DialogDescription>
               </DialogHeader>
@@ -256,23 +256,23 @@ export function PromotionsManagementPage() {
         ) : promotionAnalytics ? (
           <>
             <AnalyticsCard
-              title="Active Promotions"
+              title="Aktif Promosyonlar"
               value={promotionAnalytics.activePromotions}
             />
             <AnalyticsCard
-              title="Upcoming"
+              title="Yaklaşan"
               value={promotionAnalytics.upcomingPromotions}
             />
             <AnalyticsCard
-              title="Expired"
+              title="Süresi Dolan"
               value={promotionAnalytics.expiredPromotions}
             />
             <AnalyticsCard
-              title="Total Redemptions"
+              title="Toplam Kullanım"
               value={formatNumber(promotionAnalytics.totalRedemptions)}
             />
             <AnalyticsCard
-              title="Conversion Rate"
+              title="Dönüşüm Oranı"
               value={promotionAnalytics.conversionRate}
             />
           </>
@@ -288,11 +288,11 @@ export function PromotionsManagementPage() {
             id: "type",
             value: typeFilter,
             options: [
-              { value: "all", label: "All Types" },
-              { value: "discount", label: "Discount" },
-              { value: "bundle", label: "Bundle" },
-              { value: "seasonal", label: "Seasonal" },
-              { value: "boost", label: "Boost" },
+              { value: "all", label: "Tüm Türler" },
+              { value: "discount", label: "İndirim" },
+              { value: "bundle", label: "Paket" },
+              { value: "seasonal", label: "Sezonluk" },
+              { value: "boost", label: "Güçlendirme" },
             ],
             onChange: setTypeFilter,
           },
@@ -300,10 +300,10 @@ export function PromotionsManagementPage() {
             id: "status",
             value: statusFilter,
             options: [
-              { value: "all", label: "All Statuses" },
-              { value: "active", label: "Active" },
-              { value: "upcoming", label: "Upcoming" },
-              { value: "expired", label: "Expired" },
+              { value: "all", label: "Tüm Durumlar" },
+              { value: "active", label: "Aktif" },
+              { value: "upcoming", label: "Yaklaşan" },
+              { value: "expired", label: "Süresi Dolan" },
             ],
             onChange: setStatusFilter,
           },

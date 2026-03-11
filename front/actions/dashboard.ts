@@ -9,6 +9,7 @@ import {
 import { apiClient } from "@/lib/api-client";
 
 import { auth } from "@clerk/nextjs/server";
+import { cache } from "react";
 
 const getApiBaseUrl = () => {
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -21,19 +22,28 @@ const getApiBaseUrl = () => {
   return window.location.origin.replace(":3000", ":3001");
 };
 
+const getServerAuthToken = cache(async () => {
+  const { getToken } = await auth();
+  return getToken();
+});
+
+const getAuthHeaders = async () => {
+  const token = await getServerAuthToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
 // Get total users count and month-over-month change
 export async function getTotalUsers(): Promise<UserStatsResponse> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
+    const headers = await getAuthHeaders();
 
     const data = await apiClient.get<UserStatsResponse>(
       `${getApiBaseUrl()}/api/admin/dashboard/users`,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
 
@@ -47,16 +57,12 @@ export async function getTotalUsers(): Promise<UserStatsResponse> {
 // Get completed lessons count and month-over-month change
 export async function getCompletedLessons(): Promise<LessonStats> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
+    const headers = await getAuthHeaders();
 
     const data = await apiClient.get<LessonStats>(
       `${getApiBaseUrl()}/api/admin/dashboard/lessons`,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
 
@@ -70,16 +76,12 @@ export async function getCompletedLessons(): Promise<LessonStats> {
 // Get active quests count and month-over-month change
 export async function getActiveQuests(): Promise<QuestStats> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
+    const headers = await getAuthHeaders();
 
     const data = await apiClient.get<QuestStats>(
       `${getApiBaseUrl()}/api/admin/dashboard/quests`,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
 
@@ -93,16 +95,12 @@ export async function getActiveQuests(): Promise<QuestStats> {
 // Get monthly revenue from Stripe
 export async function getMonthlyRevenue(): Promise<RevenueStats> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
+    const headers = await getAuthHeaders();
 
     const data = await apiClient.get<RevenueStats>(
       `${getApiBaseUrl()}/api/admin/dashboard/revenue`,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
 
@@ -116,16 +114,12 @@ export async function getMonthlyRevenue(): Promise<RevenueStats> {
 // Get user activity data for the chart
 export async function getUserActivityData(): Promise<ActivityDataPoint[]> {
   try {
-    const { getToken } = await auth();
-    const token = await getToken();
+    const headers = await getAuthHeaders();
 
     const data = await apiClient.get<ActivityDataPoint[]>(
       `${getApiBaseUrl()}/api/admin/dashboard/activity`,
       {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     );
 

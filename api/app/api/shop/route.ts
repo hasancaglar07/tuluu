@@ -8,6 +8,20 @@ import connectDB from "@/lib/db/connect";
 import PaymentSettings from "@/models/PaymentSettings";
 import type { FilterQuery } from "mongoose";
 
+const SHOP_RESPONSE_CACHE_TTL_MS = 60 * 1000;
+
+type ShopCacheValue = {
+  expiresAt: number;
+  payload: unknown;
+};
+
+const globalForShopCache = globalThis as typeof globalThis & {
+  _shopResponseCache?: Map<string, ShopCacheValue>;
+};
+
+const shopResponseCache = globalForShopCache._shopResponseCache ?? new Map();
+globalForShopCache._shopResponseCache = shopResponseCache;
+
 // Define a type for lean shop item objects
 interface LeanShopItem {
   _id: string;
@@ -225,6 +239,12 @@ export async function GET(request: NextRequest) {
     const page = Number.parseInt(searchParams.get("page") || "1");
     const limit = Number.parseInt(searchParams.get("limit") || "20");
     const featuredOnly = searchParams.get("featured") === "true";
+    const cacheKey = `${category ?? "all"}|${page}|${limit}|${featuredOnly}`;
+    const nowTs = Date.now();
+    const cached = shopResponseCache.get(cacheKey);
+    if (cached && cached.expiresAt > nowTs) {
+      return NextResponse.json(cached.payload);
+    }
 
     // Build filter object
     const filter: FilterQuery<ShopItemDocument> = { status: "active" };
@@ -375,6 +395,11 @@ export async function GET(request: NextRequest) {
         },
       },
     };
+
+    shopResponseCache.set(cacheKey, {
+      expiresAt: nowTs + SHOP_RESPONSE_CACHE_TTL_MS,
+      payload: response,
+    });
 
     return NextResponse.json(response);
   } catch (error) {

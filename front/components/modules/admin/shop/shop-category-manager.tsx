@@ -114,7 +114,7 @@ export function ShopCategoryManager({
       resetForm();
       setIsCreateDialogOpen(false);
     } catch (error) {
-      console.error("Error saving category:", error);
+      console.error("Kategori kaydetme hatası:", error);
       toast.error(
         <FormattedMessage
           id="shop.error.save-category"
@@ -143,7 +143,7 @@ export function ShopCategoryManager({
         />
       );
     } catch (error) {
-      console.error("Error deleting category:", error);
+      console.error("Kategori silme hatası:", error);
       toast.error(
         <FormattedMessage
           id="shop.error.delete-category"
@@ -231,7 +231,7 @@ export function ShopCategoryManager({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="Category name"
+                  placeholder="Kategori adı"
                   required
                 />
               </div>
@@ -248,7 +248,7 @@ export function ShopCategoryManager({
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  placeholder="Category description (optional)"
+                  placeholder="Kategori açıklaması (isteğe bağlı)"
                   rows={3}
                 />
               </div>

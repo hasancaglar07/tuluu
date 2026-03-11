@@ -4,6 +4,28 @@ import UserProgress from "@/models/UserProgress";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+const USER_STATS_CACHE_TTL_MS = 60 * 1000;
+
+type UserStatsResponse = {
+  xp: number;
+  gems: number;
+  gel: number;
+  hearts: number;
+  streak: number;
+};
+
+type UserStatsCacheValue = {
+  expiresAt: number;
+  data: UserStatsResponse;
+};
+
+const globalForUserStatsCache = globalThis as typeof globalThis & {
+  _userStatsCache?: Map<string, UserStatsCacheValue>;
+};
+
+const userStatsCache = globalForUserStatsCache._userStatsCache ?? new Map();
+globalForUserStatsCache._userStatsCache = userStatsCache;
+
 /**
  * @swagger
  * /api/users/{id}:
@@ -346,33 +368,77 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const fastMode = searchParams.get("fast") === "1";
     // Check if the user is authenticated and has admin role
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const now = Date.now();
+    const cacheKey = `${id}|${fastMode ? "fast" : "full"}`;
+    const cachedStats = userStatsCache.get(cacheKey);
+    if (cachedStats && cachedStats.expiresAt > now) {
+      return NextResponse.json(cachedStats.data, { status: 200 });
+    }
+
     // Connect to the database
     await connectDB();
 
-    // Get the user from our database
-    const user = await User.findByClerkId(id);
+    const userQuery = User.findOne({ clerkId: id })
+      .select("xp gems gel hearts streak")
+      .lean();
+
+    if (fastMode) {
+      const user = await userQuery;
+      if (!user) {
+        return NextResponse.json(
+          { error: "User not found in database" },
+          { status: 404 }
+        );
+      }
+
+      const total: UserStatsResponse = {
+        xp: user.xp ?? 0,
+        gems: user.gems ?? 0,
+        gel: user.gel ?? 0,
+        hearts: user.hearts ?? 0,
+        streak: user.streak ?? 0,
+      };
+
+      userStatsCache.set(cacheKey, {
+        expiresAt: now + USER_STATS_CACHE_TTL_MS,
+        data: total,
+      });
+
+      return NextResponse.json(total, { status: 200 });
+    }
+
+    const [user, earned] = await Promise.all([
+      userQuery,
+      UserProgress.getTotalStats(id),
+    ]);
+
     if (!user) {
       return NextResponse.json(
         { error: "User not found in database" },
         { status: 404 }
       );
     }
-
-    const earned = await UserProgress.getTotalStats(userId);
     // Combine static + earned stats
-    const total = {
-      xp: user.xp + earned.totalXp,
-      gems: user.gems + earned.totalGems,
-      gel: user.gel + earned.totalGel,
-      hearts: user.hearts,
-      streak: user.streak,
+    const total: UserStatsResponse = {
+      xp: (user.xp ?? 0) + (earned.totalXp ?? 0),
+      gems: (user.gems ?? 0) + (earned.totalGems ?? 0),
+      gel: (user.gel ?? 0) + (earned.totalGel ?? 0),
+      hearts: user.hearts ?? 0,
+      streak: user.streak ?? 0,
     };
+
+    userStatsCache.set(cacheKey, {
+      expiresAt: now + USER_STATS_CACHE_TTL_MS,
+      data: total,
+    });
 
     return NextResponse.json(total, { status: 200 });
   } catch (error) {

@@ -55,8 +55,8 @@ export function RefundsTable() {
       const data = await response.data;
       setRefunds(data.refunds || []);
     } catch (err) {
-      console.error("Error fetching refunds:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
+      console.error("İadeler alınırken hata:", err);
+      setError(err instanceof Error ? err.message : "Bilinmeyen bir hata oluştu");
     } finally {
       setLoading(false);
     }
@@ -87,13 +87,28 @@ export function RefundsTable() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "succeeded":
+        return "Başarılı";
+      case "pending":
+        return "Beklemede";
+      case "failed":
+        return "Başarısız";
+      case "canceled":
+        return "İptal Edildi";
+      default:
+        return status;
+    }
+  };
+
   /**
    * Handles viewing refund details
    * @param refundId - The ID of the refund to view
    */
   const handleViewDetails = (refundId: string) => {
     // TODO: Navigate to refund details page or open modal
-    console.log("View refund details:", refundId);
+    console.log("İade detaylarını görüntüle:", refundId);
   };
 
   /**
@@ -103,9 +118,9 @@ export function RefundsTable() {
   const handleDownloadReceipt = async (refundId: string) => {
     try {
       // TODO: Implement receipt download from Stripe
-      console.log("Download receipt for refund:", refundId);
+      console.log("İade makbuzunu indir:", refundId);
     } catch (err) {
-      console.error("Error downloading receipt:", err);
+      console.error("Makbuz indirme hatası:", err);
     }
   };
 
@@ -116,7 +131,7 @@ export function RefundsTable() {
    * @returns Formatted currency string
    */
   const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("tr-TR", {
       style: "currency",
       currency: currency.toUpperCase(),
     }).format(amount / 100);
@@ -128,7 +143,7 @@ export function RefundsTable() {
    * @returns Formatted date string
    */
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+    return new Date(timestamp * 1000).toLocaleDateString("tr-TR", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -289,11 +304,11 @@ export function RefundsTable() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(refund.status)}>
-                      {refund.status}
+                      {getStatusLabel(refund.status)}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize">{refund.reason || "N/A"}</span>
+                    <span className="capitalize">{refund.reason || "Yok"}</span>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(refund.created)}

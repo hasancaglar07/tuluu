@@ -74,7 +74,7 @@ export default function AdminRoleCreation({
           `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
         avatar: user?.imageUrl || "",
         country: "US",
-        language: "en-US",
+        language: "tr-TR",
         settings: {
           preferences: {
             darkMode: false,

@@ -27,7 +27,7 @@ export function RevenueChart() {
         );
         setData(response.data.data);
       } catch (error) {
-        console.error("Error fetching revenue chart data:", error);
+        console.error("Gelir grafiği verisi alınırken hata:", error);
       } finally {
         setLoading(false);
       }
@@ -39,7 +39,7 @@ export function RevenueChart() {
   if (loading) {
     return (
       <div className="h-[300px] flex items-center justify-center">
-        <div className="animate-pulse">Loading chart...</div>
+        <div className="animate-pulse">Grafik yükleniyor...</div>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export function RevenueChart() {
                         {label}
                       </span>
                       <span className="font-bold text-muted-foreground">
-                        Revenue: ${payload[0].value}
+                        Gelir: ${payload[0].value}
                       </span>
                     </div>
                   </div>

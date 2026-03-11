@@ -5,6 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { Inter } from "next/font/google";
 import  Sidebar  from "@/components/modules/admin/sidebar";
+import AdminPrefetcher from "@/components/modules/admin/admin-prefetcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +18,7 @@ export default function AdminLayout({
 
   return (
     <div className={`${inter.className} h-screen flex`}>
+      <AdminPrefetcher />
       <div
         className={`${
           isSidebarOpen ? "w-64" : "w-20"

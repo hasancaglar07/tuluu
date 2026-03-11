@@ -43,22 +43,19 @@ export function useAudioPlayer() {
 
     const token = await getToken();
 
-    // Voice ID mapping for different languages
-    const voiceIdEn = process.env.ELEVENLABS_VOICE_ID_EN;
-    const voiceIdFr = process.env.ELEVENLABS_VOICE_ID_FR;
-    const voiceIdHi = process.env.ELEVENLABS_VOICE_ID_HI;
+    // Voice ID mapping (Turkish only)
+    const voiceIdTr =
+      process.env.ELEVENLABS_VOICE_ID_TR || process.env.ELEVENLABS_VOICE_ID;
 
     const VOICE_MAP = {
-      en: voiceIdEn,
-      fr: voiceIdFr,
-      hi: voiceIdHi,
+      tr: voiceIdTr,
     };
 
     type SupportedLang = keyof typeof VOICE_MAP;
-    const lang = exercise.sourceLanguage as string;
+    const lang = ((exercise.sourceLanguage as string) || "").toLowerCase();
 
     // Check if language is supported
-    if (!Object.keys(VOICE_MAP).includes(lang)) {
+    if (!Object.keys(VOICE_MAP).includes(lang) || !VOICE_MAP[lang as SupportedLang]) {
       console.error("Unsupported language:", lang);
       return;
     }

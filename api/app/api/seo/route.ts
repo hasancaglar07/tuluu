@@ -23,7 +23,7 @@ import { SEO } from "@/models/Seo";
  *         name: locale
  *         schema:
  *           type: string
- *           default: en
+ *           default: tr
  *         description: The locale to get SEO data for
  *     responses:
  *       200:
@@ -67,7 +67,7 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const path = url.searchParams.get("path");
-    const locale = url.searchParams.get("locale") || "en";
+    const locale = url.searchParams.get("locale") || "tr";
 
     if (!path) {
       return NextResponse.json(

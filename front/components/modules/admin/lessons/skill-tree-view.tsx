@@ -45,17 +45,7 @@ type SelectedNode =
 
 const getLanguageById = (id: string) => {
   const availableLanguages = [
-    { _id: "fr", name: "French", nativeName: "Français", flag: "🇫🇷" },
-    { _id: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
-    { _id: "es", name: "Spanish", nativeName: "Español", flag: "🇪🇸" },
-    { _id: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪" },
-    { _id: "it", name: "Italian", nativeName: "Italiano", flag: "🇮🇹" },
-    { _id: "pt", name: "Portuguese", nativeName: "Português", flag: "🇵🇹" },
-    { _id: "ja", name: "Japanese", nativeName: "日本語", flag: "🇯🇵" },
-    { _id: "zh", name: "Chinese", nativeName: "中文", flag: "🇨🇳" },
-    { _id: "ko", name: "Korean", nativeName: "한국어", flag: "🇰🇷" },
-    { _id: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺" },
-    { _id: "ar", name: "Arabic", nativeName: "العربية", flag: "🇸🇦" },
+    { _id: "tr", name: "Turkish", nativeName: "Türkçe", flag: "🇹🇷" },
   ];
 
   return (
@@ -229,17 +219,17 @@ export function SkillTreeView({
             </h2>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">
-                <FormattedMessage id="admin.lessons.baseLanguage" defaultMessage="Base:" />{" "}
+                <FormattedMessage id="admin.lessons.baseLanguage" defaultMessage="Kaynak Dil:" />{" "}
                 {getLanguageById(currentLanguage.baseLanguage).flag}{" "}
                 {getLanguageById(currentLanguage.baseLanguage).name}
               </Badge>
               <Badge variant={currentLanguage.isActive ? "default" : "secondary"}>
                 {currentLanguage.isActive ? (
-                  <FormattedMessage id="admin.lessons.status.active" defaultMessage="Active" />
+                  <FormattedMessage id="admin.lessons.status.active" defaultMessage="Aktif" />
                 ) : (
                   <FormattedMessage
                     id="admin.lessons.status.inactive"
-                    defaultMessage="Inactive"
+                    defaultMessage="Pasif"
                   />
                 )}
               </Badge>
@@ -256,14 +246,14 @@ export function SkillTreeView({
               <Edit className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.editLanguage"
-                defaultMessage="Edit Language"
+                defaultMessage="Programı Düzenle"
               />
             </Button>
             <Button className="w-full sm:w-auto" size="sm" onClick={onAddChapter}>
               <Plus className="mr-2 h-4 w-4" />
               <FormattedMessage
                 id="admin.lessons.addChapter"
-                defaultMessage="Add Chapter"
+                defaultMessage="Bölüm Ekle"
               />
             </Button>
           </div>

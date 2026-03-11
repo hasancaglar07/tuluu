@@ -1,12 +1,16 @@
 import { StoryLibrary } from "@/components/modules/story/library";
+import { getSubscription } from "@/actions/subscription";
+import MobileHeaderDashboard from "@/components/modules/header/user/mobile";
+import LeftSidebarDashboard from "@/components/modules/sidebar/user/dashboard/left";
+import RightSidebarDashboard from "@/components/modules/sidebar/user/dashboard/right";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Story Library - TULU",
+  title: "Hikaye Kütüphanesi - TULU",
   description:
-    "Browse engaging picture books tailored for your little learner.",
+    "Küçük kaşifiniz için özenle seçilmiş, eğitici ve eğlenceli hikaye kitaplarına göz atın.",
 };
 
 export default async function StoriesPage({
@@ -20,9 +24,20 @@ export default async function StoriesPage({
     ? languageParam[0]
     : languageParam;
 
+  const subscription = await getSubscription();
+
   return (
-    <section className="py-16">
-      <StoryLibrary languageId={languageId ?? null} />
-    </section>
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-white">
+      <MobileHeaderDashboard />
+      <LeftSidebarDashboard />
+      
+      <main className="flex-1 overflow-y-auto h-full p-4 md:p-8">
+        <div className="mx-auto max-w-4xl w-full">
+          <StoryLibrary languageId={languageId ?? null} />
+        </div>
+      </main>
+      
+      <RightSidebarDashboard subscription={subscription} />
+    </div>
   );
 }

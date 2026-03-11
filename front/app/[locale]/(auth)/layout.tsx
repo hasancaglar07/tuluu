@@ -14,8 +14,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const metadata: Metadata = {
-  title: "TULU - Connect page",
-  description: "An enjoyable way to learn a new language",
+  title: "TULU - Giriş ve Kayıt",
+  description: "TULU ile dil öğrenmeyi eğlenceli ve etkili hale getirin.",
   icons: {
     icon: "/images/logo_icon.png",
   },

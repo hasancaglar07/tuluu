@@ -21,7 +21,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
     <Card>
       <CardHeader>
         <CardTitle>
-          <FormattedMessage id="basicInfo.title" defaultMessage="Basic Information" />
+          <FormattedMessage id="basicInfo.title" defaultMessage="Temel Bilgiler" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -32,13 +32,13 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
               src={formik.values.avatar || "/placeholder.svg?height=80&width=80" || "/placeholder.svg"}
               width={80}
               height={80}
-              alt="Profile"
+              alt="Profil"
               className="rounded-full"
             />
           </div>
           <div className="flex-1 space-y-2">
             <Label htmlFor="avatar">
-              <FormattedMessage id="basicInfo.avatar" defaultMessage="Profile Image URL" />
+              <FormattedMessage id="basicInfo.avatar" defaultMessage="Profil Görseli URL" />
             </Label>
             <Input
               id="avatar"
@@ -46,7 +46,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
               value={formik.values.avatar}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              placeholder="https://example.com/avatar.jpg"
+              placeholder="https://ornek.com/profil.jpg"
             />
             {formik.touched.avatar && formik.errors.avatar && (
               <p className="text-sm text-red-500">{formik.errors.avatar}</p>
@@ -57,7 +57,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
         {/* Name */}
         <div className="space-y-2">
           <Label htmlFor="name">
-            <FormattedMessage id="basicInfo.name" defaultMessage="Full Name" />
+            <FormattedMessage id="basicInfo.name" defaultMessage="Ad Soyad" />
           </Label>
           <Input
             id="name"
@@ -65,7 +65,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Your full name"
+            placeholder="Ad soyadınızı girin"
           />
           {formik.touched.name && formik.errors.name && <p className="text-sm text-red-500">{formik.errors.name}</p>}
         </div>
@@ -73,7 +73,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
         {/* Bio */}
         <div className="space-y-2">
           <Label htmlFor="bio">
-            <FormattedMessage id="basicInfo.bio" defaultMessage="Bio" />
+            <FormattedMessage id="basicInfo.bio" defaultMessage="Biyografi" />
           </Label>
           <Textarea
             id="bio"
@@ -81,13 +81,13 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
             value={formik.values.bio}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Tell us about yourself"
+            placeholder="Kendinizden kısaca bahsedin"
             rows={4}
           />
           <p className="text-xs text-gray-500">
             <FormattedMessage
               id="basicInfo.bio.counter"
-              defaultMessage="{count}/500 characters"
+              defaultMessage="{count}/500 karakter"
               values={{ count: formik.values.bio.length }}
             />
           </p>
@@ -97,7 +97,7 @@ export function BasicInfoForm({ formik }: { formik: FormikProps<any> }) {
         {/* Username (read-only) */}
         <div className="space-y-2">
           <Label htmlFor="userName">
-            <FormattedMessage id="basicInfo.username" defaultMessage="Username (cannot be changed)" />
+            <FormattedMessage id="basicInfo.username" defaultMessage="Kullanıcı Adı (değiştirilemez)" />
           </Label>
           <Input id="userName" name="userName" value={formik.values.userName} readOnly disabled />
         </div>

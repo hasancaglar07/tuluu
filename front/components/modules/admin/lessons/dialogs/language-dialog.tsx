@@ -30,7 +30,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2 } from "lucide-react";
+import { CircleDot, Loader2 } from "lucide-react";
 import type { Language, NewLanguageForm } from "@/types/lessons";
 import type {
   LanguageCategory,
@@ -95,132 +95,6 @@ type ProgramTemplate = {
 };
 
 const FALLBACK_TEMPLATES: ProgramTemplate[] = [
-  {
-    id: "fr-language",
-    name: "French",
-    nativeName: "Français",
-    flag: "🇫🇷",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197560.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "beginner" },
-    baseLanguage: "fr",
-    description: "Core language-learning track for French speakers.",
-  },
-  {
-    id: "en-language",
-    name: "English",
-    nativeName: "English",
-    flag: "🇬🇧",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/9906/9906532.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "beginner" },
-    baseLanguage: "en",
-    description: "Core language-learning track for English speakers.",
-  },
-  {
-    id: "es-language",
-    name: "Spanish",
-    nativeName: "Español",
-    flag: "🇪🇸",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/10601/10601048.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "beginner" },
-    baseLanguage: "es",
-    description: "Spanish language journey with gradual vocabulary focus.",
-  },
-  {
-    id: "de-language",
-    name: "German",
-    nativeName: "Deutsch",
-    flag: "🇩🇪",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197571.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "intermediate" },
-    baseLanguage: "de",
-    description: "German practice path with grammar and conversation drills.",
-  },
-  {
-    id: "it-language",
-    name: "Italian",
-    nativeName: "Italiano",
-    flag: "🇮🇹",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197626.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "beginner" },
-    baseLanguage: "it",
-    description: "Italian vocabulary and culture lessons for beginners.",
-  },
-  {
-    id: "pt-language",
-    name: "Portuguese",
-    nativeName: "Português",
-    flag: "🇵🇹",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197463.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "beginner" },
-    baseLanguage: "pt",
-    description: "Portuguese fundamentals with pronunciation focus.",
-  },
-  {
-    id: "ja-language",
-    name: "Japanese",
-    nativeName: "日本語",
-    flag: "🇯🇵",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197604.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "intermediate" },
-    baseLanguage: "ja",
-    description: "Japanese programme covering kana, kanji, and culture.",
-  },
-  {
-    id: "zh-language",
-    name: "Chinese",
-    nativeName: "中文",
-    flag: "🇨🇳",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/5372/5372696.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "intermediate" },
-    baseLanguage: "zh",
-    description: "Mandarin lessons with tones, characters, and stories.",
-  },
-  {
-    id: "ko-language",
-    name: "Korean",
-    nativeName: "한국어",
-    flag: "🇰🇷",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197582.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "intermediate" },
-    baseLanguage: "ko",
-    description: "Hangul mastery and cultural insights for Korean learners.",
-  },
-  {
-    id: "ru-language",
-    name: "Russian",
-    nativeName: "Русский",
-    flag: "🇷🇺",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197408.png",
-    category: "language_learning",
-    themeMetadata: { ...defaultThemeMetadata(), difficultyLevel: "intermediate" },
-    baseLanguage: "ru",
-    description: "Russian cases, vocabulary and pronunciation training.",
-  },
-  {
-    id: "ar-language",
-    name: "Arabic",
-    nativeName: "العربية",
-    flag: "🇸🇦",
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/197/197569.png",
-    category: "quran_arabic",
-    themeMetadata: {
-      ...defaultThemeMetadata(),
-      islamicContent: true,
-      difficultyLevel: "intermediate",
-      moralValues: ["respect", "patience"] as MoralValue[],
-    },
-    baseLanguage: "ar",
-    description: "Arabic literacy with Qur'an recitation and tajweed focus.",
-  },
   {
     id: "tr-language",
     name: "Turkish",
@@ -356,127 +230,6 @@ const PROGRAM_TEMPLATES: Record<string, ProgramTemplate[]> = {
       description: "Empati, yardımlaşma ve adaletle sosyal becerileri geliştir.",
     },
   ],
-  en: [
-    {
-      id: "en-faith-morality",
-      name: "Faith & Character",
-      nativeName: "Faith & Character",
-      flag: "🕋",
-      imageUrl: "",
-      category: "faith_morality",
-      themeMetadata: {
-        islamicContent: true,
-        ageGroup: "kids_7-12",
-        moralValues: ["patience", "honesty", "mercy"],
-        educationalFocus: "Prophet stories, virtues and value-based mini games",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Prophetic stories and value games to nurture character.",
-    },
-    {
-      id: "en-quran-arabic",
-      name: "Qur'an & Arabic",
-      nativeName: "Qur'an & Arabic",
-      flag: "📖",
-      imageUrl: "",
-      category: "quran_arabic",
-      themeMetadata: {
-        islamicContent: true,
-        ageGroup: "kids_7-12",
-        moralValues: ["respect", "gratitude", "patience"],
-        educationalFocus: "Tajwid drills, surah memorisation and Arabic word quests",
-        difficultyLevel: "intermediate",
-      },
-      baseLanguage: "en",
-      description: "Tajwid, surah memorisation and Arabic word adventures.",
-    },
-    {
-      id: "en-math-logic",
-      name: "Math & Logic",
-      nativeName: "Math & Logic",
-      flag: "➕",
-      imageUrl: "",
-      category: "math_logic",
-      themeMetadata: {
-        islamicContent: false,
-        ageGroup: "kids_7-12",
-        moralValues: ["patience", "respect"],
-        educationalFocus: "Problem solving quests, number games and puzzles",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Number games, logic puzzles and strategy challenges.",
-    },
-    {
-      id: "en-science-discovery",
-      name: "Science & Discovery",
-      nativeName: "Science & Discovery",
-      flag: "🔭",
-      imageUrl: "",
-      category: "science_discovery",
-      themeMetadata: {
-        islamicContent: false,
-        ageGroup: "kids_7-12",
-        moralValues: ["gratitude", "respect"],
-        educationalFocus: "Nature walks, space journeys and Muslim inventors",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Explore nature, space and remarkable Muslim scientists.",
-    },
-    {
-      id: "en-language-learning",
-      name: "Language Adventures",
-      nativeName: "Language Adventures",
-      flag: "🗣️",
-      imageUrl: "",
-      category: "language_learning",
-      themeMetadata: {
-        islamicContent: false,
-        ageGroup: "kids_7-12",
-        moralValues: ["kindness", "sharing"],
-        educationalFocus: "Vocabulary stories, dialogues and empathy-driven play",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Fun storytelling and dialogue games to grow vocabulary.",
-    },
-    {
-      id: "en-mental-spiritual",
-      name: "Mind & Heart Wellness",
-      nativeName: "Mind & Heart Wellness",
-      flag: "🌿",
-      imageUrl: "",
-      category: "mental_spiritual",
-      themeMetadata: {
-        islamicContent: true,
-        ageGroup: "kids_7-12",
-        moralValues: ["patience", "mercy"],
-        educationalFocus: "Breathing exercises, dhikr-based calm and mindfulness",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Mindfulness, dhikr and breathing routines for balance.",
-    },
-    {
-      id: "en-personal-social",
-      name: "Personal & Social Skills",
-      nativeName: "Personal & Social Skills",
-      flag: "👭",
-      imageUrl: "",
-      category: "personal_social",
-      themeMetadata: {
-        islamicContent: false,
-        ageGroup: "kids_7-12",
-        moralValues: ["kindness", "sharing", "justice"],
-        educationalFocus: "Empathy quests, teamwork challenges and service projects",
-        difficultyLevel: "beginner",
-      },
-      baseLanguage: "en",
-      description: "Empathy, teamwork and community kindness missions.",
-    },
-  ],
 };
 
 interface LanguageDialogProps {
@@ -518,6 +271,12 @@ export function LanguageDialog({
   const intl = useIntl();
   const [activeTab, setActiveTab] = useState<"basic" | "theme">("basic");
   const [advancedMode, setAdvancedMode] = useState(false);
+  const [errors, setErrors] = useState<{
+    locale?: string;
+    name?: string;
+    nativeName?: string;
+    baseLanguage?: string;
+  }>({});
   const { locales: localeOptions, defaultLocale } = i18n;
   const selectedLocale =
     (newLanguage as Language | NewLanguageForm).locale ?? defaultLocale;
@@ -720,6 +479,49 @@ export function LanguageDialog({
     }
   }, [activeTab, advancedMode]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    setErrors({});
+    setActiveTab("basic");
+  }, [isOpen]);
+
+  const clearError = (field: "locale" | "name" | "nativeName" | "baseLanguage") => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      return { ...prev, [field]: undefined };
+    });
+  };
+
+  const handleSubmit = async () => {
+    const nextErrors: {
+      locale?: string;
+      name?: string;
+      nativeName?: string;
+      baseLanguage?: string;
+    } = {};
+
+    if (!selectedLocale?.trim()) {
+      nextErrors.locale = "Site dili seçimi zorunludur.";
+    }
+    if (!(newLanguage.name ?? "").trim()) {
+      nextErrors.name = "Program adı zorunludur.";
+    }
+    if (!(newLanguage.nativeName ?? "").trim()) {
+      nextErrors.nativeName = "Yerel ad zorunludur.";
+    }
+    if (!(newLanguage.baseLanguage ?? "").trim()) {
+      nextErrors.baseLanguage = "Kaynak dil seçimi zorunludur.";
+    }
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      setActiveTab("basic");
+      return;
+    }
+
+    await onSubmit();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[760px] max-h-[90vh] overflow-y-auto">
@@ -728,12 +530,12 @@ export function LanguageDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editLanguage"
-                defaultMessage="Edit Language"
+                defaultMessage="Programı Düzenle"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addNewLanguage"
-                defaultMessage="Add New Language"
+                defaultMessage="Yeni Program Ekle"
               />
             )}
           </DialogTitle>
@@ -741,16 +543,21 @@ export function LanguageDialog({
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.editLanguageDescription"
-                defaultMessage="Update language details."
+                defaultMessage="Program bilgilerini güncelleyin."
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addLanguageDescription"
-                defaultMessage="Add a new language to your course offerings."
+                defaultMessage="Eğitim içeriklerinize yeni bir program ekleyin."
               />
             )}
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-lg border border-dashed bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <CircleDot className="h-3.5 w-3.5" />
+          <span>Program şablonu seçebilir veya elle doldurabilirsiniz. Hızlı mod temel alanları, gelişmiş mod tema ayarlarını açar.</span>
+        </div>
 
         <div className="flex items-center justify-between rounded-lg border bg-muted/20 px-3 py-2 text-sm">
           <span>{advancedMode ? "Gelişmiş Mod" : "Hızlı Mod"}</span>
@@ -760,7 +567,7 @@ export function LanguageDialog({
             size="sm"
             onClick={() => setAdvancedMode((prev) => !prev)}
           >
-            {advancedMode ? "Hızlı Moda Dön" : "Tema/Ayarları Aç"}
+            {advancedMode ? "Hızlı Moda Dön" : "Tema Alanını Aç"}
           </Button>
         </div>
 
@@ -774,14 +581,14 @@ export function LanguageDialog({
               <TabsTrigger value="basic">
                 <FormattedMessage
                   id="admin.lessons.dialog.tabs.basic"
-                  defaultMessage="Basic Info"
+                  defaultMessage="Temel Bilgiler"
                 />
               </TabsTrigger>
               {advancedMode && (
                 <TabsTrigger value="theme">
                   <FormattedMessage
                     id="admin.lessons.dialog.tabs.theme"
-                    defaultMessage="Learning Theme"
+                    defaultMessage="Öğrenme Teması"
                   />
                 </TabsTrigger>
               )}
@@ -791,14 +598,14 @@ export function LanguageDialog({
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="language-locale">
-                    <FormattedMessage
-                      id="admin.lessons.siteLocale"
-                      defaultMessage="Site Locale"
-                    />
-                  </Label>
+                      <FormattedMessage
+                        id="admin.lessons.siteLocale"
+                        defaultMessage="Site Dili"
+                      />
+                    </Label>
                   <Select
                     value={selectedLocale}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
                       updateLanguage((state) =>
                         "chapters" in state
                           ? { ...state, locale: value }
@@ -806,12 +613,16 @@ export function LanguageDialog({
                               ...(state as NewLanguageForm),
                               locale: value,
                             }
-                      )
-                    }
+                      );
+                      clearError("locale");
+                    }}
                   >
-                    <SelectTrigger id="language-locale">
-                      <SelectValue placeholder={selectedLocale.toUpperCase()} />
-                    </SelectTrigger>
+                      <SelectTrigger
+                        id="language-locale"
+                        className={errors.locale ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                      >
+                        <SelectValue placeholder={selectedLocale.toUpperCase()} />
+                      </SelectTrigger>
                     <SelectContent>
                       {localeOptions.map(({ lang, image }) => (
                         <SelectItem key={lang} value={lang}>
@@ -830,22 +641,25 @@ export function LanguageDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
-                    <FormattedMessage
-                      id="admin.lessons.siteLocale.helper"
-                      defaultMessage="Learners browsing in this site language will see this programme."
-                    />
-                  </p>
-                </div>
-
-                {!isEdit && (
-                  <div className="grid gap-2">
-                    <Label htmlFor="program-template">
+                    <p className="text-xs text-muted-foreground">
                       <FormattedMessage
-                        id="admin.lessons.template.label"
-                        defaultMessage="Program Template"
+                        id="admin.lessons.siteLocale.helper"
+                        defaultMessage="Siteyi bu dilde kullanan öğrenciler bu programı görür."
                       />
-                    </Label>
+                    </p>
+                    {errors.locale ? (
+                      <p className="text-xs text-red-600">{errors.locale}</p>
+                    ) : null}
+                  </div>
+
+                  {!isEdit && (
+                    <div className="grid gap-2">
+                      <Label htmlFor="program-template">
+                        <FormattedMessage
+                          id="admin.lessons.template.label"
+                          defaultMessage="Program Şablonu"
+                        />
+                      </Label>
                     <Select
                       value={(newLanguage as { _id?: string })._id ?? ""}
                       onValueChange={handleTemplateSelection}
@@ -854,7 +668,7 @@ export function LanguageDialog({
                         <SelectValue
                           placeholder={intl.formatMessage({
                             id: "admin.lessons.template.placeholder",
-                            defaultMessage: "Choose a template to prefill programme details",
+                            defaultMessage: "Program detaylarını otomatik doldurmak için şablon seçin",
                           })}
                         />
                       </SelectTrigger>
@@ -874,7 +688,7 @@ export function LanguageDialog({
                                   <span className="text-xs text-muted-foreground">
                                     <FormattedMessage
                                       id="admin.lessons.template.inUse"
-                                      defaultMessage="{count, plural, one {# programme already created} other {# programmes already created}}"
+                                      defaultMessage="{count, plural, one {# program zaten oluşturulmuş} other {# program zaten oluşturulmuş}}"
                                       values={{ count: usageCount }}
                                     />
                                   </span>
@@ -891,7 +705,7 @@ export function LanguageDialog({
                     <p className="text-xs text-muted-foreground">
                       <FormattedMessage
                         id="admin.lessons.template.description"
-                        defaultMessage="Start from a curated template inspired by fikir.txt. You can adjust every field afterwards."
+                        defaultMessage="Hazır bir şablonla başlayın; tüm alanları sonradan değiştirebilirsiniz."
                       />
                     </p>
                     {selectedTemplate && (
@@ -907,32 +721,38 @@ export function LanguageDialog({
                     <Label htmlFor="language-name">
                       <FormattedMessage
                         id="admin.lessons.name"
-                        defaultMessage="Name"
+                        defaultMessage="Program Adı"
                       />
                     </Label>
                     <Input
                       id="language-name"
+                      className={errors.name ? "border-red-500 focus-visible:ring-red-500" : undefined}
                       value={newLanguage.name ?? ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         updateLanguage((state) =>
                           "chapters" in state
                             ? { ...state, name: e.target.value }
                             : { ...(state as NewLanguageForm), name: e.target.value }
-                        )
-                      }
+                        );
+                        clearError("name");
+                      }}
                     />
+                    {errors.name ? (
+                      <p className="text-xs text-red-600">{errors.name}</p>
+                    ) : null}
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="language-native-name">
                       <FormattedMessage
                         id="admin.lessons.nativeName"
-                        defaultMessage="Native Name"
+                        defaultMessage="Yerel Ad"
                       />
                     </Label>
                     <Input
                       id="language-native-name"
+                      className={errors.nativeName ? "border-red-500 focus-visible:ring-red-500" : undefined}
                       value={newLanguage.nativeName ?? ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         updateLanguage((state) =>
                           "chapters" in state
                             ? { ...state, nativeName: e.target.value }
@@ -940,15 +760,19 @@ export function LanguageDialog({
                                 ...(state as NewLanguageForm),
                                 nativeName: e.target.value,
                               }
-                        )
-                      }
+                        );
+                        clearError("nativeName");
+                      }}
                     />
+                    {errors.nativeName ? (
+                      <p className="text-xs text-red-600">{errors.nativeName}</p>
+                    ) : null}
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="language-flag">
                       <FormattedMessage
                         id="admin.lessons.flag"
-                        defaultMessage="Flag"
+                        defaultMessage="Bayrak / Emoji"
                       />
                     </Label>
                     <Input
@@ -965,7 +789,7 @@ export function LanguageDialog({
                   </div>
                   <UploadField
                     id="language-image-url"
-                    label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "image Url" })}
+                    label={intl.formatMessage({ id: "admin.lessons.imageUrl", defaultMessage: "Görsel URL" })}
                     value={newLanguage.imageUrl ?? ""}
                     onChange={(url) =>
                       updateLanguage((state) =>
@@ -984,12 +808,12 @@ export function LanguageDialog({
                     <Label htmlFor="language-base">
                       <FormattedMessage
                         id="admin.lessons.baseLanguage"
-                        defaultMessage="Base Language"
+                        defaultMessage="Kaynak Dil"
                       />
                     </Label>
                     <Select
                       value={newLanguage.baseLanguage}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
                         updateLanguage((state) =>
                           "chapters" in state
                             ? { ...state, baseLanguage: value }
@@ -997,14 +821,18 @@ export function LanguageDialog({
                                 ...(state as NewLanguageForm),
                                 baseLanguage: value,
                               }
-                        )
-                      }
+                        );
+                        clearError("baseLanguage");
+                      }}
                     >
-                      <SelectTrigger id="language-base">
+                      <SelectTrigger
+                        id="language-base"
+                        className={errors.baseLanguage ? "border-red-500 focus-visible:ring-red-500" : undefined}
+                      >
                         <SelectValue
                           placeholder={intl.formatMessage({
                             id: "admin.lessons.selectBaseLanguage",
-                            defaultMessage: "Select base language",
+                            defaultMessage: "Kaynak dil seçin",
                           })}
                         />
                       </SelectTrigger>
@@ -1033,9 +861,12 @@ export function LanguageDialog({
                     <p className="text-xs text-muted-foreground">
                       <FormattedMessage
                         id="admin.lessons.baseLanguageDescription"
-                        defaultMessage="The base language is the language that users already know and are learning from."
+                        defaultMessage="Kaynak dil, öğrencinin halihazırda bildiği ve öğrenmeyi bu dil üzerinden yaptığı dildir."
                       />
                     </p>
+                    {errors.baseLanguage ? (
+                      <p className="text-xs text-red-600">{errors.baseLanguage}</p>
+                    ) : null}
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -1056,13 +887,13 @@ export function LanguageDialog({
                     <Label htmlFor="language-active">
                       <FormattedMessage
                         id="admin.lessons.status.active"
-                        defaultMessage="Active"
+                        defaultMessage="Aktif"
                       />
                     </Label>
                     <p className="text-xs text-muted-foreground ml-2">
                       <FormattedMessage
                         id="admin.lessons.inactiveLanguageNote"
-                        defaultMessage="Inactive languages won't be visible to users."
+                        defaultMessage="Pasif programlar öğrencilere gösterilmez."
                       />
                     </p>
                   </div>
@@ -1078,7 +909,7 @@ export function LanguageDialog({
                     <Label htmlFor="language-category">
                       <FormattedMessage
                         id="admin.lessons.programCard.category"
-                        defaultMessage="Primary Focus"
+                        defaultMessage="Ana Kategori"
                       />
                     </Label>
                     <Select
@@ -1098,7 +929,7 @@ export function LanguageDialog({
                         <SelectValue
                           placeholder={intl.formatMessage({
                             id: "admin.lessons.programCard.category",
-                            defaultMessage: "Primary Focus",
+                            defaultMessage: "Ana Kategori",
                           })}
                         />
                       </SelectTrigger>
@@ -1119,7 +950,7 @@ export function LanguageDialog({
                     <Label htmlFor="language-age-group">
                       <FormattedMessage
                         id="admin.lessons.programCard.age"
-                        defaultMessage="Age Group"
+                        defaultMessage="Yaş Grubu"
                       />
                     </Label>
                     <Select
@@ -1132,7 +963,7 @@ export function LanguageDialog({
                         <SelectValue
                           placeholder={intl.formatMessage({
                             id: "admin.lessons.programCard.age",
-                            defaultMessage: "Age Group",
+                            defaultMessage: "Yaş Grubu",
                           })}
                         />
                       </SelectTrigger>
@@ -1155,7 +986,7 @@ export function LanguageDialog({
                     <Label htmlFor="language-difficulty">
                       <FormattedMessage
                         id="admin.lessons.programCard.difficulty"
-                        defaultMessage="Difficulty"
+                        defaultMessage="Zorluk"
                       />
                     </Label>
                     <Select
@@ -1171,7 +1002,7 @@ export function LanguageDialog({
                         <SelectValue
                           placeholder={intl.formatMessage({
                             id: "admin.lessons.programCard.difficulty",
-                            defaultMessage: "Difficulty",
+                            defaultMessage: "Zorluk",
                           })}
                         />
                       </SelectTrigger>
@@ -1199,7 +1030,7 @@ export function LanguageDialog({
                     <Label htmlFor="language-spiritual">
                       <FormattedMessage
                         id="admin.lessons.programCard.spiritual"
-                        defaultMessage="Includes spiritual storytelling"
+                        defaultMessage="Manevi hikaye anlatımı içerir"
                       />
                     </Label>
                   </div>
@@ -1207,11 +1038,11 @@ export function LanguageDialog({
 
                 <div className="grid gap-2">
                   <Label>
-                    <FormattedMessage
-                      id="admin.lessons.programCard.values"
-                      defaultMessage="Character Values"
-                    />
-                  </Label>
+                      <FormattedMessage
+                        id="admin.lessons.programCard.values"
+                        defaultMessage="Karakter Değerleri"
+                      />
+                    </Label>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {MORAL_VALUE_OPTIONS.map((value) => {
                       const checked = (currentThemeMetadata.moralValues ?? []).includes(
@@ -1239,11 +1070,11 @@ export function LanguageDialog({
 
                 <div className="grid gap-2">
                   <Label htmlFor="language-educational-focus">
-                    <FormattedMessage
-                      id="admin.lessons.programCard.focus"
-                      defaultMessage="Learning Focus"
-                    />
-                  </Label>
+                      <FormattedMessage
+                        id="admin.lessons.programCard.focus"
+                        defaultMessage="Öğrenme Odağı"
+                      />
+                    </Label>
                   <Textarea
                     id="language-educational-focus"
                     rows={3}
@@ -1263,24 +1094,24 @@ export function LanguageDialog({
           <Button className="w-full sm:w-auto" variant="outline" onClick={onClose} disabled={isLoading}>
             <FormattedMessage
               id="admin.lessons.cancel"
-              defaultMessage="Cancel"
+              defaultMessage="Vazgeç"
             />
           </Button>
           <Button
             className="w-full sm:w-auto"
-            onClick={onSubmit}
-            disabled={(!isEdit && !newLanguage._id) || isLoading}
+            onClick={handleSubmit}
+            disabled={isLoading}
           >
             {isLoading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
             {isEdit ? (
               <FormattedMessage
                 id="admin.lessons.saveChanges"
-                defaultMessage="Save Changes"
+                defaultMessage="Değişiklikleri Kaydet"
               />
             ) : (
               <FormattedMessage
                 id="admin.lessons.addLanguage"
-                defaultMessage="Add Language"
+                defaultMessage="Programı Kaydet"
               />
             )}
           </Button>

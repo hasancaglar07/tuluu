@@ -4,16 +4,17 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export default function LessonsLoading() {
   return (
     <div className="space-y-6">
-      <div>
-        <Skeleton className="h-10 w-[250px]" />
-        <Skeleton className="h-4 w-[350px] mt-2" />
+      <div className="rounded-xl border bg-card p-4">
+        <Skeleton className="h-8 w-[220px]" />
+        <Skeleton className="mt-2 h-4 w-[360px]" />
       </div>
 
-      <div className="flex gap-2">
-        <Skeleton className="h-10 w-[150px]" />
-        <Skeleton className="h-10 w-[150px]" />
-        <Skeleton className="h-10 w-[150px]" />
-        <Skeleton className="h-10 w-[150px]" />
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
+        <Skeleton className="h-20" />
+        <Skeleton className="h-20" />
+        <Skeleton className="h-20" />
+        <Skeleton className="h-20" />
+        <Skeleton className="col-span-2 h-20 xl:col-span-1" />
       </div>
 
       {Array.from({ length: 3 }).map((_, i) => (

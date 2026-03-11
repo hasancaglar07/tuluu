@@ -28,19 +28,19 @@ export function OrderReview({
       ? plan.promotionalPrice
       : plan.price;
 
-  // Helper function to convert billing cycle to English text
+  // Fatura döngüsünü kullanıcı dostu metne çevir
   const getBillingCycleText = (cycle: string) => {
     switch (cycle) {
       case "monthly":
-        return "per month";
+        return "aylık";
       case "quarterly":
-        return "per quarter";
+        return "3 aylık";
       case "yearly":
-        return "per year";
+        return "yıllık";
       case "lifetime":
-        return "lifetime access";
+        return "ömür boyu erişim";
       default:
-        return `per ${cycle}`;
+        return `${cycle} başına`;
     }
   };
 
@@ -53,7 +53,7 @@ export function OrderReview({
       <h2 className="font-bold text-xl mb-4">
         <FormattedMessage
           id="orderReview.title"
-          defaultMessage="Review your order"
+          defaultMessage="Siparişini Gözden Geçir"
         />
       </h2>
 
@@ -61,16 +61,16 @@ export function OrderReview({
         {/* Order details section */}
         <div className="p-4 border border-gray-200 rounded-lg">
           <h6 className="font-bold mb-2">
-            <FormattedMessage
-              id="orderReview.orderDetails"
-              defaultMessage="Order details"
-            />
+              <FormattedMessage
+                id="orderReview.orderDetails"
+                defaultMessage="Sipariş Detayları"
+              />
           </h6>
           <div className="flex justify-between mb-1">
             <span className="text-gray-600">
               <FormattedMessage
                 id="orderReview.product"
-                defaultMessage="Product:"
+                defaultMessage="Ürün:"
               />
             </span>
             <span className="font-medium">{plan.name}</span>
@@ -79,7 +79,7 @@ export function OrderReview({
             <span className="text-gray-600">
               <FormattedMessage
                 id="orderReview.price"
-                defaultMessage="Price:"
+                defaultMessage="Fiyat:"
               />
             </span>
             <span className="font-medium">${finalPrice.toFixed(2)} USD</span>
@@ -88,7 +88,7 @@ export function OrderReview({
             <span className="text-gray-600">
               <FormattedMessage
                 id="orderReview.period"
-                defaultMessage="Billing period:"
+                defaultMessage="Fatura Dönemi:"
               />
             </span>
             <span className="font-medium">
@@ -101,20 +101,20 @@ export function OrderReview({
               <span className="text-gray-600">
                 <FormattedMessage
                   id="orderReview.freeTrial"
-                  defaultMessage="Free trial:"
+                  defaultMessage="Ücretsiz Deneme:"
                 />
               </span>
-              <span className="font-medium">{plan.trialPeriodDays} days</span>
+              <span className="font-medium">{plan.trialPeriodDays} gün</span>
             </div>
           ) : (
             <div className="flex justify-between mb-1">
               <span className="text-gray-600">
                 <FormattedMessage
                   id="orderReview.freeTrial"
-                  defaultMessage="Free trial:"
+                  defaultMessage="Ücretsiz Deneme:"
                 />
               </span>
-              <span className="font-medium">{plan.trialPeriodDays} days</span>
+              <span className="font-medium">{plan.trialPeriodDays} gün</span>
             </div>
           )}
 
@@ -123,7 +123,7 @@ export function OrderReview({
             <h6 className="font-bold mb-2">
               <FormattedMessage
                 id="orderReview.paymentMethod"
-                defaultMessage="Payment method"
+                defaultMessage="Ödeme Yöntemi"
               />
             </h6>
             <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export function OrderReview({
                   <span>
                     <FormattedMessage
                       id="orderReview.cardEnding"
-                      defaultMessage="Credit card ending with {lastFour}"
+                      defaultMessage="Sonu {lastFour} ile biten kredi kartı"
                       values={{ lastFour: cardDetails.cardNumber.slice(-4) }}
                     />
                   </span>
@@ -199,7 +199,7 @@ export function OrderReview({
           >
             <FormattedMessage
               id="orderReview.termsAcceptance"
-              defaultMessage="By clicking Confirm and Pay, you agree to our {termsLink} and privacy policy."
+              defaultMessage="Onayla ve Öde düğmesine tıklayarak {termsLink} ve gizlilik politikamızı kabul etmiş olursun."
               values={{
                 termsLink: (
                   <a
@@ -210,7 +210,7 @@ export function OrderReview({
                   >
                     <FormattedMessage
                       id="orderReview.termsLink"
-                      defaultMessage="terms and conditions"
+                      defaultMessage="şartlar ve koşullar"
                     />
                   </a>
                 ),

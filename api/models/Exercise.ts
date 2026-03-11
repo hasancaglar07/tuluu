@@ -254,6 +254,7 @@ ExerciseSchema.index({
   chapterId: 1,
   languageId: 1,
 });
+ExerciseSchema.index({ lessonId: 1, isActive: 1, order: 1 });
 
 // 3. Create Types
 export type ExerciseType = InferSchemaType<typeof ExerciseSchema>;

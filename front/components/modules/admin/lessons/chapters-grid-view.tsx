@@ -57,26 +57,36 @@ export function ChaptersGridView({
   };
 
   const hasActiveFilters = searchTerm.trim().length > 0 || premiumFilter !== "all";
+  const premiumCount = chapters.filter((chapter) => chapter.isPremium).length;
 
   return (
     <>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold">
-          <FormattedMessage
-            id="admin.lessons.tabs.chapters"
-            defaultMessage="Chapters"
-          />
-        </h2>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold">
+            <FormattedMessage
+              id="admin.lessons.tabs.chapters"
+              defaultMessage="Bölümler"
+            />
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Bölüm yapısını sade bir tabloyla yönetin ve içerik planını net tutun.
+          </p>
+        </div>
         <Button className="w-full sm:w-auto" onClick={onAddChapter}>
           <Plus className="mr-2 h-4 w-4" />
           <FormattedMessage
             id="admin.lessons.addChapter"
-            defaultMessage="Add Chapter"
+            defaultMessage="Bölüm Ekle"
           />
         </Button>
       </div>
 
       <div className="rounded-lg border bg-muted/20 p-3 sm:p-4">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Badge variant="outline">{chapters.length} bölüm</Badge>
+          <Badge variant="secondary">{premiumCount} premium bölüm</Badge>
+        </div>
         <div className="grid gap-2 lg:grid-cols-[1fr,180px,auto]">
           <Input
             value={searchTerm}
@@ -108,7 +118,7 @@ export function ChaptersGridView({
           <p className="text-sm text-muted-foreground">
             <FormattedMessage
               id="admin.lessons.noChapters.subtitle"
-              defaultMessage="Get started by creating your first chapter."
+              defaultMessage="İlk bölümü oluşturarak başlayın."
             />
           </p>
         </div>
@@ -117,7 +127,7 @@ export function ChaptersGridView({
           <p className="text-sm text-muted-foreground">Aramanıza uyan bölüm bulunamadı.</p>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="overflow-hidden rounded-lg border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -144,7 +154,7 @@ export function ChaptersGridView({
                     <Badge variant="outline">
                       {intl.formatMessage({
                         id: `contentType.${chapter.contentType ?? "lesson"}`,
-                        defaultMessage: chapter.contentType ?? "Lesson",
+                        defaultMessage: chapter.contentType ?? "Ders",
                       })}
                     </Badge>
                   </TableCell>

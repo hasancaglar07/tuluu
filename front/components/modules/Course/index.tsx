@@ -14,6 +14,8 @@ import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useIntl } from "react-intl";
+import { useAuth } from "@clerk/nextjs";
+import { apiClient } from "@/lib/api-client";
 
 // Import components
 import { DashboardHeader } from "./DashboardHeader";
@@ -33,7 +35,11 @@ export default function Course({
   const intl = useIntl();
   const dispatch = useDispatch();
   const router = useLocalizedRouter();
+  const { getToken, userId } = useAuth();
   const [activeView, setView] = useState("game");
+  const hasPrefetchedRoutes = useRef(false);
+  const hasWarmedApis = useRef(false);
+  const hasPrefetchedLessonRoute = useRef(false);
 
   // Get state from Redux store
   const user = useSelector((state: IRootState) => state.user);
@@ -94,6 +100,77 @@ export default function Course({
       })
     );
   };
+
+  useEffect(() => {
+    if (hasPrefetchedRoutes.current) {
+      return;
+    }
+
+    hasPrefetchedRoutes.current = true;
+    router.prefetch("/leaderboard");
+    router.prefetch("/quests");
+    router.prefetch("/shop");
+    router.prefetch("/stories");
+    router.prefetch("/subscriptions");
+  }, [router]);
+
+  useEffect(() => {
+    if (!userId || hasWarmedApis.current) {
+      return;
+    }
+
+    hasWarmedApis.current = true;
+    let cancelled = false;
+
+    const warmDashboardApis = async () => {
+      const token = await getToken();
+      if (!token || cancelled) {
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      await Promise.allSettled([
+        apiClient.get(`/api/users/${userId}`, {
+          headers,
+          params: { fast: 1 },
+        }),
+        apiClient.get(`/api/users/${userId}/quests`, {
+          headers,
+          params: { type: "daily" },
+        }),
+        apiClient.get(`/api/leaderboards`, {
+          headers,
+          params: { timeFilter: "allTime", limit: "50" },
+        }),
+        apiClient.get(`/api/shop`, { headers }),
+      ]);
+    };
+
+    void warmDashboardApis();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken, userId]);
+
+  useEffect(() => {
+    if (hasPrefetchedLessonRoute.current) {
+      return;
+    }
+
+    const lessonId =
+      progress.currentLesson?._id ?? chapters[0]?.units?.[0]?.lessons?.[0]?._id;
+
+    if (!lessonId) {
+      return;
+    }
+
+    hasPrefetchedLessonRoute.current = true;
+    router.prefetch(`/lesson/${lessonId}`);
+  }, [chapters, progress.currentLesson?._id, router]);
 
   // Use Intersection Observer to detect which unit is most visible in Pro view
   useEffect(() => {

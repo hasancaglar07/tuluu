@@ -79,7 +79,7 @@ export async function syncUserWithClerk(data: ClerkUser) {
           voiceOver: false,
         },
       },
-      language: "en-US",
+      language: "tr-TR",
       bio: "",
     };
 

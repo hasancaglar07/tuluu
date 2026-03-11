@@ -16,7 +16,7 @@ export default function MobileFooterDashboard() {
           <div className="bg-[#1cb0f6] p-2 rounded-full">
             <Star className="text-white h-5 w-5" />
           </div>
-          <span className="text-xs mt-1">Leçons</span>
+          <span className="text-xs mt-1">Dersler</span>
         </m.div>
         <m.div
           className="flex flex-col items-center"
@@ -26,7 +26,7 @@ export default function MobileFooterDashboard() {
           <div className="bg-[#ffc800] p-2 rounded-full">
             <Shield className="text-white h-5 w-5" />
           </div>
-          <span className="text-xs mt-1">Ligues</span>
+          <span className="text-xs mt-1">Ligler</span>
         </m.div>
         <m.div
           className="flex flex-col items-center"

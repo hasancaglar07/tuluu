@@ -1,12 +1,14 @@
 const { spawn } = require("node:child_process");
 const { existsSync } = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 
 const args = process.argv.slice(2);
 const nextBin = path.join(__dirname, "..", "node_modules", "next", "dist", "bin", "next");
 
 const env = { ...process.env, NAPI_RS_FORCE_WASI: process.env.NAPI_RS_FORCE_WASI || "1" };
-delete env.NODE_OPTIONS;
+const localStorageFile = path.join(os.tmpdir(), "tulu-api-localstorage");
+env.NODE_OPTIONS = `--localstorage-file=${localStorageFile}`;
 
 if (process.platform === "win32") {
   const winNativeBindingPath = path.join(

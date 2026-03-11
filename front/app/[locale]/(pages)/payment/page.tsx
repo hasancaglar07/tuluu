@@ -10,8 +10,8 @@ export default function page() {
 // Nextjs dynamic metadata
 export function generateMetadata() {
   return {
-    title: "TULU - Payment",
-    description: "An enjoyable way to learn a new language",
+    title: "Ödeme - TULU",
+    description: "Ödeme işlemlerinizi güvenli şekilde tamamlayın.",
     icons: {
       icon: "/images/logo_icon.png",
       shortcut: "/favicon.ico",

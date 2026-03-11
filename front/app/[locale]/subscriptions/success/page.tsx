@@ -16,21 +16,21 @@ export default function SubscriptionSuccess() {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      toast.loading("Logging out...", {
+      toast.loading("Çıkış yapılıyor...", {
         id: "logout-loading",
       });
 
       await signOut({ redirectUrl: "/sign-in" });
 
-      toast.success("Successfully logged out!", {
+      toast.success("Çıkış başarıyla yapıldı!", {
         id: "logout-loading",
-        description: "Log back in to enjoy your premium subscription ✨",
+        description: "Premium aboneliğini kullanmak için tekrar giriş yap ✨",
       });
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Error during logout", {
+      toast.error("Çıkış sırasında hata oluştu", {
         id: "logout-loading",
-        description: "Please try again",
+        description: "Lütfen tekrar deneyin",
       });
     } finally {
       setLoading(false);
@@ -38,8 +38,8 @@ export default function SubscriptionSuccess() {
   };
 
   useEffect(() => {
-    toast.success("🎉 Payment confirmed!", {
-      description: "Your premium subscription is now active",
+    toast.success("🎉 Ödeme onaylandı!", {
+      description: "Premium aboneliğin artık aktif",
       duration: 5000,
     });
   }, []);
@@ -88,7 +88,7 @@ export default function SubscriptionSuccess() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.4 }}
               >
-                Payment Confirmed!
+                Ödeme Onaylandı!
               </m.h1>
 
               <m.p
@@ -97,7 +97,7 @@ export default function SubscriptionSuccess() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.4 }}
               >
-                Your premium subscription has been successfully activated.
+                Premium aboneliğin başarıyla etkinleştirildi.
               </m.p>
             </CardHeader>
 
@@ -114,11 +114,11 @@ export default function SubscriptionSuccess() {
                   </div>
                   <div className="text-left">
                     <h3 className="font-semibold text-primary-900 mb-1">
-                      Action Required
+                      Yapılması Gereken
                     </h3>
                     <p className="text-sm text-primary-800">
-                      To fully enjoy your new premium features, please log out
-                      and log back in to your account.
+                      Yeni premium özellikleri tam kullanmak için lütfen
+                      hesabından çıkış yapıp tekrar giriş yap.
                     </p>
                   </div>
                 </div>
@@ -130,13 +130,13 @@ export default function SubscriptionSuccess() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.1, duration: 0.4 }}
               >
-                <h6 className="text-gray-900 mb-3">Unlocked Features</h6>
+                <h6 className="text-gray-900 mb-3">Açılan Özellikler</h6>
                 <ul className="text-sm text-gray-700 space-y-2 text-left">
                   {[
-                    "Unlimited access to all lessons",
-                    "Premium features unlocked",
-                    "Unlimited hearts",
-                    "No annoying ads",
+                    "Tüm derslere sınırsız erişim",
+                    "Premium özellikler açıldı",
+                    "Sınırsız kalp",
+                    "Reklamsız deneyim",
                   ].map((feature, index) => (
                     <m.li
                       key={index}
@@ -166,7 +166,7 @@ export default function SubscriptionSuccess() {
                   size="lg"
                 >
                   <LogOut className="w-5 h-5 mr-2" />
-                  Log Out and Continue
+                  Çıkış Yap ve Devam Et
                 </Button>
               </m.div>
 
@@ -176,7 +176,7 @@ export default function SubscriptionSuccess() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.9, duration: 0.4 }}
               >
-                You will be redirected to the dashboard after logout.
+                Çıkıştan sonra panele yönlendirileceksin.
               </m.p>
             </CardContent>
           </Card>

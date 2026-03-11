@@ -57,7 +57,7 @@ export function InventoryManagementPage() {
 
       setInventoryItems(response.data.items)
     } catch (error) {
-      console.error("Error fetching inventory items:", error)
+      console.error("Envanter ürünleri alınırken hata:", error)
       toast.error(
         <FormattedMessage id="inventory.error.fetch-items" defaultMessage="Failed to fetch inventory items" />,
       )
@@ -78,7 +78,7 @@ export function InventoryManagementPage() {
 
       setInventoryAnalytics(response.data.analytics)
     } catch (error) {
-      console.error("Error fetching inventory analytics:", error)
+      console.error("Envanter analizleri alınırken hata:", error)
       toast.error(
         <FormattedMessage id="inventory.error.fetch-analytics" defaultMessage="Failed to fetch inventory analytics" />,
       )
@@ -122,7 +122,7 @@ export function InventoryManagementPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <ShopHeader title="Inventory Management" description="Monitor and manage your shop inventory" />
+        <ShopHeader title="Envanter Yönetimi" description="Mağaza envanterini takip et ve yönet" />
         <div className="flex gap-2">
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
@@ -142,11 +142,11 @@ export function InventoryManagementPage() {
           Array.from({ length: 5 }).map((_, i) => <AnalyticsCardSkeleton key={i} />)
         ) : inventoryAnalytics ? (
           <>
-            <AnalyticsCard title="Total Items" value={inventoryAnalytics.totalItems} />
-            <AnalyticsCard title="In Stock" value={inventoryAnalytics.inStock} className="text-green-600" />
-            <AnalyticsCard title="Low Stock" value={inventoryAnalytics.lowStock} className="text-amber-600" />
-            <AnalyticsCard title="Out of Stock" value={inventoryAnalytics.outOfStock} className="text-red-600" />
-            <AnalyticsCard title="Expiring Soon" value={inventoryAnalytics.expiringItems} className="text-blue-600" />
+            <AnalyticsCard title="Toplam Ürün" value={inventoryAnalytics.totalItems} />
+            <AnalyticsCard title="Stokta" value={inventoryAnalytics.inStock} className="text-green-600" />
+            <AnalyticsCard title="Düşük Stok" value={inventoryAnalytics.lowStock} className="text-amber-600" />
+            <AnalyticsCard title="Stokta Yok" value={inventoryAnalytics.outOfStock} className="text-red-600" />
+            <AnalyticsCard title="Yakında Süresi Dolacak" value={inventoryAnalytics.expiringItems} className="text-blue-600" />
           </>
         ) : null}
       </AnalyticsCardsGrid>
@@ -160,12 +160,12 @@ export function InventoryManagementPage() {
             id: "category",
             value: categoryFilter,
             options: [
-              { value: "all", label: "All Categories" },
-              { value: "Power-ups", label: "Power-ups" },
-              { value: "Outfits", label: "Outfits" },
-              { value: "Currency", label: "Currency" },
-              { value: "Special Offers", label: "Special Offers" },
-              { value: "Lessons", label: "Lessons" },
+              { value: "all", label: "Tüm Kategoriler" },
+              { value: "Power-ups", label: "Güçlendiriciler" },
+              { value: "Outfits", label: "Kıyafetler" },
+              { value: "Currency", label: "Para Birimi" },
+              { value: "Special Offers", label: "Özel Teklifler" },
+              { value: "Lessons", label: "Dersler" },
             ],
             onChange: setCategoryFilter,
           },
@@ -173,11 +173,11 @@ export function InventoryManagementPage() {
             id: "status",
             value: statusFilter,
             options: [
-              { value: "all", label: "All Statuses" },
-              { value: "in stock", label: "In Stock" },
-              { value: "low stock", label: "Low Stock" },
-              { value: "out of stock", label: "Out of Stock" },
-              { value: "expiring", label: "Expiring Soon" },
+              { value: "all", label: "Tüm Durumlar" },
+              { value: "in stock", label: "Stokta" },
+              { value: "low stock", label: "Düşük Stok" },
+              { value: "out of stock", label: "Stokta Yok" },
+              { value: "expiring", label: "Yakında Süresi Dolacak" },
             ],
             onChange: setStatusFilter,
           },
@@ -211,7 +211,7 @@ export function InventoryManagementPage() {
             formatNumber={formatNumber}
             onUpdateStock={(itemId, newStock) => {
               // Handle stock update
-              console.log("Update stock for item:", itemId, "to:", newStock)
+              console.log("Ürün stok güncelle:", itemId, "->", newStock)
             }}
           />
         </TabsContent>
@@ -222,7 +222,7 @@ export function InventoryManagementPage() {
             loading={loading}
             formatNumber={formatNumber}
             onUpdateStock={(itemId, newStock) => {
-              console.log("Update stock for item:", itemId, "to:", newStock)
+              console.log("Ürün stok güncelle:", itemId, "->", newStock)
             }}
           />
         </TabsContent>
@@ -233,7 +233,7 @@ export function InventoryManagementPage() {
             loading={loading}
             formatNumber={formatNumber}
             onUpdateStock={(itemId, newStock) => {
-              console.log("Update stock for item:", itemId, "to:", newStock)
+              console.log("Ürün stok güncelle:", itemId, "->", newStock)
             }}
           />
         </TabsContent>
@@ -244,7 +244,7 @@ export function InventoryManagementPage() {
             loading={loading}
             formatNumber={formatNumber}
             onUpdateStock={(itemId, newStock) => {
-              console.log("Update stock for item:", itemId, "to:", newStock)
+              console.log("Ürün stok güncelle:", itemId, "->", newStock)
             }}
           />
         </TabsContent>
@@ -255,7 +255,7 @@ export function InventoryManagementPage() {
             loading={loading}
             formatNumber={formatNumber}
             onUpdateStock={(itemId, newStock) => {
-              console.log("Update stock for item:", itemId, "to:", newStock)
+              console.log("Ürün stok güncelle:", itemId, "->", newStock)
             }}
           />
         </TabsContent>

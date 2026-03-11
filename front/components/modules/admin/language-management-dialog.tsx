@@ -56,8 +56,8 @@ import { toast } from "sonner";
 const MOCK_LANGUAGES = [
   {
     id: "1",
-    code: "en",
-    name: "English",
+    code: "tr",
+    name: "Türkçe",
     isDefault: true,
     completionPercentage: 100,
     category: "language_learning",
@@ -69,81 +69,6 @@ const MOCK_LANGUAGES = [
       difficultyLevel: "beginner",
     },
   },
-  {
-    id: "2",
-    code: "es",
-    name: "Spanish",
-    isDefault: false,
-    completionPercentage: 87,
-    category: "faith_morality",
-    themeMetadata: {
-      islamicContent: true,
-      ageGroup: "kids_7-12",
-      moralValues: ["kindness", "sharing"],
-      educationalFocus: "Daily gratitude lessons",
-      difficultyLevel: "beginner",
-    },
-  },
-  {
-    id: "3",
-    code: "fr",
-    name: "French",
-    isDefault: false,
-    completionPercentage: 76,
-    category: "science_discovery",
-    themeMetadata: {
-      islamicContent: false,
-      ageGroup: "kids_7-12",
-      moralValues: ["respect"],
-      educationalFocus: "STEM vocabulary",
-      difficultyLevel: "intermediate",
-    },
-  },
-  {
-    id: "4",
-    code: "de",
-    name: "German",
-    isDefault: false,
-    completionPercentage: 65,
-    category: "math_logic",
-    themeMetadata: {
-      islamicContent: false,
-      ageGroup: "kids_7-12",
-      moralValues: [],
-      educationalFocus: "Numbers and logic",
-      difficultyLevel: "intermediate",
-    },
-  },
-  {
-    id: "5",
-    code: "it",
-    name: "Italian",
-    isDefault: false,
-    completionPercentage: 42,
-    category: "personal_social",
-    themeMetadata: {
-      islamicContent: true,
-      ageGroup: "kids_2-6",
-      moralValues: ["gratitude"],
-      educationalFocus: "Daily routines",
-      difficultyLevel: "beginner",
-    },
-  },
-  {
-    id: "6",
-    code: "ja",
-    name: "Japanese",
-    isDefault: false,
-    completionPercentage: 31,
-    category: "language_learning",
-    themeMetadata: {
-      islamicContent: false,
-      ageGroup: "kids_7-12",
-      moralValues: [],
-      educationalFocus: "Conversational phrases",
-      difficultyLevel: "advanced",
-    },
-  },
 ];
 
 // Mock translation data for demonstration
@@ -153,12 +78,7 @@ const MOCK_TRANSLATIONS = [
     key: "quest.daily.title",
     module: "quests",
     translations: {
-      en: "Daily Quest",
-      es: "Misión diaria",
-      fr: "Quête quotidienne",
-      de: "Tägliche Quest",
-      it: "",
-      ja: "",
+      tr: "Daily Quest",
     },
   },
   {
@@ -166,12 +86,7 @@ const MOCK_TRANSLATIONS = [
     key: "shop.item.purchase",
     module: "shop",
     translations: {
-      en: "Purchase Item",
-      es: "Comprar artículo",
-      fr: "Acheter l'article",
-      de: "Artikel kaufen",
-      it: "Acquista articolo",
-      ja: "",
+      tr: "Purchase Item",
     },
   },
   {
@@ -179,12 +94,7 @@ const MOCK_TRANSLATIONS = [
     key: "lesson.complete.message",
     module: "lessons",
     translations: {
-      en: "Lesson completed!",
-      es: "¡Lección completada!",
-      fr: "Leçon terminée !",
-      de: "Lektion abgeschlossen!",
-      it: "Lezione completata!",
-      ja: "レッスン完了！",
+      tr: "Lesson completed!",
     },
   },
   {
@@ -192,12 +102,7 @@ const MOCK_TRANSLATIONS = [
     key: "settings.language.title",
     module: "settings",
     translations: {
-      en: "Language Settings",
-      es: "Configuración de idioma",
-      fr: "Paramètres de langue",
-      de: "Spracheinstellungen",
-      it: "",
-      ja: "",
+      tr: "Language Settings",
     },
   },
   {
@@ -205,12 +110,7 @@ const MOCK_TRANSLATIONS = [
     key: "user.profile.edit",
     module: "users",
     translations: {
-      en: "Edit Profile",
-      es: "Editar perfil",
-      fr: "Modifier le profil",
-      de: "Profil bearbeiten",
-      it: "Modifica profilo",
-      ja: "プロフィール編集",
+      tr: "Edit Profile",
     },
   },
 ];
@@ -224,7 +124,7 @@ const formSchema = z.object({
     .max(5)
     .refine((code) => /^[a-z]{2,5}$/.test(code), {
       message:
-        "Language code must be 2-5 lowercase letters (e.g., 'en', 'es', 'fr').",
+        "Language code must be 2-5 lowercase letters (e.g., 'tr').",
     }),
   name: z.string().min(2, {
     message: "Language name must be at least 2 characters.",
@@ -474,6 +374,9 @@ export function LanguageManagementDialog({
                             selectedLanguage as keyof typeof translation.translations
                           ]
                             ?.toLowerCase()
+                            .includes(searchQuery.toLowerCase()) ||
+                          translation.translations.tr
+                            ?.toLowerCase()
                             .includes(searchQuery.toLowerCase())
                       )
                       .map((translation) => {
@@ -482,7 +385,7 @@ export function LanguageManagementDialog({
                         const value =
                           translation.translations[
                             selectedLanguage as keyof typeof translation.translations
-                          ] || "";
+                          ] || translation.translations.tr || "";
                         const isEmpty = value === "";
 
                         return (
@@ -518,10 +421,10 @@ export function LanguageManagementDialog({
 
                             <div className="pl-2 border-l-2 border-muted">
                               <div className="text-sm text-muted-foreground mb-1">
-                                English (Default):
+                                Türkçe (Varsayılan):
                               </div>
                               <div className="font-medium mb-2">
-                                {translation.translations.en}
+                                {translation.translations.tr}
                               </div>
 
                               <div className="text-sm text-muted-foreground mb-1">
@@ -767,7 +670,7 @@ export function LanguageManagementDialog({
                           <FormItem>
                             <FormLabel>Program Key</FormLabel>
                             <FormControl>
-                              <Input placeholder="en" {...field} />
+                              <Input placeholder="tr" {...field} />
                             </FormControl>
                             <FormDescription>
                               Short identifier used in URLs and dashboards

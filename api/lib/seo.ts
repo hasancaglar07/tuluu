@@ -15,12 +15,12 @@ export interface SEOData {
 /**
  * Get SEO data for a specific path and locale
  * @param path - The URL path
- * @param locale - The locale (default: 'en')
+ * @param locale - The locale (default: 'tr')
  * @returns SEO data for the page
  */
 export async function getSEOData(
   path: string,
-  locale = "en"
+  locale = "tr"
 ): Promise<SEOData | null> {
   try {
     await connectDB();
@@ -55,8 +55,8 @@ export async function getSEOData(
  */
 export function generateMetadata(
   seoData: SEOData | null,
-  defaultTitle = "Your Site",
-  defaultDescription = "Your site description"
+  defaultTitle = "TULU",
+  defaultDescription = "TULU ile dil öğrenmeyi eğlenceli ve etkili hale getirin."
 ): Metadata {
   if (!seoData) {
     return {
@@ -95,12 +95,12 @@ export function generateMetadata(
 /**
  * Get structured data for a specific path and locale
  * @param path - The URL path
- * @param locale - The locale (default: 'en')
+ * @param locale - The locale (default: 'tr')
  * @returns Structured data as a JavaScript object or null
  */
 export async function getStructuredData(
   path: string,
-  locale = "en"
+  locale = "tr"
 ): Promise<Record<string, unknown> | null> {
   try {
     const seoData = await getSEOData(path, locale);
@@ -119,19 +119,19 @@ export async function getStructuredData(
 /**
  * Auto-generate default SEO data for a new page
  * @param path - The URL path
- * @param locale - The locale (default: 'en')
+ * @param locale - The locale (default: 'tr')
  * @param siteName - The name of the site
  * @returns Default SEO data for the page
  */
 export function generateDefaultSEO(
   path: string,
-  // locale = "en",
-  siteName = "Your Site"
+  // locale = "tr",
+  siteName = "TULU"
 ): SEOData {
   // Convert path to title case
   const pathWithoutSlashes = path.replace(/^\/|\/$/g, "");
   const segments = pathWithoutSlashes.split("/");
-  const lastSegment = segments[segments.length - 1] || "Home";
+  const lastSegment = segments[segments.length - 1] || "Ana Sayfa";
 
   // Convert kebab-case or snake_case to Title Case
   const title = lastSegment
@@ -140,7 +140,7 @@ export function generateDefaultSEO(
 
   return {
     title: `${title} | ${siteName}`,
-    description: `Learn more about ${title.toLowerCase()} on ${siteName}.`,
+    description: `${siteName} üzerinde ${title.toLowerCase()} hakkında daha fazla bilgi edinin.`,
     robots: "index,follow",
   };
 }

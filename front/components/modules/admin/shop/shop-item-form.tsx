@@ -54,7 +54,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
       stockType: item?.stockType || "unlimited",
       stockQuantity: item?.stockQuantity || 0,
       status: item?.status || "draft",
-      eligibility: item?.eligibility || "All users",
+      eligibility: item?.eligibility || "Tüm kullanıcılar",
       isLimitedTime: item?.isLimitedTime || false,
       startDate: item?.startDate ? new Date(item.startDate).toISOString().split("T")[0] : "",
       endDate: item?.endDate ? new Date(item.endDate).toISOString().split("T")[0] : "",
@@ -95,7 +95,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
 
       onClose()
     } catch (error) {
-      console.error("Error saving shop item:", error)
+      console.error("Mağaza ürünü kaydetme hatası:", error)
       toast.error(<FormattedMessage id="shop.error.save-item" defaultMessage="Failed to save shop item" />)
     } finally {
       setIsSubmitting(false)
@@ -152,7 +152,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder="Tür seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,7 +192,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder="Kategori seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -243,7 +243,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select currency" />
+                          <SelectValue placeholder="Para birimi seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -298,7 +298,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select stock type" />
+                          <SelectValue placeholder="Stok tipi seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -352,7 +352,7 @@ export function ShopItemForm({ item, categories, onClose, onItemCreated, onItemU
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder="Durum seçin" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

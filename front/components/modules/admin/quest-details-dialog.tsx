@@ -132,6 +132,36 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  const getTargetSegmentLabel = (segment: string) => {
+    switch (segment) {
+      case "all":
+        return "Tüm kullanıcılar";
+      case "free":
+        return "Ücretsiz";
+      case "premium":
+        return "Premium";
+      default:
+        return segment;
+    }
+  };
+
+  const getActivityStatusLabel = (status: string) => {
+    switch (status) {
+      case "started":
+        return "başladı";
+      case "completed":
+        return "tamamladı";
+      case "in_progress":
+        return "devam ediyor";
+      case "abandoned":
+        return "bıraktı";
+      case "paused":
+        return "duraklatıldı";
+      default:
+        return status;
+    }
+  };
+
   // Fetch user completions
   const fetchUserCompletions = async () => {
     try {
@@ -152,8 +182,8 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
         setUserCompletions(response.data.data.completions);
       }
     } catch (error) {
-      console.error("Error fetching user completions:", error);
-      toast.error("Failed to fetch user completions");
+      console.error("Kullanıcı tamamlamaları alınırken hata:", error);
+      toast.error("Kullanıcı tamamlamaları alınamadı");
     } finally {
       setLoadingCompletions(false);
     }
@@ -208,8 +238,8 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
         });
       }
     } catch (error) {
-      console.error("Error fetching analytics:", error);
-      toast.error("Failed to fetch analytics data");
+      console.error("Analiz verileri alınırken hata:", error);
+      toast.error("Analiz verileri alınamadı");
     } finally {
       setLoadingAnalytics(false);
     }
@@ -235,8 +265,8 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
         setQuestHistory(response.data.data.history);
       }
     } catch (error) {
-      console.error("Error fetching quest history:", error);
-      toast.error("Failed to fetch quest history");
+      console.error("Görev geçmişi alınırken hata:", error);
+      toast.error("Görev geçmişi alınamadı");
     } finally {
       setLoadingHistory(false);
     }
@@ -283,7 +313,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       const data = response.data;
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to update quest status");
+        throw new Error(data.error || "Görev durumu güncellenemedi");
       }
 
       toast.success(data.message);
@@ -296,9 +326,9 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       fetchAnalytics();
       fetchQuestHistory();
     } catch (err) {
-      console.error("Error updating quest status:", err);
+      console.error("Görev durumu güncelleme hatası:", err);
       toast.error(
-        err instanceof Error ? err.message : "Failed to update quest status"
+        err instanceof Error ? err.message : "Görev durumu güncellenemedi"
       );
     } finally {
       setIsUpdating(false);
@@ -328,11 +358,13 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       const data = response.data;
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to update quest visibility");
+        throw new Error(data.error || "Görev görünürlüğü güncellenemedi");
       }
 
       toast.success(
-        `Quest ${quest.isVisible ? "hidden" : "shown"} successfully`
+        quest.isVisible
+          ? "Görev başarıyla gizlendi"
+          : "Görev başarıyla gösterildi"
       );
 
       // Update local quest visibility
@@ -342,9 +374,11 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       // Refresh history after visibility change
       fetchQuestHistory();
     } catch (err) {
-      console.error("Error updating quest visibility:", err);
+      console.error("Görev görünürlüğü güncelleme hatası:", err);
       toast.error(
-        err instanceof Error ? err.message : "Failed to update quest visibility"
+        err instanceof Error
+          ? err.message
+          : "Görev görünürlüğü güncellenemedi"
       );
     } finally {
       setIsUpdating(false);
@@ -355,7 +389,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
   const handleDelete = async () => {
     if (
       !confirm(
-        "Are you sure you want to delete this quest? This action cannot be undone."
+        "Bu görevi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
       )
     ) {
       return;
@@ -378,16 +412,16 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       const data = response.data;
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to delete quest");
+        throw new Error(data.error || "Görev silinemedi");
       }
-      toast.success("Quest deleted successfully");
+      toast.success("Görev başarıyla silindi");
 
       // Close dialog and refresh parent component
       window.location.reload(); // Simple refresh for now
     } catch (err) {
-      console.error("Error deleting quest:", err);
+      console.error("Görev silme hatası:", err);
       toast.error(
-        err instanceof Error ? err.message : "Failed to delete quest"
+        err instanceof Error ? err.message : "Görev silinemedi"
       );
     } finally {
       setIsUpdating(false);
@@ -397,13 +431,13 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-500">Active</Badge>;
+        return <Badge className="bg-green-500">Aktif</Badge>;
       case "draft":
-        return <Badge className="bg-blue-500">Draft</Badge>;
+        return <Badge className="bg-blue-500">Taslak</Badge>;
       case "expired":
-        return <Badge className="bg-gray-500">Expired</Badge>;
+        return <Badge className="bg-gray-500">Süresi Doldu</Badge>;
       case "paused":
-        return <Badge className="bg-yellow-500">Paused</Badge>;
+        return <Badge className="bg-yellow-500">Duraklatıldı</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -414,13 +448,13 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
       case "daily":
         return (
           <Badge variant="outline" className="border-green-500 text-green-700">
-            Daily
+            Günlük
           </Badge>
         );
       case "weekly":
         return (
           <Badge variant="outline" className="border-blue-500 text-blue-700">
-            Weekly
+            Haftalık
           </Badge>
         );
       case "event":
@@ -429,7 +463,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
             variant="outline"
             className="border-purple-500 text-purple-700"
           >
-            Event
+            Etkinlik
           </Badge>
         );
       case "custom":
@@ -438,7 +472,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
             variant="outline"
             className="border-orange-500 text-orange-700"
           >
-            Custom
+            Özel
           </Badge>
         );
       default:
@@ -457,11 +491,11 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
         );
       case "gems":
         return (
-          <span className="flex items-center gap-1">{reward.value} Gems</span>
+          <span className="flex items-center gap-1">{reward.value} Elmas</span>
         );
       case "badge":
         return (
-          <span className="flex items-center gap-1">Badge: {reward.value}</span>
+          <span className="flex items-center gap-1">Rozet: {reward.value}</span>
         );
       default:
         return <span>{reward.value}</span>;
@@ -485,14 +519,16 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
               disabled={isUpdating}
             >
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              Düzenle
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
                 const action =
-                  quest.status === "paused" || "draft" ? "resume" : "pause";
+                  quest.status === "paused" || quest.status === "draft"
+                    ? "resume"
+                    : "pause";
                 handleStatusChange(action);
               }}
               disabled={isUpdating}
@@ -502,12 +538,12 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
               ) : quest.status === "paused" || quest.status === "draft" ? (
                 <>
                   <Play className="mr-2 h-4 w-4" />
-                  Resume
+                  Devam Ettir
                 </>
               ) : (
                 <>
                   <Pause className="mr-2 h-4 w-4" />
-                  Pause
+                  Duraklat
                 </>
               )}
             </Button>
@@ -522,12 +558,12 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
               ) : quest.isVisible ? (
                 <>
                   <EyeOff className="mr-2 h-4 w-4" />
-                  Hide
+                  Gizle
                 </>
               ) : (
                 <>
                   <Eye className="mr-2 h-4 w-4" />
-                  Show
+                  Göster
                 </>
               )}
             </Button>
@@ -543,7 +579,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
               ) : (
                 <>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  Sil
                 </>
               )}
             </Button>
@@ -554,10 +590,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="completions">Completions</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
+          <TabsTrigger value="completions">Tamamlayanlar</TabsTrigger>
+          <TabsTrigger value="analytics">Analiz</TabsTrigger>
+          <TabsTrigger value="history">Geçmiş</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4 space-y-4">
@@ -565,49 +601,49 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Quest Details
+                  Görev Detayları
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <dl className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <dt className="text-muted-foreground">Status</dt>
+                    <dt className="text-muted-foreground">Durum</dt>
                     <dd className="font-medium">
                       {getStatusBadge(quest.status)}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Type</dt>
+                    <dt className="text-muted-foreground">Tür</dt>
                     <dd className="font-medium">{getTypeBadge(quest.type)}</dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Goal</dt>
+                    <dt className="text-muted-foreground">Hedef</dt>
                     <dd className="font-medium">{quest.goal}</dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Reward</dt>
+                    <dt className="text-muted-foreground">Ödül</dt>
                     <dd className="font-medium">
                       {getRewardDisplay(quest.reward)}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Target Users</dt>
-                    <dd className="font-medium capitalize">
-                      {quest.targetSegment}
+                    <dt className="text-muted-foreground">Hedef Kullanıcılar</dt>
+                    <dd className="font-medium">
+                      {getTargetSegmentLabel(quest.targetSegment)}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Visibility</dt>
+                    <dt className="text-muted-foreground">Görünürlük</dt>
                     <dd className="font-medium">
-                      {quest.isVisible ? "Visible" : "Hidden"}
+                      {quest.isVisible ? "Görünür" : "Gizli"}
                     </dd>
                   </div>
                   <div className="col-span-2">
-                    <dt className="text-muted-foreground">Duration</dt>
+                    <dt className="text-muted-foreground">Süre</dt>
                     <dd className="font-medium flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {format(quest.startDate, "MMMM d, yyyy")} -{" "}
-                      {format(quest.endDate, "MMMM d, yyyy")}
+                      {format(quest.startDate, "dd.MM.yyyy")} -{" "}
+                      {format(quest.endDate, "dd.MM.yyyy")}
                     </dd>
                   </div>
                 </dl>
@@ -617,7 +653,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Completion Statistics
+                  Tamamlama İstatistikleri
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -630,7 +666,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium">
-                          Overall Completion
+                          Genel Tamamlanma
                         </span>
                         <span className="text-sm font-medium">
                           {analytics.overview.completionRate}%
@@ -646,7 +682,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                       <dl className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Assigned
+                            Atanan Kullanıcı
                           </dt>
                           <dd className="font-medium">
                             {analytics.overview.totalAssigned}
@@ -654,7 +690,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Completed
+                            Tamamlayan Kullanıcı
                           </dt>
                           <dd className="font-medium">
                             {analytics.overview.totalCompleted}
@@ -662,7 +698,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Started
+                            Başlayan Kullanıcı
                           </dt>
                           <dd className="font-medium">
                             {analytics.overview.totalStarted}
@@ -670,7 +706,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Average Progress
+                            Ortalama İlerleme
                           </dt>
                           <dd className="font-medium">
                             {analytics.overview.averageProgress}%
@@ -684,7 +720,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium">
-                          Overall Completion
+                          Genel Tamamlanma
                         </span>
                         <span className="text-sm font-medium">
                           {quest.completionRate}%
@@ -697,13 +733,13 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                       <dl className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Assigned
+                            Atanan Kullanıcı
                           </dt>
                           <dd className="font-medium">{quest.usersAssigned}</dd>
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Completed
+                            Tamamlayan Kullanıcı
                           </dt>
                           <dd className="font-medium">
                             {quest.usersCompleted}
@@ -711,13 +747,13 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Users Started
+                            Başlayan Kullanıcı
                           </dt>
                           <dd className="font-medium">{quest.usersStarted}</dd>
                         </div>
                         <div>
                           <dt className="text-muted-foreground">
-                            Average Progress
+                            Ortalama İlerleme
                           </dt>
                           <dd className="font-medium">
                             {quest.averageProgress || 0}%
@@ -734,10 +770,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">
-                Recent Activity
+                Son Etkinlik
               </CardTitle>
               <CardDescription>
-                Latest user interactions with this quest
+                Bu görevle ilgili son kullanıcı etkileşimleri
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -760,27 +796,27 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <p className="text-sm font-medium">
-                              User {(activity.clerkId ?? "unknown").slice(0, 8)}
+                              Kullanıcı {(activity.clerkId ?? "bilinmiyor").slice(0, 8)}
                               ... -{" "}
-                              {activity.status}
+                              {getActivityStatusLabel(activity.status)}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {format(
                                 new Date(activity.lastActivity),
-                                "MMMM d, yyyy"
+                                "dd.MM.yyyy"
                               )}
                             </p>
                           </div>
                         </div>
                         <div className="text-sm font-medium">
-                          {activity.progress}% complete
+                          %{activity.progress} tamamlandı
                         </div>
                       </div>
                     ))}
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-8">
-                  No recent activity data available
+                  Son etkinlik verisi yok
                 </div>
               )}
             </CardContent>
@@ -791,10 +827,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">
-                User Completions
+                Kullanıcı Tamamlamaları
               </CardTitle>
               <CardDescription>
-                Users who have completed this quest
+                Bu görevi tamamlayan kullanıcılar
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -820,23 +856,22 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                             {user.email}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {user.attempts} attempt
-                            {user.attempts !== 1 ? "s" : ""} •
+                            {user.attempts} deneme •
                             {user.totalRewardsValue > 0 &&
-                              ` ${user.totalRewardsValue} rewards`}
+                              ` ${user.totalRewardsValue} ödül`}
                           </p>
                         </div>
                       </div>
                       <div className="text-sm">
-                        Completed on{" "}
-                        {format(new Date(user.completedAt), "MMM d, yyyy")}
+                        Tamamlama tarihi:{" "}
+                        {format(new Date(user.completedAt), "dd.MM.yyyy")}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-8">
-                  No completions yet
+                  Henüz tamamlayan yok
                 </div>
               )}
 
@@ -847,7 +882,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     size="sm"
                     onClick={fetchUserCompletions}
                   >
-                    Refresh Completions
+                    Tamamlamaları Yenile
                   </Button>
                 </div>
               )}
@@ -859,10 +894,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">
-                Completion Analytics
+                Tamamlama Analizi
               </CardTitle>
               <CardDescription>
-                Detailed statistics about quest performance
+                Görev performansına ilişkin detaylı istatistikler
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -876,10 +911,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <div className="flex flex-col items-center text-center">
                       <BarChart3 className="h-16 w-16 text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">
-                        Daily activity chart would be displayed here
+                        Günlük aktivite grafiği burada gösterilecek
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
-                        {analytics.dailyActivity.length} days of data available
+                        {analytics.dailyActivity.length} günlük veri mevcut
                       </p>
                     </div>
                   </div>
@@ -888,12 +923,12 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <Card>
                       <CardContent className="p-4">
                         <div className="text-xs text-muted-foreground">
-                          Completion by User Level
+                          Kullanıcı Seviyesine Göre Tamamlama
                         </div>
                         <div className="mt-2 space-y-2">
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Beginners</span>
+                              <span className="text-xs">Başlangıç</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLevel.beginners}%
                               </span>
@@ -905,7 +940,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Intermediate</span>
+                              <span className="text-xs">Orta</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLevel.intermediate}%
                               </span>
@@ -919,7 +954,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Advanced</span>
+                              <span className="text-xs">İleri</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLevel.advanced}%
                               </span>
@@ -936,12 +971,12 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <Card>
                       <CardContent className="p-4">
                         <div className="text-xs text-muted-foreground">
-                          Completion by Language
+                          Dile Göre Tamamlama
                         </div>
                         <div className="mt-2 space-y-2">
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Spanish</span>
+                              <span className="text-xs">İspanyolca</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLanguage.spanish}%
                               </span>
@@ -953,7 +988,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">French</span>
+                              <span className="text-xs">Fransızca</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLanguage.french}%
                               </span>
@@ -965,7 +1000,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">German</span>
+                              <span className="text-xs">Almanca</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byLanguage.german}%
                               </span>
@@ -982,12 +1017,12 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     <Card>
                       <CardContent className="p-4">
                         <div className="text-xs text-muted-foreground">
-                          Completion by Platform
+                          Platforma Göre Tamamlama
                         </div>
                         <div className="mt-2 space-y-2">
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Mobile</span>
+                              <span className="text-xs">Mobil</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byPlatform.mobile}%
                               </span>
@@ -999,7 +1034,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                           </div>
                           <div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs">Desktop</span>
+                              <span className="text-xs">Masaüstü</span>
                               <span className="text-xs">
                                 {analytics.segmentation.byPlatform.desktop}%
                               </span>
@@ -1031,7 +1066,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                   <div className="flex flex-col items-center text-center">
                     <BarChart3 className="h-16 w-16 text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      Failed to load analytics data
+                      Analiz verisi yüklenemedi
                     </p>
                   </div>
                 </div>
@@ -1044,10 +1079,10 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">
-                Quest History
+                Görev Geçmişi
               </CardTitle>
               <CardDescription>
-                Audit log of changes to this quest
+                Bu görevde yapılan değişikliklerin kayıtları
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1065,7 +1100,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                       <div>
                         <p className="text-sm font-medium">{log.action}</p>
                         <p className="text-xs text-muted-foreground">
-                          By {log.user}
+                          İşlemi yapan: {log.user}
                         </p>
                         {log.details && (
                           <p className="text-xs text-muted-foreground mt-1">
@@ -1077,7 +1112,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                       <div className="text-sm text-muted-foreground">
                         {format(
                           new Date(log.timestamp),
-                          "MMM d, yyyy 'at' h:mm a"
+                          "dd.MM.yyyy HH:mm"
                         )}
                       </div>
                     </div>
@@ -1085,7 +1120,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-8">
-                  No history data available
+                  Geçmiş verisi bulunamadı
                 </div>
               )}
 
@@ -1096,7 +1131,7 @@ export function QuestDetailsDialog({ quest, onEdit }: QuestDetailsDialogProps) {
                     size="sm"
                     onClick={fetchQuestHistory}
                   >
-                    Refresh History
+                    Geçmişi Yenile
                   </Button>
                 </div>
               )}

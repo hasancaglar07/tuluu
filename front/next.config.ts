@@ -1,5 +1,15 @@
 import type { NextConfig } from "next";
 
+const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001";
+
+const apiOrigin = (() => {
+  try {
+    return new URL(configuredApiUrl).origin;
+  } catch {
+    return "http://127.0.0.1:3001";
+  }
+})();
+
 const nextConfig: NextConfig = {
   webpack: (config) => {
     config.module.rules.push({
@@ -66,6 +76,14 @@ const nextConfig: NextConfig = {
             value: "strict-origin-when-cross-origin",
           },
         ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/_api/:path*",
+        destination: `${apiOrigin}/:path*`,
       },
     ];
   },

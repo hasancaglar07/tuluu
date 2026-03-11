@@ -57,7 +57,7 @@ export function HeartPurchaseCard({
         <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
         <FormattedMessage
           id="shop.hearts.purchase.title"
-          defaultMessage="Buy Hearts"
+          defaultMessage="Kalp Satın Al"
         />
       </h2>
 
@@ -66,7 +66,7 @@ export function HeartPurchaseCard({
           <p className="text-gray-700 mb-4">
             <FormattedMessage
               id="shop.hearts.description"
-              defaultMessage="Hearts allow you to continue learning even after making mistakes. Each heart costs {cost} Gems."
+              defaultMessage="Kalpler, hata yaptığında bile öğrenmeye devam etmeni sağlar. Her kalp {cost} elmasa mal olur."
               values={{ cost: heartCostInGems }}
             />
           </p>
@@ -106,7 +106,7 @@ export function HeartPurchaseCard({
               <span className="font-bold">
                 <FormattedMessage
                   id="shop.hearts.cost"
-                  defaultMessage="{cost} Gems"
+                  defaultMessage="{cost} Elmas"
                   values={{ cost: totalCost.toLocaleString() }}
                 />
               </span>
@@ -119,11 +119,11 @@ export function HeartPurchaseCard({
             className="w-full bg-red-500 hover:bg-red-600 text-white"
           >
             {canAfford ? (
-              <FormattedMessage id="shop.buy.now" defaultMessage="Buy Now" />
+              <FormattedMessage id="shop.buy.now" defaultMessage="Şimdi Satın Al" />
             ) : (
               <FormattedMessage
                 id="shop.insufficient.gems"
-                defaultMessage="Insufficient Gems"
+                defaultMessage="Yetersiz Elmas"
               />
             )}
           </Button>
@@ -132,7 +132,7 @@ export function HeartPurchaseCard({
             <p className="text-sm text-red-500 mt-2">
               <FormattedMessage
                 id="shop.gems.needed"
-                defaultMessage="You need {amount} more Gems for this purchase."
+                defaultMessage="Bu satın alma için {amount} daha elmasa ihtiyacın var."
                 values={{ amount: (totalCost - userGems).toLocaleString() }}
               />
             </p>

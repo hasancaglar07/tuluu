@@ -3,6 +3,26 @@ import UserQuest from "@/models/UserQuest";
 import connectDB from "@/lib/db/connect";
 import { authGuard } from "@/lib/utils";
 
+const DASHBOARD_QUESTS_CACHE_TTL_MS = 30 * 1000;
+
+type DashboardQuestsPayload = {
+  count: number;
+  newThisMonth: number;
+};
+
+type DashboardQuestsCacheValue = {
+  expiresAt: number;
+  payload: DashboardQuestsPayload;
+};
+
+const globalForDashboardQuestsCache = globalThis as typeof globalThis & {
+  _dashboardQuestsCache?: Map<string, DashboardQuestsCacheValue>;
+};
+
+const dashboardQuestsCache =
+  globalForDashboardQuestsCache._dashboardQuestsCache ?? new Map();
+globalForDashboardQuestsCache._dashboardQuestsCache = dashboardQuestsCache;
+
 /**
  * @swagger
  * /api/admin/quests/analytics:
@@ -35,26 +55,39 @@ export async function GET() {
     if (auth instanceof NextResponse) {
       return auth; // early return on unauthorized or forbidden
     }
+
+    const now = Date.now();
+    const cached = dashboardQuestsCache.get("summary");
+    if (cached && cached.expiresAt > now) {
+      return NextResponse.json(cached.payload);
+    }
+
     await connectDB();
 
     // Get current active quests
-    const activeQuests = await UserQuest.countDocuments({
-      status: { $in: ["assigned", "started", "in_progress"] },
-    });
-
-    // Get new quests created this month
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
+    const [activeQuests, newQuestsThisMonth] = await Promise.all([
+      UserQuest.countDocuments({
+        status: { $in: ["assigned", "started", "in_progress"] },
+      }),
+      UserQuest.countDocuments({
+        createdAt: { $gte: startOfMonth },
+      }),
+    ]);
 
-    const newQuestsThisMonth = await UserQuest.countDocuments({
-      createdAt: { $gte: startOfMonth },
-    });
-
-    return NextResponse.json({
+    const payload: DashboardQuestsPayload = {
       count: activeQuests,
       newThisMonth: newQuestsThisMonth,
+    };
+
+    dashboardQuestsCache.set("summary", {
+      expiresAt: now + DASHBOARD_QUESTS_CACHE_TTL_MS,
+      payload,
     });
+
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("Error fetching active quests:", error);
     return NextResponse.json(

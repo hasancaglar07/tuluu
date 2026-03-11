@@ -51,13 +51,13 @@ export function QuestRewardDialog({
           <DialogTitle className="text-center">
             <FormattedMessage
               id="quest.dialog.title"
-              defaultMessage="Quest completed!"
+              defaultMessage="Görev tamamlandı!"
             />
           </DialogTitle>
           <DialogDescription className="text-center">
             <FormattedMessage
               id="quest.dialog.description"
-              defaultMessage="Congratulations! You have completed a quest and earned rewards."
+              defaultMessage="Tebrikler! Bir görevi tamamladın ve ödüller kazandın."
             />
           </DialogDescription>
         </DialogHeader>
@@ -91,7 +91,7 @@ export function QuestRewardDialog({
                 <span className="text-sm text-gray-500">
                   <FormattedMessage
                     id="quest.reward.hearts"
-                    defaultMessage="Hearts"
+                    defaultMessage="Kalp"
                   />
                 </span>
               </div>
@@ -103,7 +103,7 @@ export function QuestRewardDialog({
           <Button onClick={onClose} className="w-full">
             <FormattedMessage
               id="quest.dialog.continue"
-              defaultMessage="Continue"
+              defaultMessage="Devam Et"
             />
           </Button>
         </DialogFooter>

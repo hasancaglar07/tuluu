@@ -1,25 +1,97 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalizedRouter } from "@/hooks/useLocalizedRouter";
 import confetti from "canvas-confetti";
 import dynamic from "next/dynamic";
+import { useAuth } from "@clerk/nextjs";
+import { useParams } from "next/navigation";
+import { apiClient } from "@/lib/api-client";
 
 import Container from "@/components/custom/container";
 import { TypingAnimation } from "@/components/custom/typing-animation";
 import FooterWelcome from "@/components/modules/footer/welcome";
 import { useIntl } from "react-intl";
 import welcomeMascotAnimation from "@/public/images/welcome_mascot.json";
+import { i18n } from "@/i18n-config";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function Welcome() {
   const router = useLocalizedRouter();
   const intl = useIntl();
+  const { userId, getToken } = useAuth();
+  const params = useParams();
+  const localeParam = params?.locale;
+  const currentLocale =
+    (Array.isArray(localeParam)
+      ? localeParam[0]
+      : (localeParam as string | undefined)) || i18n.defaultLocale;
   // Tu peux garder le formatMessage ici si tu veux garder le texte dans un state
   const initialText = intl.formatMessage({ id: "welcome.intro" });
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState(initialText);
+  const hasPrefetchedRoutes = useRef(false);
+  const hasWarmedWelcomeApis = useRef(false);
+
+  useEffect(() => {
+    if (hasPrefetchedRoutes.current) {
+      return;
+    }
+
+    hasPrefetchedRoutes.current = true;
+    router.prefetch("/learn");
+    router.prefetch("/dashboard");
+    router.prefetch("/stories");
+    router.prefetch("/leaderboard");
+    router.prefetch("/quests");
+    router.prefetch("/shop");
+  }, [router]);
+
+  useEffect(() => {
+    if (!userId || hasWarmedWelcomeApis.current) {
+      return;
+    }
+
+    hasWarmedWelcomeApis.current = true;
+    let cancelled = false;
+
+    const warmWelcomeApis = async () => {
+      const token = await getToken();
+      if (!token || cancelled) {
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      await Promise.allSettled([
+        apiClient.get(
+          `/api/public/lessons?action=learn&locale=${currentLocale}&detail=summary`
+        ),
+        apiClient.get(`/api/users/${userId}`, {
+          headers,
+          params: { fast: 1 },
+        }),
+        apiClient.get(`/api/users/${userId}/quests`, {
+          headers,
+          params: { type: "daily" },
+        }),
+        apiClient.get(`/api/leaderboards`, {
+          headers,
+          params: { timeFilter: "allTime", limit: "50" },
+        }),
+        apiClient.get(`/api/shop`, { headers }),
+      ]);
+    };
+
+    void warmWelcomeApis();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentLocale, getToken, userId]);
 
   const goToDashboard = useCallback(() => {
     setIsLoading(true);

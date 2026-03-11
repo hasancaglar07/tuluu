@@ -1,5 +1,4 @@
 // @ts-nocheck
-/* eslint-disable */
 import { type NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db/connect";
 

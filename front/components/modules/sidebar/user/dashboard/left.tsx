@@ -17,7 +17,7 @@ import { FormattedMessage } from "react-intl";
 const menuItems = [
   {
     label: "sidebar.myCourse",
-    defaultMessage: "My Course",
+    defaultMessage: "Kursum",
     icon: <Book className="h-6 w-6 text-indigo-500" />,
     href: "/dashboard",
     isActive: true,
@@ -26,7 +26,7 @@ const menuItems = [
   },
   {
     label: "sidebar.leaderboard",
-    defaultMessage: "Leaderboard",
+    defaultMessage: "Lider Tablosu",
     icon: <Shield className="h-6 w-6 text-blue-500" />,
     href: "/leaderboard",
     bgColor: "#ffc800",
@@ -34,7 +34,7 @@ const menuItems = [
   },
   {
     label: "sidebar.quests",
-    defaultMessage: "Quests",
+    defaultMessage: "Görevler",
     icon: <Plus className="h-6 w-6 text-amber-500" />,
     href: "/quests",
     bgColor: "#ffc800",
@@ -42,7 +42,7 @@ const menuItems = [
   },
   {
     label: "sidebar.shop",
-    defaultMessage: "Shop",
+    defaultMessage: "Mağaza",
     icon: <ShoppingBag className="h-6 w-6 text-red-500" />,
     href: "/shop",
     bgColor: "#ff4b4b",
@@ -50,7 +50,7 @@ const menuItems = [
   },
   {
     label: "sidebar.storyLibrary",
-    defaultMessage: "Story Library",
+    defaultMessage: "Hikâye Kütüphanesi",
     icon: <BookOpen className="h-6 w-6 text-rose-500" />,
     href: "/stories",
     bgColor: "#ffc800",
@@ -58,7 +58,7 @@ const menuItems = [
   },
   {
     label: "sidebar.profile",
-    defaultMessage: "Profile",
+    defaultMessage: "Profil",
     icon: <Settings className="h-6 w-6 text-purple-500" />,
     href: "profile",
     bgColor: "#ce82ff",

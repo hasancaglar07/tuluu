@@ -128,8 +128,8 @@ export function InventoryTable({ items, loading, formatNumber, onUpdateStock }: 
         <CardContent className="p-8">
           <EmptyState
             icon={Package}
-            title="No items found"
-            description="Try adjusting your search or filter criteria"
+            title="Ürün bulunamadı"
+            description="Arama veya filtre kriterlerini değiştirerek tekrar dene"
           />
         </CardContent>
       </Card>
