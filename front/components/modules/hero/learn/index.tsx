@@ -16,6 +16,7 @@ import { apiClient } from "@/lib/api-client";
 import useSWR from "swr";
 import CategoryBadge from "@/components/custom/category-badge";
 import { i18n } from "@/i18n-config";
+import { useCSRF } from "@/hooks/use-csrf";
 
 // SWR fetcher function
 const fetchLanguages = async (locale: string): Promise<Language[]> => {
@@ -83,6 +84,7 @@ export default function LanguagesToLearn({
   const router = useLocalizedRouter();
   const dispatch = useAppDispatch();
   const intl = useIntl();
+  const { getCSRFHeaders } = useCSRF();
 
   const {
     data: languages,
@@ -454,13 +456,13 @@ export default function LanguagesToLearn({
   const handleCategorySelect = (category: LanguageCategory) => {
     setSelectedCategory(category);
     setViewMode("programs");
-    router.replace(`/learn?category=${category}`, { scroll: false });
+    router.replace(`/learn?category=${category}`);
   };
 
   const handleBackToCategories = () => {
     setSelectedCategory("all");
     setViewMode("categories");
-    router.replace("/learn", { scroll: false });
+    router.replace("/learn");
   };
 
   const handleLearn = async (languageId: string) => {
@@ -478,6 +480,7 @@ export default function LanguagesToLearn({
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            ...getCSRFHeaders(),
           },
         }
       );

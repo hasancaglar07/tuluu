@@ -23,6 +23,7 @@ import {
   buildStyles,
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useCSRF } from "@/hooks/use-csrf";
 
 const extractHexColor = (input?: string | null) => {
   if (!input) return "#f97316";
@@ -41,6 +42,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const router = useLocalizedRouter();
+  const { getCSRFHeaders } = useCSRF();
   const { getToken } = useAuth();
   const { userId } = useAuth();
   const params = useParams();
@@ -192,6 +194,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
+              ...getCSRFHeaders(),
             },
           }
         );
@@ -231,6 +234,7 @@ export function StoryLibrary({ languageId }: StoryLibraryProps) {
     intl,
     language?._id,
     userId,
+    getCSRFHeaders,
   ]);
 
   useEffect(() => {
